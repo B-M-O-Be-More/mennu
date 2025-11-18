@@ -1,0 +1,38 @@
+{
+  "DashboardPage": {
+    "title": "ReadBox",
+    "welcome to": "Welcome to",
+    "connect with your": "Connect with your stories anytime.",
+    "get started": "Get Started",
+    "see how it": "See how it works",
+    "what is": "What is",
+    "and how": "and how does ",
+    "description": "ReadBox is a platform created for those who love to read and want to keep their books always at hand. Here, you can upload your PDF files, organize them your way, and access your library from any device, simply and securely.",
+    "using read": "Using ",
+    "is very easy": "is very easy!"
+  },
+  "LoginModal": {
+    "login": "Login",
+    "password": "Password",
+    "email": "Email"
+  },
+  "RegisterModal": {
+    "register": "Register",
+    "name": "Name",
+    "birthdate": "Birthdate",
+    "document": "Document",
+    "phone": "Phone",
+    "password": "Password",
+    "email": "Email",
+    "already_have_account": "Already have an account?"
+  },
+  "MessagesFormsSchemas": {
+    "min": "Field must be at least {number} characters",
+    "max": "Field must be at most {number} characters",
+    "required": "Required field",
+    "email": "Invalid email",
+    "length": "Field must be exactly {number} characters",
+    "fileSize": "File size must be less than {number} MB",
+    "matches": "The password must contain at least one letter, one number, and one special character."
+  }
+}
