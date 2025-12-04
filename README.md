@@ -113,7 +113,7 @@ ESLint + Prettier + Husky.
 
 ### 1. Clonar o repositório  
 ```bash
-git clone https://github.com/seu-org/mennu-frontend.git
+git clone https://github.com/B-M-O-Be-More/mennu.git
 cd mennu
 ```
 ### 2. Instalar dependências
