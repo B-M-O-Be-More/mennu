@@ -19,7 +19,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguage(lang);
     i18next.changeLanguage(lang);
 
-    setCookie(null, "@Readbox:language", lang, {
+    setCookie(null, "@Mennu:language", lang, {
       maxAge: 60 * 60 * 24 * 365,
       path: "/",
     });
@@ -27,7 +27,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
 
   React.useEffect(() => {
     const cookies = parseCookies();
-    const savedLanguage = cookies["@Readbox:language"] || "pt";
+    const savedLanguage = cookies["@Mennu:language"] || "pt";
 
     i18next.changeLanguage(savedLanguage);
     setLanguage(savedLanguage);

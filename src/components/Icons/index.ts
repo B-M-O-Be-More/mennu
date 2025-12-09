@@ -6,6 +6,17 @@ import {
   LuEyeClosed,
 } from "react-icons/lu";
 
-import { FiBookOpen } from "react-icons/fi";
+import { FiBookOpen, FiLock } from "react-icons/fi";
 
-export { LuUserPlus, LuLogIn, LuUpload, LuEye, LuEyeClosed, FiBookOpen };
+import { MdOutlineEmail } from "react-icons/md";
+
+export {
+  LuUserPlus,
+  LuLogIn,
+  LuUpload,
+  LuEye,
+  LuEyeClosed,
+  FiBookOpen,
+  MdOutlineEmail,
+  FiLock,
+};

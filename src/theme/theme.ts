@@ -1,76 +1,31 @@
-import {
-  createSystem,
-  defineConfig,
-  defineRecipe,
-  defaultConfig,
-} from "@chakra-ui/react";
+"use client";
 
-const buttonRecipe = defineRecipe({
-  className: "chakra-button", // mantém compatibilidade
-  base: {
-    borderRadius: "full",
-    fontWeight: "semibold",
+import { createTheme } from "@mui/material/styles";
+
+export const theme = createTheme({
+  palette: {
+    mode: "light",
+    background: {
+      default: "#FFFFFF",
+      auth: "#FF3D00",
+    },
+    text: {
+      primary: "#101828",
+      secondary: "#6A7282",
+      label: "#364153",
+    },
   },
-  variants: {
-    variant: {
-      solid: {
-        bg: "#000000",
-        color: "white",
-        border: "1px solid white",
-        _hover: {
-          bg: "white",
-          color: "#000000",
-          border: "1px solid #000000",
-          _dark: {
-            bg: "#000000",
-            color: "#FFFFFF",
-            border: "1px solid #FFFFFF",
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          backgroundColor: "#FF3D00",
+          color: "#FFFFFF",
+          "&:hover": {
+            backgroundColor: "#992400ff",
           },
         },
-        _dark: { bg: "#FFFFFF", color: "#000000", border: "1px solid #000000" },
       },
-      outline: {
-        border: "1px solid",
-        borderColor: "#000000",
-        color: "#000000",
-        bg: "transparent",
-        _hover: {
-          bg: "#000000",
-          color: "white",
-          _dark: {
-            bg: "white",
-            color: "#000000",
-            border: "1px solid #000000",
-          },
-        },
-        _dark: { bg: "transparent", color: "#FFFFFF", border: "1px solid" },
-      },
-    },
-    size: {
-      xl: {
-        fontSize: "lg",
-        px: 6,
-        py: 3,
-      },
-    },
-  },
-  defaultVariants: {
-    variant: "solid",
-  },
-});
-
-const customConfig = defineConfig({
-  theme: {
-    tokens: {
-      fonts: {
-        body: { value: "var(--font-montserrat), sans-serif" },
-        heading: { value: "var(--font-montserrat), sans-serif" },
-      },
-    },
-    recipes: {
-      button: buttonRecipe,
     },
   },
 });
-
-export const system = createSystem(defaultConfig, customConfig);

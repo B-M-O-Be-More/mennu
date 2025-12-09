@@ -1,16 +1,17 @@
 "use client";
 
-import MainLayout from "@/components/Layouts/Main";
-import { Provider } from "@/components/ui/provider";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { theme } from "@/theme/theme";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ReactNode } from "react";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <Provider>
-      <LanguageProvider>
-        <MainLayout>{children}</MainLayout>
-      </LanguageProvider>
-    </Provider>
+    <LanguageProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }

@@ -1,5 +1,5 @@
-import {Input} from "./component";
-import {InputProps} from "./interface";
+import { Input } from "./component";
+import { InputProps } from "./interface";
 
 export default Input;
-export type {InputProps};
+export type { InputProps };
