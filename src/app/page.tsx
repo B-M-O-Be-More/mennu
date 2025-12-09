@@ -1,14 +1,19 @@
 "use client";
 
-import SectionComponent from "@/components/Layouts/Section";
-import { Stack, Text } from "@chakra-ui/react";
+import FormLogin from "@/components/Forms/FormLogin";
+import Stack from "@mui/material/Stack";
 
 export default function Home() {
   return (
-    <Stack w="full" gap={0}>
-      <SectionComponent>
-        <Text>HomePage</Text>
-      </SectionComponent>
+    <Stack
+      width={"full"}
+      height="100vh"
+      bgcolor={"background.auth"}
+      justifyContent="center"
+      alignItems="center"
+      padding={"10px"}
+    >
+      <FormLogin />
     </Stack>
   );
 }
