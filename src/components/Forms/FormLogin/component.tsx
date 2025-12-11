@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Checkbox, Link, Stack, Typography } from "@mui/material";
+import NextLink from "next/link";
 import { FormLoginProps } from "./interface";
 import { Input } from "@/components/FormControl/Input/component";
 import { MdOutlineEmail, FiLock } from "@/components/Icons";
@@ -62,7 +63,7 @@ export function FormLogin({}: FormLoginProps) {
               Lembrar-me
             </Typography>
           </Stack>
-          <Link href="#" color="background.auth" underline="none">
+          <Link component={NextLink} href="/passwordreset" color="background.auth" underline="none">
             Esqueci minha senha
           </Link>
         </Stack>
