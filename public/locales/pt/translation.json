@@ -1,1 +1,47 @@
-{}
+{
+  "dashboard": {
+    "title": "Dashboard Operacional",
+    "subtitle": "Visão geral das operações do dia",
+    "modules": {
+      "menus": "Cardápios",
+      "stock": "Estoque",
+      "meals": "Refeições",
+      "reports": "Relatórios",
+      "users": "Usuários",
+      "accessModule": "Acesse o módulo"
+    },
+    "alerts": {
+      "title": "Sem alertas críticos",
+      "description": "Nenhum item atingiu o ponto de alerta."
+    },
+    "meals": {
+      "expected": "Refeições Previstas",
+      "served": "Refeições Servidas",
+      "noData": "Ainda sem dados"
+    },
+    "menu": {
+      "title": "Cardápio do Dia",
+      "viewFull": "Ver Cardápio Completo",
+      "emptyTitle": "Nenhum cardápio programado",
+      "emptyMessage": "Ainda não há cardápios cadastrados para hoje."
+    },
+    "stock": {
+      "title": "Alertas de Estoque",
+      "items": "{{count}} itens",
+      "emptyMessage": "Sem alertas no momento",
+      "viewFull": "Ver Estoque Completo"
+    },
+    "weekly": {
+      "title": "Últimos 7 Dias",
+      "days": {
+        "mon": "Seg",
+        "tue": "Ter",
+        "wed": "Qua",
+        "thu": "Qui",
+        "fri": "Sex",
+        "sat": "Sáb",
+        "sun": "Dom"
+      }
+    }
+  }
+}

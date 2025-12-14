@@ -1,1 +1,47 @@
-{}
+{
+  "dashboard": {
+    "title": "Operational Dashboard",
+    "subtitle": "Overview of today's operations",
+    "modules": {
+      "menus": "Menus",
+      "stock": "Stock",
+      "meals": "Meals",
+      "reports": "Reports",
+      "users": "Users",
+      "accessModule": "Access module"
+    },
+    "alerts": {
+      "title": "No critical alerts",
+      "description": "No item has reached the alert point."
+    },
+    "meals": {
+      "expected": "Expected Meals",
+      "served": "Meals Served",
+      "noData": "No data yet"
+    },
+    "menu": {
+      "title": "Menu of the Day",
+      "viewFull": "View Full Menu",
+      "emptyTitle": "No menu scheduled",
+      "emptyMessage": "There are no menus registered for today yet."
+    },
+    "stock": {
+      "title": "Stock Alerts",
+      "items": "{{count}} items",
+      "emptyMessage": "No alerts at the moment",
+      "viewFull": "View Full Stock"
+    },
+    "weekly": {
+      "title": "Last 7 Days",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      }
+    }
+  }
+}

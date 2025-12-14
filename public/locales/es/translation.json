@@ -1,1 +1,47 @@
-{}
+{
+  "dashboard": {
+    "title": "Panel Operacional",
+    "subtitle": "Resumen de las operaciones del día",
+    "modules": {
+      "menus": "Menús",
+      "stock": "Inventario",
+      "meals": "Comidas",
+      "reports": "Informes",
+      "users": "Usuarios",
+      "accessModule": "Acceder al módulo"
+    },
+    "alerts": {
+      "title": "Sin alertas críticas",
+      "description": "Ningún artículo ha alcanzado el punto de alerta."
+    },
+    "meals": {
+      "expected": "Comidas Esperadas",
+      "served": "Comidas Servidas",
+      "noData": "Sin datos todavía"
+    },
+    "menu": {
+      "title": "Menú del Día",
+      "viewFull": "Ver Menú Completo",
+      "emptyTitle": "Ningún menú programado",
+      "emptyMessage": "Aún no hay menús registrados para hoy."
+    },
+    "stock": {
+      "title": "Alertas de Inventario",
+      "items": "{{count}} artículos",
+      "emptyMessage": "Sin alertas en este momento",
+      "viewFull": "Ver Inventario Completo"
+    },
+    "weekly": {
+      "title": "Últimos 7 Días",
+      "days": {
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb",
+        "sun": "Dom"
+      }
+    }
+  }
+}
