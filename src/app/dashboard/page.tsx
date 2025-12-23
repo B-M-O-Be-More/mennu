@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
 import {
   DashboardIcon,
@@ -17,6 +17,7 @@ import {
   SairIcon,
 } from "@/components/Sidebar/icons";
 import { usePathname } from "next/navigation";
+import DashBoardPage from "@/components/DashboardPage";
 
 export default function DashboardPage() {
   const pathname = usePathname();
@@ -129,10 +130,7 @@ export default function DashboardPage() {
           overflowY: "auto",
         }}
       >
-        <Stack spacing={2}>
-          <h1>Dashboard</h1>
-          <p>Conteúdo da página aqui...</p>
-        </Stack>
+        <DashBoardPage />
       </Box>
     </Box>
   );
