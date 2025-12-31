@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Stack, Typography, Grid, Box } from "@mui/material";
-import { DashBoardPageProps, ModuleCard, IconBox } from "./index";
+import { DashBoardPageProps, ModuleCard, IconBox, Last7DaysChart } from "./index";
 import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon } from "../Icons";
 import { CardapiosIcon, RefeicoesIcon, EstoqueIcon, RelatoriosIcon, UsuariosIcon } from "../Sidebar/icons";
 import React from "react";
@@ -308,6 +308,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
           >
             Últimos 7 Dias
           </Typography>
+          <Last7DaysChart />
         </CardGeneric>
       </Stack>
     </Stack>
