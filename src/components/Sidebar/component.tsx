@@ -102,12 +102,13 @@ export function SidebarComponent({
       sx={{
         width: { xs: "240px", sm: "260px", lg: "279px" },
         height: "100vh",
-        backgroundColor: "background.default",
+        backgroundColor: (theme) => theme.palette.sidebar.background,
         display: "flex",
         flexDirection: "column",
         position: "relative",
         padding: { xs: "1rem 0 0 0", sm: "1.25rem 0 0 0", lg: "24px 0 0 0" },
         transition: "width 0.3s ease",
+        borderRight: `1px solid ${sidebarColors.divider}`,
       }}
     >
       {/* Logo Container */}
@@ -217,7 +218,7 @@ export function SidebarComponent({
             {adminMenuItems.map((item) => {
               const itemActive = isActive(item.path);
               const isLongLabel = item.label === "Perfis & Permissões";
-              
+
               return (
                 <Button
                   key={item.id}
@@ -228,16 +229,16 @@ export function SidebarComponent({
                   aria-label={item.label}
                   sx={{
                     ...getMenuItemStyles(itemActive),
-                    height: isLongLabel 
-                      ? { xs: "80px", sm: "84px", lg: "88px" } 
+                    height: isLongLabel
+                      ? { xs: "80px", sm: "84px", lg: "88px" }
                       : { xs: "56px", sm: "58px", lg: "60px" },
                     "& .MuiButton-startIcon": {
                       ...getMenuItemStyles(itemActive)["& .MuiButton-startIcon"],
                       "& svg": {
-                        width: isLongLabel 
+                        width: isLongLabel
                           ? { xs: "22px", sm: "24px", lg: "26.25px" }
                           : { xs: "22px", sm: "24px", lg: "28px" },
-                        height: isLongLabel 
+                        height: isLongLabel
                           ? { xs: "22px", sm: "24px", lg: "26.25px" }
                           : { xs: "22px", sm: "24px", lg: "28px" },
                       },
@@ -245,7 +246,7 @@ export function SidebarComponent({
                   }}
                 >
                   {renderIcon(item.icon, itemActive)}
-                  <Typography 
+                  <Typography
                     sx={{
                       ...getMenuTextStyles(itemActive),
                       whiteSpace: "pre-wrap",

@@ -13,9 +13,9 @@ export const CardGeneric = forwardRef<HTMLDivElement, CardGenericProps>(
 			<Stack
 				ref={ref}
 				border="1px solid"
-				borderColor="#E5E7EB"
+				borderColor="divider"
 				borderRadius={3}
-				bgcolor="#FFFFFF"
+				bgcolor="background.paper"
 				padding={3}
 				spacing={2}
 				sx={{ flex: 1, ...sx }}

@@ -7,10 +7,12 @@ import {
   TooltipItem
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useTheme } from "@mui/material/styles";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
 export default function Last7DaysChart() {
+  const theme = useTheme();
   const maxValue = 10;
 
   const data = {
@@ -18,7 +20,7 @@ export default function Last7DaysChart() {
     datasets: [
       {
         data: [2, 3, 1, 0, 4, 0, 2],
-        backgroundColor: "#FF3D00",
+        backgroundColor: theme.palette.primary.main,
         borderRadius: 6,
         barThickness: 6,
         stack: "progress",
@@ -26,7 +28,7 @@ export default function Last7DaysChart() {
       },
       {
         data: Array(7).fill(maxValue),
-        backgroundColor: "#E5E7EB",
+        backgroundColor: theme.palette.divider,
         borderRadius: 6,
         barThickness: 10,
         stack: "progress",
@@ -58,7 +60,7 @@ export default function Last7DaysChart() {
         stacked: false,
         grid: { display: false },
         ticks: {
-          color: "#6A7282",
+          color: theme.palette.text.secondary,
           font: { size: 14 },
         },
       },

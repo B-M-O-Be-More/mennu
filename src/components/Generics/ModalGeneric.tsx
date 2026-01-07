@@ -25,12 +25,20 @@ export default function ModalGeneric({
   children,
 }: ModalGenericProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 3,
+          },
+        }
+
+      }}>
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1 }}>
         <Box component="span">
-          <Typography fontSize={"18px"} fontWeight={"600"} color="#0C0813">{title}</Typography>
+          <Typography variant="h3" fontWeight={"600"} color="text.primary">{title}</Typography>
           {subtitle && (
-            <Typography color="#6C757D" fontSize={"14px"} fontWeight={"400"} >
+            <Typography variant="h6" fontWeight={"400"} color="text.secondary" >
               {subtitle}
             </Typography>
           )}

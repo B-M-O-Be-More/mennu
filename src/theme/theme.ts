@@ -1,6 +1,6 @@
 "use client";
 
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes, alpha } from "@mui/material/styles";
 
 const palette = {
   mode: "light" as const,
@@ -53,7 +53,7 @@ const palette = {
     900: "#111827",
   },
   background: {
-    default: "#FFFFFF",
+    default: "#F9FAFB",
     paper: "#FFFFFF",
     auth: "#FF3D00",
   },
@@ -66,6 +66,7 @@ const palette = {
   sidebar: {
     text: "#4A5565",
     textActive: "#FF3D00",
+    background: "#FFFFFF",
     bgActive: "rgba(255, 61, 0, 0.08)",
     bgHover: "rgba(0, 0, 0, 0.04)",
     bgActiveHover: "rgba(255, 61, 0, 0.12)",
@@ -75,6 +76,9 @@ const palette = {
     userNameColor: "#0A0A0A",
     userEmailColor: "#6A7282",
   },
+  tables: {
+    text: "#4A5565",
+  }
 };
 
 const typography = {
@@ -144,14 +148,47 @@ const baseTheme = createTheme({
 export const theme = createTheme(baseTheme, {
   components: {
     MuiButton: {
+      variants: [
+        {
+          props: { variant: "example" },
+          style: {
+            justifyContent: "center",
+            borderRadius: "16px",
+            backgroundColor: "transparent",
+            color: baseTheme.palette.primary.contrastText,
+            fontWeight: 500,
+            padding: "12px 24px",
+            fontSize: "18px",
+            "&:hover": {
+              backgroundColor: baseTheme.palette.primary.dark,
+            },
+          },
+        },
+      ],
       styleOverrides: {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
+          fontWeight: 500,
           fontFamily: typography.fontFamily,
-          fontWeight: 600,
+          height: "fit-content",
+          padding: "1rem 1.5rem",
+          borderRadius: "1rem",
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
+          },
+        },
+        outlined: {
+          backgroundColor: "transparent",
+          color: baseTheme.palette.secondary.main,
+          fontweight: 500,
+          fontFamily: typography.fontFamily,
+          borderColor: baseTheme.palette.divider,
+          padding: "1rem 1.5rem",
+          borderRadius: "1rem",
+          height: "fit-content",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.04)",
           },
         },
       },
@@ -165,3 +202,5 @@ export const theme = createTheme(baseTheme, {
     },
   },
 });
+
+export default responsiveFontSizes(theme);

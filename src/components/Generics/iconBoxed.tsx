@@ -7,6 +7,7 @@ interface IconBoxProps {
 	padding?: number | string;
 	borderRadius?: number | string;
 	maxWidth?: string;
+	maxHeight?: string;
 }
 
 export default function IconBox({
@@ -15,6 +16,7 @@ export default function IconBox({
 	padding = 2,
 	borderRadius = 3,
 	maxWidth = "fit-content",
+	maxHeight = "fit-content"
 }: IconBoxProps) {
 	return (
 		<Box
@@ -23,6 +25,8 @@ export default function IconBox({
 			bgcolor={bgColor}
 			borderRadius={borderRadius}
 			maxWidth={maxWidth}
+			maxHeight={maxHeight}
+
 			sx={{ display: "inline-flex" }}
 		>
 			{icon}

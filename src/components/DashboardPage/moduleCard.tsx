@@ -1,8 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { ReactNode } from "react";
 import NextLink from "next/link";
-import { CardGeneric } from "../Generics";
-import { IconBox } from "./index";
+import { CardGeneric, IconBox } from "../Generics";
 
 interface ModuleCardProps {
 	icon: ReactNode;
@@ -40,11 +39,11 @@ export default function ModuleCard({
 				borderRadius={3}
 			/>
 			<Box component="span">
-				<Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+				<Typography variant="body1" fontWeight="400" color="text.primary">
 					{title}
 				</Typography>
 
-				<Typography fontSize="18px" fontWeight="400" color="#6A7282">
+				<Typography variant="body2" fontWeight="400" color="text.secondary">
 					{subtitle}
 				</Typography>
 			</Box>
