@@ -7,23 +7,15 @@ import {
   Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { ReactNode } from "react";
+import { ModalProps } from "./";
 
-interface ModalGenericProps {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  subtitle?: string;
-  children?: ReactNode;
-}
-
-export default function ModalGeneric({
+export default function Modal({
   open,
   onClose,
   title,
   subtitle,
   children,
-}: ModalGenericProps) {
+}: ModalProps) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
       slotProps={{

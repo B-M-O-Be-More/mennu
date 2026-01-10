@@ -1,49 +1,16 @@
 "use client";
 
 import { Button, Stack, Typography, Grid, Box } from "@mui/material";
-import { DashBoardPageProps, ModuleCard, Last7DaysChart } from "./index";
+import { DashBoardPageProps } from "./index";
 import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon } from "../Icons";
-import { CardapiosIcon, RefeicoesIcon, EstoqueIcon, RelatoriosIcon, UsuariosIcon } from "../Sidebar/icons";
+import { RefeicoesIcon } from "../Sidebar/icons";
 import React from "react";
-import { CardGeneric, ModalGeneric, IconBox } from "../Generics";
-
-const modules = [
-  {
-    title: "Cardápios",
-    subtitle: "Acesse o módulo",
-    link: "/cardapios",
-    icon: <CardapiosIcon color="#155DFC" />,
-    iconBgColor: "#EFF6FF",
-  },
-  {
-    title: "Estoque",
-    subtitle: "Acesse o módulo",
-    link: "/estoque",
-    icon: <EstoqueIcon color="#9810FA" />,
-    iconBgColor: "#FAF5FF",
-  },
-  {
-    title: "Refeições",
-    subtitle: "Acesse o módulo",
-    link: "/refeicoes",
-    icon: <RefeicoesIcon color="#009689" />,
-    iconBgColor: "#F0FDFA",
-  },
-  {
-    title: "Relatórios",
-    subtitle: "Acesse o módulo",
-    link: "/relatorios",
-    icon: <RelatoriosIcon color="#EC003F" />,
-    iconBgColor: "#FFF1F2",
-  },
-  {
-    title: "Usuários",
-    subtitle: "Acesse o módulo",
-    link: "/usuarios",
-    icon: <UsuariosIcon color="#E17100" />,
-    iconBgColor: "#FFBEB",
-  },
-];
+import { cardsModules } from "@/data/infos";
+import ModuleCard from "../ModuleCard";
+import Last7DaysChart from "../Last7DaysChart";
+import Modal from "../Modals/Modal";
+import IconBox from "../Cards/IconBox";
+import Card from "../Cards/Card";
 
 export function DashBoardPage({ }: DashBoardPageProps) {
   const [open, setOpen] = React.useState(false);
@@ -68,7 +35,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
           Exportar
         </Button>
 
-        <ModalGeneric
+        <Modal
           open={open}
           onClose={() => setOpen(false)}
           title="Exportar Relatório"
@@ -140,7 +107,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               </Button>
             </Stack>
           </Stack>
-        </ModalGeneric>
+        </Modal>
 
       </Stack>
 
@@ -149,7 +116,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
         gap={2}
         gridTemplateColumns="repeat(auto-fit, minmax(150px, 1fr))"
       >
-        {modules.map((module, i) => (
+        {cardsModules.map((module, i) => (
           <ModuleCard
             key={i}
             icon={module.icon}
@@ -161,17 +128,17 @@ export function DashBoardPage({ }: DashBoardPageProps) {
         ))}
       </Box>
 
-      <CardGeneric>
+      <Card>
         <Typography variant="body1" fontWeight="400" color="text.primary">
           Sem alertas críticos
         </Typography>
         <Typography variant="body2" fontWeight="400" color="text.secondary">
           Nenhum item atingiu o ponto de alerta.
         </Typography>
-      </CardGeneric>
+      </Card>
 
       <Stack direction={"row"} gap={2}>
-        <CardGeneric>
+        <Card>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Box component="span">
               <Typography variant="body1" fontWeight="400" color="text.primary">
@@ -189,8 +156,8 @@ export function DashBoardPage({ }: DashBoardPageProps) {
             />
           </Stack>
           <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
-        </CardGeneric>
-        <CardGeneric>
+        </Card>
+        <Card>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Box component="span">
               <Typography variant="body1" fontWeight="400" color="text.primary">
@@ -208,11 +175,11 @@ export function DashBoardPage({ }: DashBoardPageProps) {
             />
           </Stack>
           <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
-        </CardGeneric>
+        </Card>
       </Stack>
 
       <Stack direction={"row"} flexWrap="wrap" gap={2}>
-        <CardGeneric>
+        <Card>
           <Stack
             direction={"row"}
             borderBottom={"1px solid"}
@@ -250,9 +217,9 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               Nenhum cardápio programado
             </Typography>
           </Stack>
-        </CardGeneric>
+        </Card>
 
-        <CardGeneric>
+        <Card>
           <Stack
             direction={"row"}
             borderBottom={"1px solid"}
@@ -286,9 +253,9 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               Ver Estoque Completo
             </Typography>
           </Stack>
-        </CardGeneric>
+        </Card>
 
-        <CardGeneric>
+        <Card>
           <Typography
             variant="body1"
             fontWeight="400"
@@ -300,7 +267,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
             Últimos 7 Dias
           </Typography>
           <Last7DaysChart />
-        </CardGeneric>
+        </Card>
       </Stack>
     </Stack>
   );

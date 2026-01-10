@@ -1,47 +1,47 @@
 "use client";
 
-import { Button, Checkbox, Link, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Link, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
 import { FormLoginProps } from "./interface";
-import { Input } from "@/components/FormControl/Input/component";
+import Input from "@/components/FormControl/Input";
 import { MdOutlineEmail, FiLock } from "@/components/Icons";
+import Card from "@/components/Cards/Card";
 
-export function FormLogin({}: FormLoginProps) {
+export function FormLogin({ }: FormLoginProps) {
   return (
-    <Stack
-      alignItems="center"
-      justifyContent="space-between"
-      bgcolor={"background.default"}
-      maxWidth={"600px"}
-      width={"100%"}
-      borderRadius={"24px"}
-      spacing={3}
-      padding={"24px"}
-    >
-      <Stack width={"100%"} alignItems="center" gap={2}>
+    <Box bgcolor={"primary.main"} height="100%" position="relative" >
+      <Card
+        alignItems="center"
+        boxShadow={"0 25px 50px -12px rgba(0, 0, 0, 0.25)"}
+        width={"500px"}
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
         <Stack
-          width={"176px"}
-          height={"80px"}
-          bgcolor={"background.auth"}
-          borderRadius={"16px"}
+          bgcolor={"primary.main"}
+          borderRadius={3}
           alignItems="center"
-          justifyContent="center"
+          paddingX={4}
+          paddingY={2}
         >
-          <Typography fontSize={"38px"} color="white">
+          <Typography variant="h2" color="primary.contrastText" fontWeight={"400"}>
             Mennu
           </Typography>
         </Stack>
-        <Typography fontSize={"40px"} fontWeight={"600"}>
+        <Typography variant="h2" fontWeight={"600"}>
           Bem-vindo de volta
         </Typography>
-        <Typography fontSize={"18px"} color="text.secondary" fontWeight={"400"}>
+        <Typography variant="body2" color="text.secondary" fontWeight={"400"}>
           Acesse sua conta para continuar
         </Typography>
 
-        <Stack width={"100%"} spacing={2}>
-          <Input startIcon={<MdOutlineEmail />} label="E-mail" />
-          <Input startIcon={<FiLock />} label="Senha" type="password" />
-        </Stack>
+        <Input icon={<MdOutlineEmail size={18} />} label="E-mail" placeholder="seu@email.com" />
+        <Input icon={<FiLock size={18} />} label="Senha" type="password" placeholder="••••••••" />
+
         <Stack
           direction={"row"}
           alignItems={"center"}
@@ -56,10 +56,10 @@ export function FormLogin({}: FormLoginProps) {
             <Checkbox
               defaultChecked
               sx={{
-                "&.Mui-checked": { color: "#FF3D00" },
+                "&.Mui-checked": { color: "primary.main" },
               }}
             />
-            <Typography fontSize={"18px"} color="#4A5565" fontWeight={"400"}>
+            <Typography variant="body2" color="text.secondary" fontWeight={"400"}>
               Lembrar-me
             </Typography>
           </Stack>
@@ -70,17 +70,17 @@ export function FormLogin({}: FormLoginProps) {
         <Button
           sx={{
             width: "100%",
-            borderRadius: "17px",
-            height: "66px",
+            height: "4rem",
+            fontWeight: 400,
           }}
           variant="contained"
         >
           Entrar
         </Button>
-      </Stack>
-      <Typography fontSize={"18px"} color="#99A1AF">
-        Mennu © 2025 — Sistema de Gestão de Refeições
-      </Typography>
-    </Stack>
+        <Typography variant="body2" color="text.secondary">
+          Mennu © 2025 — Sistema de Gestão de Refeições
+        </Typography>
+      </Card>
+    </Box>
   );
 }

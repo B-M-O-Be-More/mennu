@@ -1,6 +1,14 @@
-import { TextFieldProps } from "@mui/material";
+import {
+  SxProps,
+  Theme,
+  TextFieldProps
+} from "@mui/material";
+
 
 export type InputProps = TextFieldProps & {
   label?: string;
-  startIcon?: React.ReactNode;
+  optional?: boolean;
+  placeholder?: string;
+  sx?: SxProps<Theme>;
+  icon?: React.ReactNode;
 };

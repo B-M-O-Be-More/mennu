@@ -1,34 +1,87 @@
-import { InputAdornment, Stack, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
-import { InputProps } from "./interface";
+import {
+  FormControl,
+  OutlinedInput,
+  InputAdornment,
+  Typography,
+  IconButton,
+} from "@mui/material";
+import { InputProps } from "./";
+import React from "react";
+import { FiEye } from "react-icons/fi";
 
-export const RoundedTextField = styled(TextField)(() => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "16px",
-    fontSize: "18px",
-  },
-}));
+export default function Input
+  ({
+    value,
+    onChange,
+    label,
+    optional = true,
+    placeholder = "Buscar...",
+    sx,
+    icon,
+    type = "text",
+  }: InputProps) {
+  const [showPassword, setShowPassword] = React.useState(false);
 
-export function Input({ label, startIcon, ...props }: InputProps) {
+  const inputType =
+    type === "password" ? (showPassword ? "text" : "password") : type;
+
   return (
-    <Stack width={"100%"} spacing={1}>
-      <Typography fontSize={"18px"} color="text.label" fontWeight={"400"}>
-        {label}
-      </Typography>
-      <RoundedTextField
-        slotProps={{
-          input: {
-            startAdornment: startIcon ? (
-              <InputAdornment position="start" sx={{ mr: "18px" }}>
-                {startIcon}
-              </InputAdornment>
-            ) : undefined,
+    <FormControl fullWidth>
+      {label && (
+        <Typography
+          variant="body2"
+          mb={1} color="text.label" fontWeight={400}
+        >
+          {label}{" "}
+          {!optional && (
+            <Typography variant="body2" component="span" color="primary.main">*</Typography>
+          )}
+        </Typography>
+      )}
+      <OutlinedInput
+        value={value}
+        type={inputType}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        startAdornment={
+          <InputAdornment position="start">
+            {type === "password" ? (
+              <IconButton
+                onClick={() => setShowPassword((prev) => !prev)}
+                edge="start"
+                size="small"
+              >
+                {showPassword ? <FiEye /> : icon}
+              </IconButton>
+            ) : (
+              icon
+            )}
+          </InputAdornment>
+        }
+        sx={{
+          borderRadius: 3,
+          fontSize: 14,
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "divider",
+            transition: "border-color 0.2s ease",
           },
+          "& input::placeholder": {
+            color: "text.secondary",
+            opacity: 0.8,
+          },
+          "&.Mui-focused": {
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "primary.main",
+            },
+            "& .MuiInputAdornment-root svg": {
+              color: "primary.main",
+              transition: "all 0.2s ease",
+              transform: "scale(1.2) rotate(12deg)",
+            },
+          },
+          ...sx,
         }}
-        fullWidth
-        {...props}
       />
-    </Stack>
+    </FormControl>
   );
 }

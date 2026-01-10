@@ -1,50 +1,20 @@
 "use client";
 
 import { Stack, Typography, Box, Button, } from "@mui/material";
-import { ExportUsersModal, NewUserModal, UsersPageProps } from "./";
+import { ExportUsersModal, UsersPageProps } from "./";
 import React from "react";
-import { CardGeneric, IconBox, TableGeneric, SelectGeneric, InputGeneric } from "../Generics";
-import { DownloadIcon, FilterIcon, PlusIcon, SearchIcon, UsuariosCheckIcon, UsuariosXIcon } from "../Icons";
-import { UsuariosIcon } from "../Sidebar/icons";
+import { DownloadIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
+import { cardsUsers } from "../../data/infos";
+import NewUserModal from "../Modals/NewUserModal";
+import Card from "../Cards/Card";
+import Input from "../FormControl/Input";
+import IconBox from "../Cards/IconBox";
+import Select from "../FormControl/Select";
+import { mockStatuses, mockUnidades } from "@/data/menuItems";
+import { userColumns } from "@/data/tableColumns";
+import Table from "../Tables/Table";
 
-const cards = [
-  {
-    title: "Total Usuários",
-    value: 0,
-    icon: <UsuariosIcon color="#155DFC" />,
-    bgColor: "#EFF6FF",
-  },
-  {
-    title: "Usuários Ativos",
-    value: 0,
-    icon: <UsuariosCheckIcon color="#00A63E" />,
-    bgColor: "#F0FDF4",
-  },
-  {
-    title: "Total Inativos",
-    value: 0,
-    icon: <UsuariosXIcon color="#E7000B" />,
-    bgColor: "#FEF2F2",
-  },
-  {
-    title: "Administradores",
-    value: 0,
-    icon: <UsuariosIcon color="#9810FA" />,
-    bgColor: "#FAF5FF",
-  },
-];
-
-interface usersData {
-  name: string;
-  matricula: string;
-  unidade: string;
-  status: string;
-  tipoAcesso: string;
-  ultimaRefeicao: string;
-  acoes: string;
-}
-
-export const mock: usersData[] = [
+export const mockUsers = [
   {
     name: "João Silva",
     matricula: "12345",
@@ -109,54 +79,15 @@ export const mock: usersData[] = [
     acoes: "Editar / Excluir",
   },
 ];
-const statuses = [
-  { label: "Todos os status", value: "all" },
-  { label: "Ativo", value: "active" },
-  { label: "Inativo", value: "inactive" },
-  { label: "Bloqueado", value: "blocked" },
-];
 
-const columns: any = [
-  { key: "name", label: "Nome" },
-  { key: "matricula", label: "Matrícula" },
-  { key: "unidade", label: "Unidade", align: "right" },
-  { key: "status", label: "Status" },
-  { key: "tipoAcesso", label: "Tipo de Acesso" },
-  { key: "ultimaRefeicao", label: "Última Refeição" },
-];
-
-const unidades = [
-  { label: "Todas as unidades", value: 0 },
-  { label: "Unidade 1", value: 1 },
-  { label: "Unidade 2", value: 2 },
-  { label: "Unidade 3", value: 3 },
-];
-
-const categorias = [
-  { label: "Selecione uma categoria", value: "admin" },
-  { label: "Administrador", value: "admin" },
-  { label: "Usuário", value: "user" },
-  { label: "Visitante", value: "visitor" },
-];
 
 export function UsersPage({ }: UsersPageProps) {
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
 
   const [userSearch, setUserSearch] = React.useState("");
-  const [unidade, setUnidade] = React.useState(0);
-  const [status, setStatus] = React.useState("all");
-
-  // newUser states
-  const [newUserName, setNewUserName] = React.useState("");
-  const [newUserCpf, setNewUserCpf] = React.useState("");
-  const [newUserMatricula, setNewUserMatricula] = React.useState("");
-  const [newUserNumeroCartao, setNewUserNumeroCartao] = React.useState("");
-  const [newUserCategoria, setNewUserCategoria] = React.useState(categorias[0].value);
-  const [newUserUnidade, setNewUserUnidade] = React.useState(unidades[0].value);
-  const [newUserStatus, setNewUserStatus] = React.useState(statuses[0].value);
-
-
+  const [unidade, setUnidade] = React.useState("");
+  const [status, setStatus] = React.useState("");
 
   return (
     <Stack gap={2}>
@@ -200,26 +131,26 @@ export function UsersPage({ }: UsersPageProps) {
         </Stack>
       </Stack>
 
-      <CardGeneric>
+      <Card>
         <Stack gap={2} direction={"row"}>
 
-          <InputGeneric
+          <Input
             value={userSearch}
             onChange={setUserSearch}
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
 
           />
-          <SelectGeneric
+          <Select
             value={unidade}
             onChange={setUnidade}
-            options={unidades}
+            options={mockUnidades}
             formControlSx={{ width: "26rem" }}
           />
-          <SelectGeneric
+          <Select
             value={status}
             onChange={setStatus}
-            options={statuses}
+            options={mockStatuses}
             formControlSx={{ width: "26rem" }}
           />
 
@@ -238,8 +169,8 @@ export function UsersPage({ }: UsersPageProps) {
           gap={2}
           gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))"
         >
-          {cards.map((card, i) => (
-            <CardGeneric key={i} flexDirection="row" alignItems="center" gap={2}>
+          {cardsUsers.map((card, i) => (
+            <Card key={i} flexDirection="row" alignItems="center" gap={2}>
               <IconBox
                 icon={card.icon}
                 bgColor={card.bgColor}
@@ -255,13 +186,13 @@ export function UsersPage({ }: UsersPageProps) {
                 </Typography>
               </Box>
 
-            </CardGeneric>
+            </Card>
           ))}
         </Box>
 
-        <TableGeneric columns={columns} rows={mock} initialRowsPerPage={5} />
+        <Table columns={userColumns} rows={mockUsers} initialRowsPerPage={5} />
 
-      </CardGeneric>
+      </Card>
     </Stack>
 
   );

@@ -1,8 +1,9 @@
 import React from "react";
 import { Stack, Typography, Box, Button } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { IconBox, ModalGeneric } from "../Generics";
 import { CSVIcon, FileIcon } from "../Icons";
+import Modal from "../Modals/Modal";
+import IconBox from "../Cards/IconBox";
 
 interface ExportUsersModalProps {
   open: boolean;
@@ -11,7 +12,7 @@ interface ExportUsersModalProps {
 
 export default function ExportUsersModal({ open, onClose }: ExportUsersModalProps) {
   return (
-    <ModalGeneric
+    <Modal
       open={open}
       onClose={onClose}
       title="Importar Usuários"
@@ -95,6 +96,6 @@ export default function ExportUsersModal({ open, onClose }: ExportUsersModalProp
           </Button>
         </Stack>
       </Stack>
-    </ModalGeneric>
+    </Modal>
   );
 }

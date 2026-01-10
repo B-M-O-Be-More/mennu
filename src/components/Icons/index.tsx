@@ -20,14 +20,14 @@ interface SVGIconProps {
 const UsuariosCheckIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
     <path d="M18.6665 12.8333L20.9998 15.1667L25.6665 10.5" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M18.6668 24.5V22.1667C18.6668 20.929 18.1752 19.742 17.3 18.8668C16.4248 17.9917 15.2378 17.5 14.0002 17.5H7.00016C5.76249 17.5 4.5755 17.9917 3.70033 18.8668C2.82516 19.742 2.3335 20.929 2.3335 22.1667V24.5" stroke="#00A63E" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M10.5002 12.8333C13.0775 12.8333 15.1668 10.744 15.1668 8.16667C15.1668 5.58934 13.0775 3.5 10.5002 3.5C7.92283 3.5 5.8335 5.58934 5.8335 8.16667C5.8335 10.744 7.92283 12.8333 10.5002 12.8333Z" stroke="#00A63E" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M18.6668 24.5V22.1667C18.6668 20.929 18.1752 19.742 17.3 18.8668C16.4248 17.9917 15.2378 17.5 14.0002 17.5H7.00016C5.76249 17.5 4.5755 17.9917 3.70033 18.8668C2.82516 19.742 2.3335 20.929 2.3335 22.1667V24.5" stroke="#00A63E" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10.5002 12.8333C13.0775 12.8333 15.1668 10.744 15.1668 8.16667C15.1668 5.58934 13.0775 3.5 10.5002 3.5C7.92283 3.5 5.8335 5.58934 5.8335 8.16667C5.8335 10.744 7.92283 12.8333 10.5002 12.8333Z" stroke="#00A63E" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const UsuariosXIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-    <path d="M18.6668 24.5V22.1667C18.6668 20.929 18.1752 19.742 17.3 18.8668C16.4248 17.9917 15.2378 17.5 14.0002 17.5H7.00016C5.76249 17.5 4.5755 17.9917 3.70033 18.8668C2.82516 19.742 2.3335 20.929 2.3335 22.1667V24.5" stroke="#E7000B" stroke-width="2.33333" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M18.6668 24.5V22.1667C18.6668 20.929 18.1752 19.742 17.3 18.8668C16.4248 17.9917 15.2378 17.5 14.0002 17.5H7.00016C5.76249 17.5 4.5755 17.9917 3.70033 18.8668C2.82516 19.742 2.3335 20.929 2.3335 22.1667V24.5" stroke="#E7000B" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M10.5002 12.8333C13.0775 12.8333 15.1668 10.744 15.1668 8.16667C15.1668 5.58934 13.0775 3.5 10.5002 3.5C7.92283 3.5 5.8335 5.58934 5.8335 8.16667C5.8335 10.744 7.92283 12.8333 10.5002 12.8333Z" stroke="#E7000B" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M19.8335 9.33301L25.6668 15.1663" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M25.6668 9.33301L19.8335 15.1663" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
