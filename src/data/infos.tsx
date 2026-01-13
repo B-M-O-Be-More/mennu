@@ -66,4 +66,4 @@ const cardsModules = [
   },
 ];
 
-export { cardsUsers, cardsModules }
+export { cardsUsers, cardsModules };
