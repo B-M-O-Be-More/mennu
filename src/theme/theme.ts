@@ -78,7 +78,7 @@ const palette = {
   },
   tables: {
     text: "#4A5565",
-  }
+  },
 };
 
 const typography = {
