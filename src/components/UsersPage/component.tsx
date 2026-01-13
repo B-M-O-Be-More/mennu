@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography, Box, Button, } from "@mui/material";
+import { Stack, Typography, Box, Button, Avatar, } from "@mui/material";
 import { ExportUsersModal, UsersPageProps } from "./";
 import React from "react";
 import { DownloadIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
@@ -11,79 +11,47 @@ import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades } from "@/data/menuItems";
-import { userColumns } from "@/data/tableColumns";
+import { userColumns, usersData } from "@/data/tableColumns";
 import Table from "../Tables/Table";
+import EditUserModal from "../Modals/EditUserModal";
 
-export const mockUsers = [
+export const mockUsers: usersData[] = [
   {
-    name: "João Silva",
+    nome: "João Silva",
     matricula: "12345",
     unidade: "10",
     status: "Ativo",
-    tipoAcesso: "Administrador",
     ultimaRefeicao: "05/01/2026 12:30",
-    acoes: "Editar / Excluir",
+    categoria: "Administrador",
+    acoes: <></>,
   },
   {
-    name: "Maria Souza",
+    nome: "Maria Souza",
     matricula: "67890",
     unidade: "8",
     status: "Inativo",
-    tipoAcesso: "Usuário",
     ultimaRefeicao: "04/01/2026 11:45",
-    acoes: "Editar / Excluir",
-  },
-  {
-    name: "Carlos Pereira",
-    matricula: "54321",
-    unidade: "12",
-    status: "Ativo",
-    tipoAcesso: "Usuário",
-    ultimaRefeicao: "06/01/2026 08:15",
-    acoes: "Editar / Excluir",
-  },
-  {
-    name: "Ana Oliveira",
-    matricula: "98765",
-    unidade: "15",
-    status: "Bloqueado",
-    tipoAcesso: "Administrador",
-    ultimaRefeicao: "05/01/2026 13:00",
-    acoes: "Editar / Excluir",
-  },
-  {
-    name: "Maria Souza",
-    matricula: "67890",
-    unidade: "8",
-    status: "Inativo",
-    tipoAcesso: "Usuário",
-    ultimaRefeicao: "04/01/2026 11:45",
-    acoes: "Editar / Excluir",
-  },
-  {
-    name: "Carlos Pereira",
-    matricula: "54321",
-    unidade: "12",
-    status: "Ativo",
-    tipoAcesso: "Usuário",
-    ultimaRefeicao: "06/01/2026 08:15",
-    acoes: "Editar / Excluir",
-  },
-  {
-    name: "Ana Oliveira",
-    matricula: "98765",
-    unidade: "15",
-    status: "Bloqueado",
-    tipoAcesso: "Administrador",
-    ultimaRefeicao: "05/01/2026 13:00",
-    acoes: "Editar / Excluir",
+    categoria: "Usuário",
+    acoes: <></>,
   },
 ];
 
 
+const userMock =
+{
+  nome: "João Silva",
+  matricula: "12345",
+  unidade: "10",
+  status: "Ativo",
+  CPF: "123.456.789-00",
+  categoria: "Administrador",
+  numeroCartao: "1234567890",
+}
+
 export function UsersPage({ }: UsersPageProps) {
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
 
   const [userSearch, setUserSearch] = React.useState("");
   const [unidade, setUnidade] = React.useState("");
@@ -97,7 +65,7 @@ export function UsersPage({ }: UsersPageProps) {
           <Typography variant="h1" fontWeight={"600"} color="text.primary">
             Usuários
           </Typography>
-          <Typography variant="body1" color="text.secondary"  >
+          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
             Gerencie os usuários do sistema
           </Typography>
         </Box>
@@ -139,19 +107,18 @@ export function UsersPage({ }: UsersPageProps) {
             onChange={setUserSearch}
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
-
           />
           <Select
             value={unidade}
             onChange={setUnidade}
             options={mockUnidades}
-            formControlSx={{ width: "26rem" }}
+            formControlSx={{ maxWidth: "10rem" }}
           />
           <Select
             value={status}
             onChange={setStatus}
             options={mockStatuses}
-            formControlSx={{ width: "26rem" }}
+            formControlSx={{ maxWidth: "10rem" }}
           />
 
           <Button
@@ -191,6 +158,12 @@ export function UsersPage({ }: UsersPageProps) {
         </Box>
 
         <Table columns={userColumns} rows={mockUsers} initialRowsPerPage={5} />
+        <EditUserModal
+          open={openUpdateModal}
+          onClose={() => setOpenUpdateModal(false)}
+          user={userMock}
+          onSave={() => { }}
+        />
 
       </Card>
     </Stack>

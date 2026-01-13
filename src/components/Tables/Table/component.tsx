@@ -64,7 +64,10 @@ export default function TableG<T extends { [key: string]: any }>({
   };
 
   return (
-    <TableContainer >
+    <TableContainer sx={{
+      maxWidth: "100%",
+      overflowX: "auto",
+    }}>
       <Table>
         <TableHead sx={{ "& .MuiTableCell-root": { color: "tables.text" } }}>
           <TableRow>

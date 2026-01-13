@@ -1,14 +1,16 @@
 import {
   SxProps,
-  Theme,
-  TextFieldProps
+  Theme
 } from "@mui/material";
 
 
-export type InputProps = TextFieldProps & {
+export interface InputProps {
+  value: string;
+  onChange: (value: string) => void;
   label?: string;
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;
   icon?: React.ReactNode;
-};
+  type?: React.HTMLInputTypeAttribute;
+}

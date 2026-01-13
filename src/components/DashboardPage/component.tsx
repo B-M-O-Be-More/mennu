@@ -23,7 +23,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
           <Typography variant="h1" fontWeight={"600"} color="text.primary">
             Dashboard Operacional
           </Typography>
-          <Typography variant="body1" color="text.secondary"  >
+          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
             Visão geral das operações do dia
           </Typography>
         </Box>

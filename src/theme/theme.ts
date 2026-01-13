@@ -148,27 +148,12 @@ const baseTheme = createTheme({
 export const theme = createTheme(baseTheme, {
   components: {
     MuiButton: {
-      variants: [
-        {
-          props: { variant: "example" },
-          style: {
-            justifyContent: "center",
-            borderRadius: "16px",
-            backgroundColor: "transparent",
-            color: baseTheme.palette.primary.contrastText,
-            fontWeight: 500,
-            padding: "12px 24px",
-            fontSize: "18px",
-            "&:hover": {
-              backgroundColor: baseTheme.palette.primary.dark,
-            },
-          },
-        },
-      ],
       styleOverrides: {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
+          border: "1px solid",
+          borderColor: baseTheme.palette.primary.main,
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",

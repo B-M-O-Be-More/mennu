@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Typography, Box } from "@mui/material";
+import { Stack, Typography, Box, Button } from "@mui/material";
 import { UsuariosIcon } from "../../Sidebar/icons";
 import { mockCategorias, mockUnidades, mockStatuses } from "../../../data/menuItems";
 import { NewUserModalProps } from ".";
@@ -36,7 +36,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
         <Stack direction="row" spacing={2}>
           <Input
             value={newUserName}
-            onChange={(e) => setNewUserName(e.target.value)}
+            onChange={setNewUserName}
             label="Nome Completo"
             placeholder="Ex. João Silva"
             optional={false}
@@ -47,7 +47,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
         <Stack direction="row" spacing={2}>
           <Input
             value={newUserCpf}
-            onChange={(e) => setNewUserCpf(e.target.value)}
+            onChange={setNewUserCpf}
             label="CPF"
             placeholder="Ex. 000.000.000-00"
             optional={false}
@@ -55,7 +55,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           />
           <Input
             value={newUserMatricula}
-            onChange={(e) => setNewUserMatricula(e.target.value)}
+            onChange={setNewUserMatricula}
             label="Matrícula"
             placeholder="Ex. 123456"
             optional={false}
@@ -90,7 +90,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           />
           <Input
             value={newUserNumeroCartao}
-            onChange={(e) => setNewUserNumeroCartao(e.target.value)}
+            onChange={setNewUserNumeroCartao}
             label="Número do Cartão"
             placeholder="Ex: 1250458-25"
             optional={true}
@@ -112,7 +112,30 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
               Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
             </Typography>
           </Box>
-
+        </Stack>
+        <Stack direction="row" gap={2}>
+          <Button
+            variant="outlined"
+            sx={{
+              flex: 1,
+              border: "1px solid",
+              borderColor: "divider",
+              transition: "all 0.2s ease-in-out",
+              "&:hover": { color: "text.primary" },
+            }}
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            sx={{
+              flex: 1,
+            }}
+            variant="contained"
+            onClick={handleSave}
+          >
+            Criar Novo Usuário
+          </Button>
         </Stack>
       </Stack>
     </Modal>

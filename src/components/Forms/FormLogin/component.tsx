@@ -6,8 +6,12 @@ import { FormLoginProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { MdOutlineEmail, FiLock } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
+import React from "react";
 
 export function FormLogin({ }: FormLoginProps) {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
   return (
     <Box bgcolor={"primary.main"} height="100%" position="relative" >
       <Card
@@ -39,8 +43,8 @@ export function FormLogin({ }: FormLoginProps) {
           Acesse sua conta para continuar
         </Typography>
 
-        <Input icon={<MdOutlineEmail size={18} />} label="E-mail" placeholder="seu@email.com" />
-        <Input icon={<FiLock size={18} />} label="Senha" type="password" placeholder="••••••••" />
+        <Input icon={<MdOutlineEmail size={18} />} label="E-mail" placeholder="seu@email.com" onChange={setEmail} value={email} />
+        <Input icon={<FiLock size={18} />} label="Senha" type="password" placeholder="••••••••" onChange={setPassword} value={password} />
 
         <Stack
           direction={"row"}

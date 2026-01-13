@@ -15,8 +15,8 @@ export default function ExportUsersModal({ open, onClose }: ExportUsersModalProp
     <Modal
       open={open}
       onClose={onClose}
-      title="Importar Usuários"
-      subtitle="Escolha o formato da importação"
+      title="Exportar Usuários"
+      subtitle="Escolha o formato da exportação"
     >
       <Stack gap={2}>
         <Stack

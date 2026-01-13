@@ -33,9 +33,13 @@ export default function Input
           mb={1} color="text.label" fontWeight={400}
         >
           {label}{" "}
-          {!optional && (
-            <Typography variant="body2" component="span" color="primary.main">*</Typography>
-          )}
+          <Typography
+            variant="body2"
+            component="span"
+            color={!optional ? "primary.main" : "transparent"}
+            sx={{ transition: "all 0.2s ease-in-out" }}>
+            *
+          </Typography>
         </Typography>
       )}
       <OutlinedInput
