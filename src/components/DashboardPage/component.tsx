@@ -1,11 +1,16 @@
 "use client";
 
 import { Button, Stack, Typography, Grid, Box } from "@mui/material";
-import { DashBoardPageProps, ModuleCard, IconBox, Last7DaysChart } from "./index";
+import { DashBoardPageProps } from "./index";
 import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon } from "../Icons";
-import { CardapiosIcon, RefeicoesIcon, EstoqueIcon, RelatoriosIcon, UsuariosIcon } from "../Sidebar/icons";
+import { RefeicoesIcon } from "../Sidebar/icons";
 import React from "react";
-import { CardGeneric, ModalGeneric } from "../Generics";
+import { cardsModules } from "@/data/infos";
+import ModuleCard from "../ModuleCard";
+import Last7DaysChart from "../Last7DaysChart";
+import Modal from "../Modals/Modal";
+import IconBox from "../Cards/IconBox";
+import Card from "../Cards/Card";
 
 export function DashBoardPage({ }: DashBoardPageProps) {
   const [open, setOpen] = React.useState(false);
@@ -15,23 +20,14 @@ export function DashBoardPage({ }: DashBoardPageProps) {
 
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
         <Box component="span">
-          <Typography fontSize={"42px"} fontWeight={"700"} color="#101828">
+          <Typography variant="h1" fontWeight={"600"} color="text.primary">
             Dashboard Operacional
           </Typography>
-          <Typography color="#6A7282" fontSize={"18px"} fontWeight={"400"}>
+          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
             Visão geral das operações do dia
           </Typography>
         </Box>
         <Button
-          sx={{
-            width: "175px",
-            borderRadius: "17px",
-            height: "58px",
-            color: "#FFFFFF",
-            padding: "15px 32px",
-            fontSize: "18px",
-            fontWeight: "500"
-          }}
           variant="contained"
           startIcon={<DownloadIcon />}
           onClick={() => setOpen(true)}
@@ -39,14 +35,14 @@ export function DashBoardPage({ }: DashBoardPageProps) {
           Exportar
         </Button>
 
-        <ModalGeneric
+        <Modal
           open={open}
           onClose={() => setOpen(false)}
           title="Exportar Relatório"
           subtitle="Escolha o formato de exportação"
         >
           <Stack gap={2}>
-            <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"#98a8b380"} borderRadius={3} padding={2}>
+            <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"divider"} borderRadius={3} padding={2}>
               <IconBox
                 icon={<FileIcon color="#FF0070" />}
                 bgColor="#ff00701a"
@@ -54,16 +50,16 @@ export function DashBoardPage({ }: DashBoardPageProps) {
                 borderRadius={3}
               />
               <Box component="span">
-                <Typography fontSize={"16px"} fontWeight={"500"} color="#0C0813">
+                <Typography variant="body1" color="text.primary">
                   PDF
                 </Typography>
-                <Typography color="#6C757D" fontSize={"14px"} fontWeight={"400"}>
+                <Typography variant="body2" color="text.secondary">
                   Relatório completo com gráficos e métricas
                 </Typography>
               </Box>
             </Stack>
 
-            <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"#98a8b380"} borderRadius={3} padding={2}>
+            <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"divider"} borderRadius={3} padding={2}>
               <IconBox
                 icon={<CSVIcon color="#198754" />}
                 bgColor="#B8EBAD"
@@ -71,10 +67,10 @@ export function DashBoardPage({ }: DashBoardPageProps) {
                 borderRadius={3}
               />
               <Box component="span">
-                <Typography fontSize={"16px"} fontWeight={"500"} color="#0C0813">
+                <Typography variant="body1" color="text.primary">
                   CSV
                 </Typography>
-                <Typography color="#6C757D" fontSize={"14px"} fontWeight={"400"}>
+                <Typography variant="body2" color="text.secondary" >
                   Dados em formato de tabela separada por vírgulas
                 </Typography>
               </Box>
@@ -82,17 +78,18 @@ export function DashBoardPage({ }: DashBoardPageProps) {
 
             <Stack direction={"row"} gap={2}>
               <Button
+                variant="outlined"
                 sx={{
                   flex: 1,
-                  borderRadius: "12px",
-                  color: "#98A8B3",
-                  fontSize: "18px",
-                  fontWeight: "500",
-                  backgroundColor: "#FFF",
+                  fontSize: "1.2rem",
                   border: "1px solid",
-                  borderColor: "#E5E7EB"
+                  borderColor: "divider",
+                  color: "text.secondary",
+                  transition: "all 0.2s ease-in-out",
+                  "&:hover": {
+                    color: "text.primary",
+                  },
                 }}
-
                 onClick={() => { }}
               >
                 Visualizar
@@ -100,10 +97,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               <Button
                 sx={{
                   flex: 1,
-                  borderRadius: "12px",
-                  color: "#FFFFFF",
-                  fontSize: "18px",
-                  fontWeight: "500"
+                  fontSize: "1.2rem",
                 }}
                 variant="contained"
                 startIcon={<DownloadIcon />}
@@ -113,80 +107,44 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               </Button>
             </Stack>
           </Stack>
-        </ModalGeneric>
+        </Modal>
 
       </Stack>
 
-      <Grid container gap={2}>
-        <Grid size={{ xs: 12, sm: 6, md: "grow" }}>
+      <Box
+        display="grid"
+        gap={2}
+        gridTemplateColumns="repeat(auto-fit, minmax(150px, 1fr))"
+      >
+        {cardsModules.map((module, i) => (
           <ModuleCard
-            icon={<CardapiosIcon color="#155DFC" />}
-            iconBgColor="#EFF6FF"
-            title="Cardápios"
-            subtitle="Acesse o módulo"
-            link="/cardapios"
+            key={i}
+            icon={module.icon}
+            iconBgColor={module.iconBgColor}
+            title={module.title}
+            subtitle={module.subtitle}
+            link={module.link}
           />
-        </Grid>
+        ))}
+      </Box>
 
-        <Grid size={{ xs: 12, sm: 6, md: "grow" }}>
-          <ModuleCard
-            icon={<EstoqueIcon color="#9810FA" />}
-            iconBgColor="#FAF5FF"
-            title="Estoque"
-            subtitle="Acesse o módulo"
-            link="/estoque"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6, md: "grow" }}>
-          <ModuleCard
-            icon={<RefeicoesIcon color="#009689" />}
-            iconBgColor="#F0FDFA"
-            title="Refeições"
-            subtitle="Acesse o módulo"
-            link="/refeicoes"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6, md: "grow" }}>
-          <ModuleCard
-            icon={<RelatoriosIcon color="#EC003F" />}
-            iconBgColor="#FFF1F2"
-            title="Relatórios"
-            subtitle="Acesse o módulo"
-            link="/relatorios"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6, md: "grow" }}>
-          <ModuleCard
-            icon={<UsuariosIcon color="#E17100" />}
-            iconBgColor="#FFBEB"
-            title="Usuários"
-            subtitle="Acesse o módulo"
-            link="/usuarios"
-          />
-        </Grid>
-
-      </Grid>
-
-      <CardGeneric>
-        <Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+      <Card>
+        <Typography variant="body1" fontWeight="400" color="text.primary">
           Sem alertas críticos
         </Typography>
-        <Typography fontSize="18px" fontWeight="400" color="#6A7282">
+        <Typography variant="body2" fontWeight="400" color="text.secondary">
           Nenhum item atingiu o ponto de alerta.
         </Typography>
-      </CardGeneric>
+      </Card>
 
       <Stack direction={"row"} gap={2}>
-        <CardGeneric>
+        <Card>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Box component="span">
-              <Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+              <Typography variant="body1" fontWeight="400" color="text.primary">
                 Refeições Previstas
               </Typography>
-              <Typography fontSize="18px" fontWeight="400" color="#6A7282">
+              <Typography variant="body2" color="text.secondary"  >
                 Ainda sem dados
               </Typography>
             </Box>
@@ -197,15 +155,15 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               borderRadius={3}
             />
           </Stack>
-          <Typography fontSize="48px" fontWeight="400" color="#0A0A0A">–</Typography>
-        </CardGeneric>
-        <CardGeneric>
+          <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
+        </Card>
+        <Card>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Box component="span">
-              <Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+              <Typography variant="body1" fontWeight="400" color="text.primary">
                 Refeições Servidas
               </Typography>
-              <Typography fontSize="18px" fontWeight="400" color="#6A7282">
+              <Typography variant="body2" fontWeight="400" color="text.secondary">
                 Ainda sem dados
               </Typography>
             </Box>
@@ -216,32 +174,32 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               borderRadius={3}
             />
           </Stack>
-          <Typography fontSize="48px" fontWeight="400" color="#0A0A0A">–</Typography>
-        </CardGeneric>
+          <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
+        </Card>
       </Stack>
 
       <Stack direction={"row"} flexWrap="wrap" gap={2}>
-        <CardGeneric>
+        <Card>
           <Stack
             direction={"row"}
             borderBottom={"1px solid"}
-            borderColor={"#F3F4F6"}
+            borderColor={"divider"}
             justifyContent={"space-between"}
             paddingBottom={2}
             gap={2}
           >
             <Box component="span">
-              <Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+              <Typography variant="body1" fontWeight="400" color="text.primary">
                 Cardápio do Dia
               </Typography>
-              <Typography fontSize="18px" fontWeight="400" color="#6A7282">
+              <Typography variant="body2" fontWeight="400" color="text.secondary">
                 03/12/2025
               </Typography>
             </Box>
             <Typography
-              fontSize="18px"
+              variant="body1"
               fontWeight="500"
-              color="#FF3D00"
+              color="primary.main"
               gap={0.5}
               sx={{
                 display: "inline-flex", alignItems: "center", cursor: "pointer", transition: "all 0.2s ease-in-out",
@@ -251,40 +209,40 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               }}
             >
               Ver Cardápio Completo
-              <ArrowIcon color="#FF3D00" />
+              <ArrowIcon color="primary.main" />
             </Typography>
           </Stack>
           <Stack component="span" padding={3} alignItems={"center"}>
-            <Typography fontSize="20px" fontWeight="400" color="#6A7282" >
+            <Typography variant="body2" fontWeight="400" color="text.secondary" >
               Nenhum cardápio programado
             </Typography>
           </Stack>
-        </CardGeneric>
+        </Card>
 
-        <CardGeneric>
+        <Card>
           <Stack
             direction={"row"}
             borderBottom={"1px solid"}
-            borderColor={"#F3F4F6"}
+            borderColor={"divider"}
             justifyContent={"space-between"}
             paddingBottom={2}
             gap={2}
           >
-            <Typography fontSize="20px" fontWeight="400" color="#0A0A0A">
+            <Typography variant="body1" fontWeight="400" color="text.primary">
               Alertas de Estoque
             </Typography>
-            <Typography fontSize="18px" fontWeight="400" color="#6A7282">
+            <Typography variant="body2" fontWeight="400" color="text.secondary">
               0 itens
             </Typography>
           </Stack>
           <Stack component="span" padding={3} alignItems={"center"}>
-            <Typography fontSize="20px" fontWeight="400" color="#6A7282" >
+            <Typography variant="body2" fontWeight="400" color="text.secondary" >
               Nenhum cardápio programado
             </Typography>
             <Typography
-              fontSize="18px"
+              variant="body2"
               fontWeight="400"
-              color="#FF3D00"
+              color="primary.main"
               sx={{
                 display: "inline-flex", alignItems: "center", cursor: "pointer", transition: "all 0.2s ease-in-out",
                 "&:hover": {
@@ -295,21 +253,21 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               Ver Estoque Completo
             </Typography>
           </Stack>
-        </CardGeneric>
+        </Card>
 
-        <CardGeneric>
+        <Card>
           <Typography
-            fontSize="20px"
+            variant="body1"
             fontWeight="400"
-            color="#0A0A0A"
+            color="text.primary"
             borderBottom={"1px solid"}
-            borderColor={"#F3F4F6"}
+            borderColor={"divider"}
             paddingBottom={2}
           >
             Últimos 7 Dias
           </Typography>
           <Last7DaysChart />
-        </CardGeneric>
+        </Card>
       </Stack>
     </Stack>
   );
