@@ -1,6 +1,6 @@
 import React from "react";
-import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
+import { Stack, Typography, Box, Button } from "@mui/material";
+import { mockCategorias } from "../../../data/menuItems";
 import { NewMovementModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -33,7 +33,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Novo Item de Estoque">
+    <Modal open={open} onClose={onClose} title="Nova Movimentação">
       <Stack gap={2}>
 
         <Box>
@@ -138,7 +138,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
               transition: "all 0.2s ease-in-out",
               "&:hover": { color: "text.primary" },
             }}
-            onClick={() => { }}
+            onClick={onClose}
           >
             Cancelar
           </Button>

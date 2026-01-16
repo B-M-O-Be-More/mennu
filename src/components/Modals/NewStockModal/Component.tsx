@@ -109,7 +109,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
               transition: "all 0.2s ease-in-out",
               "&:hover": { color: "text.primary" },
             }}
-            onClick={() => { }}
+            onClick={onClose}
           >
             Cancelar
           </Button>

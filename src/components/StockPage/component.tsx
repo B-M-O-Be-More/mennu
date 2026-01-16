@@ -118,8 +118,8 @@ export function StockPage({ }: StockPageProps) {
 
   const [itemSearch, setItemSearch] = React.useState("");
 
-  const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
-  const [openExportStockModal, setOpenExportStockModal] = React.useState(false);
+  const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
+  const [_openExportStockModal, setOpenExportStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
 
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
@@ -141,7 +141,7 @@ export function StockPage({ }: StockPageProps) {
           <Button
             variant="outlined"
             startIcon={<UpdateIcon />}
-            onClick={() => setOpenUpdateModal(true)}
+            onClick={() => setOpenEditStockModal(true)}
           >
             Atualizar
           </Button>
@@ -233,10 +233,10 @@ export function StockPage({ }: StockPageProps) {
                 </Stack>
               </Stack>
 
-              <Table columns={stockColumns} rows={getStockMock(() => setOpenUpdateModal(true))} initialRowsPerPage={5} />
+              <Table columns={stockColumns} rows={getStockMock(() => setOpenEditStockModal(true))} initialRowsPerPage={5} />
               <EditStockModal
-                open={openUpdateModal}
-                onClose={() => setOpenUpdateModal(false)}
+                open={openEditStockModal}
+                onClose={() => setOpenEditStockModal(false)}
                 stockItem={stockMock}
                 onSave={() => { }}
               />

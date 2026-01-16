@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Typography, Box, Button, Switch, Chip } from "@mui/material";
+import { Stack, Typography, Box, Button, Switch } from "@mui/material";
 import { mockCategorias, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
