@@ -3,7 +3,7 @@ import { mockCategorias, mockUnidades, mockUnidadesMedida } from "../../../data/
 import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
-import SelectG from "@/components/FormControl/Select"; // novo SelectG
+import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IStock } from "@/data/tableColumns";
@@ -48,14 +48,14 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
           />
 
           <Stack direction="row" spacing={2}>
-            <SelectG
+            <Select
               label="Categoria"
               optional={false}
               options={mockCategorias}
               register={register("categoria")}
               error={errors.categoria?.message}
             />
-            <SelectG
+            <Select
               label="Unidade de Medida"
               optional={false}
               options={mockUnidadesMedida}
@@ -83,7 +83,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             />
           </Stack>
 
-          <SelectG
+          <Select
             label="Unidade"
             optional={true}
             options={mockUnidades}

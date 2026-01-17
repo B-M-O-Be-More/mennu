@@ -26,23 +26,20 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
     formState: { errors },
     setValue,
     watch,
-  } = useForm<IMovement>(
-    {
-      resolver: yupResolver(movementSchema),
-      defaultValues:
-      {
-        data: "",
-        tipo: "entrada",
-        item: mockCategorias[0].value,
-        quantidade: 0,
-        responsavel: "",
-        justificativa: "",
-      },
-    });
+  } = useForm<IMovement>({
+    resolver: yupResolver(movementSchema),
+    defaultValues: {
+      data: "",
+      tipo: "entrada",
+      item: mockCategorias[0].value,
+      quantidade: 0,
+      responsavel: "",
+      justificativa: "",
+    },
+  });
 
   const onSubmit = (data: IMovement) => {
-    console.log("Nova movimentação:",
-      data);
+    console.log("Nova movimentação:", data);
     onClose();
   };
 

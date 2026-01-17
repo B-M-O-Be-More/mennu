@@ -8,9 +8,11 @@ export default function SelectG<T>({
   options,
   register,
   error,
+  formControlSx,
+  selectSx,
 }: SelectGProps<T>) {
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth sx={{ ...formControlSx, }} >
       {label && (
         <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
           {label}{" "}
@@ -35,6 +37,7 @@ export default function SelectG<T>({
             transition: "border-color 0.1s ease",
           },
           height: "57px",
+          ...selectSx
         }}
       >
         {options.map((opt) => (

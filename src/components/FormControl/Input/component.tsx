@@ -44,7 +44,7 @@ export default function Input({
       <OutlinedInput
         type={inputType}
         placeholder={placeholder}
-        {...register} // aqui entra o register do RHF
+        {...register}
         startAdornment={
           <InputAdornment position="start">
             {type === "password" ? (

@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { policySchema } from "@/schemas/unitSchema";
 
-
 export default function UnitPoliciesModal({
   open,
   onClose,
@@ -38,7 +37,7 @@ export default function UnitPoliciesModal({
     console.log("Políticas atualizadas:", data);
     const updatedUnit = { ...unitItem, politicas: data };
 
-    onSave?.(updatedUnit);
+    onSave(updatedUnit);
     onClose();
   };
 

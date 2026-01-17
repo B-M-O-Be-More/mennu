@@ -13,7 +13,7 @@ export const movementSchema = yup.object({
   item: yup
     .string()
     .required("O item é obrigatório")
-    .oneOf(mockCategorias.slice(1).map(c => c.value), "Item inválido"),
+    .oneOf(mockCategorias.slice(1).map(c => c.value), "Categoria inválida"),
   quantidade: yup
     .number()
     .typeError("Quantidade deve ser numérica")
@@ -23,10 +23,12 @@ export const movementSchema = yup.object({
     .string()
     .required("O responsável é obrigatório")
     .min(3, "Nome do responsável deve ter pelo menos 3 caracteres"),
-  justificativa: yup.string().default("").when("tipo", {
-    is: (val: string) => val === "perda" || val === "ajuste",
-    then: schema =>
-      schema.required("Justificativa obrigatória para perdas e ajustes"),
-    otherwise: schema => schema.notRequired()
-  }),
+  justificativa: yup
+    .string()
+    .default("")
+    .when("tipo", {
+      is: (val: string) => val === "perda" || val === "ajuste",
+      then: schema => schema.required("Justificativa obrigatória para perdas e ajustes"),
+      otherwise: schema => schema.notRequired(),
+    }),
 });

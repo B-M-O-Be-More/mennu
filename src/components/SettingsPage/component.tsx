@@ -15,7 +15,7 @@ export function SettingsPage({ }: SettingsPageProps) {
           Configurações
         </Typography>
         <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
-          Visão geral das operações do dia
+          Gerencie as configurações do sistema
         </Typography>
       </Box>
       <Stack direction={"row"} gap={2} >

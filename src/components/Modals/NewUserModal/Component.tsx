@@ -12,7 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { userSchema } from "@/schemas/userSchema";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
-  const { control,
+  const {
     handleSubmit,
     register,
     formState: { errors },

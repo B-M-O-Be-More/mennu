@@ -163,7 +163,10 @@ export default function UnitsTab({ }: UnitsTabProps) {
                   display: "flex",
                   fontSize: 14,
                 }}
-                onClick={() => setOpenUnitPoliciesModal(true)}
+                onClick={() => {
+                  setSelectedUnit(unit);
+                  setOpenUnitPoliciesModal(true)
+                }}
               >
                 Políticas
               </Button>
@@ -182,6 +185,10 @@ export default function UnitsTab({ }: UnitsTabProps) {
                 aria-label="delete"
                 size="medium"
                 sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, height: 'fit-content', color: 'error.contrastText' }}
+                onClick={() => {
+                  setSelectedUnit(unit);
+                  // setOpenDeleteUnitModal(true)
+                }}
               >
                 <TrashIcon width={22} height={22} />
               </IconButton>

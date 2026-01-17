@@ -126,6 +126,12 @@ export function StockPage({ }: StockPageProps) {
     defaultValues: { itemSearch: "" },
   });
 
+  const itemSearch = watch("itemSearch");
+
+  React.useEffect(() => {
+    console.log(itemSearch);
+  }, [itemSearch]);
+
   return (
     <Stack gap={2}>
 
@@ -218,7 +224,6 @@ export function StockPage({ }: StockPageProps) {
                     placeholder="Buscar item..."
                     icon={<SearchIcon />}
                     register={register("itemSearch")}
-                    error={undefined}
                   />
                   <Button
                     variant="contained"

@@ -67,6 +67,10 @@ export function UsersPage({ }: UsersPageProps) {
 
   const filters = watch()
 
+  React.useEffect(() => {
+    console.log(filters);
+  }, [filters]);
+
   return (
     <Stack gap={2}>
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
@@ -115,18 +119,18 @@ export function UsersPage({ }: UsersPageProps) {
             icon={<SearchIcon />}
             register={register("userSearch")}
           />
-          <Stack gap={2} direction={"row"} maxWidth={"500px"} width={"100%"}>
-            <Select
-              options={mockUnidades}
-              register={register("unidade")}
-              formControlSx={{ maxWidth: "300px" }}
-            />
-            <Select
-              options={mockStatuses}
-              register={register("status")}
-              formControlSx={{ maxWidth: "300px" }}
-            />
-          </Stack>
+
+          <Select
+            options={mockUnidades}
+            register={register("unidade")}
+            formControlSx={{ maxWidth: "250px" }}
+          />
+
+          <Select
+            options={mockStatuses}
+            register={register("status")}
+            formControlSx={{ maxWidth: "250px" }}
+          />
 
           <Button
             variant="outlined"

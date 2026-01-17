@@ -19,18 +19,17 @@ export const policySchema = yup.object({
   limites: yup.object({
     diario: yup
       .number()
-      .min(0)
+      .min(0, "O limite diário deve ser maior ou igual a zero")
       .required("Informe o limite diário"),
     semanal: yup
       .number()
-      .min(0)
+      .min(0, "O limite semanal deve ser maior ou igual a zero")
       .required("Informe o limite semanal"),
     mensal: yup
       .number()
-      .min(0)
+      .min(0, "O limite mensal deve ser maior ou igual a zero")
       .required("Informe o limite mensal"),
   }),
-
 });
 
 export const unitSchema = yup.object({
