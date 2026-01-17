@@ -6,14 +6,33 @@ import { FormLoginProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { MdOutlineEmail, FiLock } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
-import React from "react";
+import { useForm } from "react-hook-form";
+import { loginSchema } from "@/schemas/loginSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 export function FormLogin({ }: FormLoginProps) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ email: string; password: string; }>(
+    {
+      resolver: yupResolver(loginSchema),
+      defaultValues:
+      {
+        email: "",
+        password: "",
+      },
+    }
+  );
+
+  const onSubmit = (data: { email: string; password: string; }) => {
+    console.log("Login:", data);
+  };
 
   return (
-    <Box bgcolor={"primary.main"} height="100%" position="relative" >
+    <Box bgcolor={"primary.main"} height="100%" position="relative" component={"form"}
+      onSubmit={handleSubmit(onSubmit)}>
       <Card
         alignItems="center"
         boxShadow={"0 25px 50px -12px rgba(0, 0, 0, 0.25)"}
@@ -39,12 +58,24 @@ export function FormLogin({ }: FormLoginProps) {
         <Typography variant="h2" fontWeight={"600"}>
           Bem-vindo de volta
         </Typography>
-        <Typography variant="body2" color="text.secondary" fontWeight={"400"}>
+        <Typography variant="subtitle1" color="text.secondary" fontWeight={"400"}>
           Acesse sua conta para continuar
         </Typography>
 
-        <Input icon={<MdOutlineEmail size={18} />} label="E-mail" placeholder="seu@email.com" onChange={setEmail} value={email} />
-        <Input icon={<FiLock size={18} />} label="Senha" type="password" placeholder="••••••••" onChange={setPassword} value={password} />
+        <Input icon={<MdOutlineEmail size={18} />}
+          label="E-mail"
+          placeholder="seu@email.com"
+          register={register("email")}
+          error={errors.email?.message}
+        />
+
+        <Input icon={<FiLock size={18} />}
+          label="Senha"
+          type="password"
+          placeholder="••••••••"
+          register={register("password")}
+          error={errors.password?.message}
+        />
 
         <Stack
           direction={"row"}
@@ -78,6 +109,7 @@ export function FormLogin({ }: FormLoginProps) {
             fontWeight: 400,
           }}
           variant="contained"
+          type="submit"
         >
           Entrar
         </Button>

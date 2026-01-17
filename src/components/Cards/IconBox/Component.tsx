@@ -7,7 +7,8 @@ export default function IconBox({
   padding = 2,
   borderRadius = 3,
   maxWidth = "fit-content",
-  maxHeight = "fit-content"
+  maxHeight = "fit-content",
+  sx = {}
 }: IconBoxProps) {
   return (
     <Box
@@ -17,7 +18,7 @@ export default function IconBox({
       borderRadius={borderRadius}
       maxWidth={maxWidth}
       maxHeight={maxHeight}
-      sx={{ display: "inline-flex" }}
+      sx={{ display: "inline-flex", ...sx }}
     >
       {icon}
     </Box>

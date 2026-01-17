@@ -121,5 +121,35 @@ interface IMovement {
   justificativa: string;
 }
 
+interface IPolicy {
+  horarios: {
+    cafeManha: {
+      inicio: string;
+      fim: string;
+    };
+    almoco: {
+      inicio: string;
+      fim: string;
+    };
+    jantar: {
+      inicio: string;
+      fim: string;
+    };
+  }
+  limites: {
+    diario: number;
+    semanal: number;
+    mensal: number;
+  };
+}
+
+interface IUnit {
+  nome: string;
+  endereco: string;
+  responsavel: string;
+  status: string;
+  politicas: IPolicy
+}
+
 export { userColumns, stockColumns, movementColumns };
-export type { IUser, usersData, IStock, IMovement, };
+export type { IUser, usersData, IStock, IMovement, IUnit, IPolicy };

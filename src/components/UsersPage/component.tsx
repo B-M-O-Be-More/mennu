@@ -14,6 +14,7 @@ import { mockStatuses, mockUnidades } from "@/data/menuItems";
 import { userColumns, usersData } from "@/data/tableColumns";
 import Table from "../Tables/Table";
 import EditUserModal from "../Modals/EditUserModal";
+import { useForm } from "react-hook-form";
 
 export const mockUsers: usersData[] = [
   {
@@ -53,13 +54,21 @@ export function UsersPage({ }: UsersPageProps) {
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
 
-  const [userSearch, setUserSearch] = React.useState("");
-  const [unidade, setUnidade] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const {
+    register,
+    watch
+  } = useForm<{ userSearch: string; unidade: string; status: string; }>({
+    defaultValues: {
+      userSearch: "",
+      unidade: mockUnidades[0].value,
+      status: mockStatuses[0].value,
+    },
+  });
+
+  const filters = watch()
 
   return (
     <Stack gap={2}>
-
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
         <Box component="span">
           <Typography variant="h1" fontWeight={"600"} color="text.primary">
@@ -101,25 +110,23 @@ export function UsersPage({ }: UsersPageProps) {
 
       <Card>
         <Stack gap={2} direction={"row"}>
-
           <Input
-            value={userSearch}
-            onChange={setUserSearch}
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
+            register={register("userSearch")}
           />
-          <Select
-            value={unidade}
-            onChange={setUnidade}
-            options={mockUnidades}
-            formControlSx={{ maxWidth: "10rem" }}
-          />
-          <Select
-            value={status}
-            onChange={setStatus}
-            options={mockStatuses}
-            formControlSx={{ maxWidth: "10rem" }}
-          />
+          <Stack gap={2} direction={"row"} maxWidth={"500px"} width={"100%"}>
+            <Select
+              options={mockUnidades}
+              register={register("unidade")}
+              formControlSx={{ maxWidth: "300px" }}
+            />
+            <Select
+              options={mockStatuses}
+              register={register("status")}
+              formControlSx={{ maxWidth: "300px" }}
+            />
+          </Stack>
 
           <Button
             variant="outlined"

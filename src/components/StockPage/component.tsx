@@ -15,6 +15,7 @@ import NewStockModal from "../Modals/NewStockModal";
 import ActionCell from "../ActionCell";
 import EditStockModal from "../Modals/EditStockModal";
 import NewMovementModal from "../Modals/NewMovementModal";
+import { useForm } from "react-hook-form";
 
 export const getStockMock = (onEdit: () => void) => [
   {
@@ -116,13 +117,14 @@ export const mockMovements: IMovement[] = [
 export function StockPage({ }: StockPageProps) {
   const [openTable, setOpenTable] = React.useState(0);
 
-  const [itemSearch, setItemSearch] = React.useState("");
-
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
   const [_openExportStockModal, setOpenExportStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
-
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
+
+  const { register, watch } = useForm<{ itemSearch: string }>({
+    defaultValues: { itemSearch: "" },
+  });
 
   return (
     <Stack gap={2}>
@@ -213,10 +215,10 @@ export function StockPage({ }: StockPageProps) {
                 <Typography>Itens Cadastrados</Typography>
                 <Stack direction={"row"} gap={2} minWidth={"450px"}>
                   <Input
-                    value={itemSearch}
-                    onChange={setItemSearch}
                     placeholder="Buscar item..."
                     icon={<SearchIcon />}
+                    register={register("itemSearch")}
+                    error={undefined}
                   />
                   <Button
                     variant="contained"

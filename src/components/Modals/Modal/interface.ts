@@ -1,3 +1,4 @@
+import { SxProps } from "@mui/material";
 import { ReactNode } from "react";
 
 export interface ModalProps {
@@ -6,4 +7,5 @@ export interface ModalProps {
   title: string;
   subtitle?: string;
   children?: ReactNode;
+  dialogSx?: SxProps;
 }

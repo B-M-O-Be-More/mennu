@@ -1,5 +1,4 @@
-import React from "react";
-import { Stack, Typography, Box, Button, Switch, Chip } from "@mui/material";
+import { Stack, Typography, Box, Button } from "@mui/material";
 import { mockCategorias, mockStatuses, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -7,6 +6,9 @@ import Select from "@/components/FormControl/Select";
 import { IUser } from "@/data/tableColumns";
 import { EditUserModalProps } from "./";
 import { CircledCheckIcon } from "@/components/Icons";
+import { useForm } from "react-hook-form";
+import { userSchema } from "@/schemas/userSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 
 export default function EditUserModal({
@@ -15,84 +17,76 @@ export default function EditUserModal({
   user,
   onSave,
 }: EditUserModalProps) {
-  const [nome, setNome] = React.useState(user.nome);
-  const [CPF, setCPF] = React.useState(user.CPF);
-  const [matricula, setMatricula] = React.useState(user.matricula);
-  const [categoria, setCategoria] = React.useState(user.categoria);
-  const [unidade, setUnidade] = React.useState(user.unidade);
-  const [status, setStatus] = React.useState(user.status);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IUser>(
+    {
+      resolver: yupResolver(userSchema),
+      defaultValues: user,
+    });
 
-
-  const handleSave = () => {
-    if (!user) return;
-
-    const updatedUser: Partial<IUser> = {
-      ...user,
-      nome,
-      CPF,
-      matricula,
-      categoria,
-      unidade,
-      status,
-    };
-
-    onSave(updatedUser);
+  const onSubmit = (data: IUser) => {
+    onSave(data);
     onClose();
   };
 
   return (
     <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
-      <Stack gap={2}>
+      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
-          value={nome}
-          onChange={setNome}
           label="Nome Completo"
           placeholder="João Silva"
           optional={false}
+          register={register("nome")}
+          error={errors.nome?.message}
         />
 
         <Stack direction="row" spacing={2}>
           <Input
-            value={CPF}
-            onChange={setCPF}
             label="CPF"
-            placeholder="123.456.789-00"
+            placeholder="12345678900"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("CPF")}
+            error={errors.CPF?.message}
           />
+
           <Input
-            value={matricula}
-            onChange={setMatricula}
             label="Matrícula"
             placeholder="12345"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("matricula")}
+            error={errors.matricula?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
           <Select
-            value={categoria}
             label="Categoria"
             optional={false}
-            onChange={setCategoria}
             options={mockCategorias}
+            register={register("categoria")}
+            error={errors.categoria?.message}
           />
+
           <Select
-            value={unidade}
             label="Unidade"
             optional={false}
-            onChange={setUnidade}
             options={mockUnidades}
+            register={register("unidade")}
+            error={errors.unidade?.message}
           />
         </Stack>
 
         <Select
-          value={status}
           label="Status"
           optional={true}
-          onChange={setStatus}
           options={mockStatuses}
+          register={register("status")}
+          error={errors.status?.message}
         />
 
         <Stack
@@ -136,7 +130,7 @@ export default function EditUserModal({
               fontSize: "1.2rem",
             }}
             variant="contained"
-            onClick={handleSave}
+            type="submit"
           >
             Salvar Alterações
           </Button>

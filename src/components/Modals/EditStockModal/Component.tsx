@@ -6,6 +6,9 @@ import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { IStock } from "@/data/tableColumns";
 import { EditStockModalProps } from "./";
+import { useForm } from "react-hook-form";
+import { stockSchema } from "@/schemas/stockSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 
 export default function EditStockModal({
@@ -14,85 +17,76 @@ export default function EditStockModal({
   stockItem,
   onSave,
 }: EditStockModalProps) {
-  const [itemName, setItemName] = React.useState(stockItem.item);
-  const [categoria, setCategoria] = React.useState(stockItem.categoria);
-  const [unidadeMedida, setUnidadeMedida] = React.useState(stockItem.unidadeMedida);
-  const [saldo, setSaldo] = React.useState(stockItem.saldo);
-  const [estoqueMinimo, setEstoqueMinimo] = React.useState(stockItem.estoqueMinimo);
-  const [unidade, setUnidade] = React.useState(stockItem.unidade);
-  const [status, setStatus] = React.useState(stockItem.status);
 
+  const { register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<IStock>({
+    resolver: yupResolver(stockSchema),
+    defaultValues:
+      stockItem,
+  });
 
-  const handleSave = () => {
-    if (!stockItem) return;
-
-    const updatedStock: Partial<IStock> = {
-      ...stockItem,
-      item: itemName,
-      categoria,
-      saldo,
-      estoqueMinimo,
-      unidade,
-      status,
-    };
-
-    onSave(updatedStock);
+  const onSubmit = (data: IStock) => {
+    onSave(data);
     onClose();
   };
 
   return (
     <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
-      <Stack gap={2}>
+      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
-          value={itemName}
-          onChange={setItemName}
           label="Nome do Item"
           placeholder="Ex. Arroz Branco"
           optional={false}
+          register={register("item")}
+          error={errors.item?.message}
         />
-
         <Stack direction="row" spacing={2}>
           <Select
-            value={categoria}
             label="Categoria"
             optional={false}
-            onChange={setCategoria}
             options={mockCategorias}
+            register={register("categoria")}
+            error={errors.categoria?.message}
           />
+
           <Select
-            value={unidadeMedida}
             label="Unidade de Medida"
             optional={false}
-            onChange={setUnidadeMedida}
             options={mockUnidadesMedida}
+            register={register("unidadeMedida")}
+            error={errors.unidadeMedida?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
           <Input
-            value={saldo}
-            onChange={setSaldo}
             label="Saldo"
             placeholder="0"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("saldo")}
+            error={errors.saldo?.message}
           />
           <Input
-            value={estoqueMinimo}
-            onChange={setEstoqueMinimo}
             label="Estoque Mínimo"
             placeholder="0"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("estoqueMinimo")}
+            error={errors.estoqueMinimo?.message}
           />
         </Stack>
 
         <Select
-          value={unidade}
           label="Unidade"
           optional={true}
-          onChange={setUnidade}
           options={mockUnidades}
+          register={register("unidade")}
+          error={errors.unidade?.message}
         />
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
@@ -102,9 +96,7 @@ export default function EditStockModal({
               Itens inativos não aparecem nas movimentações
             </Typography>
           </Box>
-          <Switch
-            checked={status}
-            onChange={(e) => setStatus(e.target.checked)}
+          <Switch checked={watch("status")} onChange={(e) => setValue("status", e.target.checked)}
           />
         </Stack>
 
@@ -128,7 +120,7 @@ export default function EditStockModal({
               fontSize: "1.2rem",
             }}
             variant="contained"
-            onClick={handleSave}
+            type="submit"
           >
             Salvar Alterações
           </Button>

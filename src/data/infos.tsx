@@ -1,5 +1,6 @@
-import { AlertIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
-import { CardapiosIcon, EstoqueIcon, RefeicoesIcon, RelatoriosIcon, UsuariosIcon } from "../components/Sidebar/icons";
+import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
+import { AlertIcon, BuildingIcon, LockIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
+import { CardapiosIcon, ConfiguracoesIcon, EstoqueIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, UsuariosIcon } from "../components/Sidebar/icons";
 
 const cardsUsers = [
   {
@@ -90,4 +91,33 @@ const cardsStock = [
   },
 ];
 
-export { cardsUsers, cardsModules, cardsStock }
+const tabsSettings = [
+  {
+    label: "Geral",
+    icon: <ConfiguracoesIcon width={22} height={22} />,
+    tabComponent: <GeneralTab />,
+  },
+  {
+    label: "Unidades",
+    icon: <BuildingIcon width={22} height={22} />,
+    tabComponent: <UnitsTab />,
+  },
+  {
+    label: "Terminais",
+    icon: <TerminalIcon width={22} height={22} />,
+    tabComponent: <TerminalsTab />,
+  },
+  {
+    label: "Políticas",
+    icon: <PerfisPermissoesIcon width={22} height={22} />,
+    tabComponent: <PoliciesTab />,
+  },
+  {
+    label: "Segurança",
+    icon: <LockIcon width={22} height={22} />,
+    tabComponent: <SecurityTab />,
+  },
+];
+
+
+export { cardsUsers, cardsModules, cardsStock, tabsSettings }
