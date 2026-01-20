@@ -43,7 +43,6 @@ O foco inicial do projeto é fornecer uma interface robusta e eficiente para ope
 | Framework | **Next.js 14+ (App Router)** |
 | Linguagem | **TypeScript** |
 | Componentes UI | **MUI — Material UI** |
-| HTTP Client | **Axios** |
 | Estado | React Query + Context API |
 | Qualidade | ESLint, Prettier, Husky, Commitlint |
 | Testes | Jest + Testing Library |
