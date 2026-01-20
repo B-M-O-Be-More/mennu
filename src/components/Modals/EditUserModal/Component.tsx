@@ -20,6 +20,7 @@ export default function EditUserModal({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<IUser>(
     {
@@ -65,6 +66,8 @@ export default function EditUserModal({
 
         <Stack direction="row" spacing={2}>
           <Select
+            name="categoria"
+            control={control}
             label="Categoria"
             optional={false}
             options={mockCategorias}
@@ -73,6 +76,8 @@ export default function EditUserModal({
           />
 
           <Select
+            name="unidade"
+            control={control}
             label="Unidade"
             optional={false}
             options={mockUnidades}
@@ -82,6 +87,8 @@ export default function EditUserModal({
         </Stack>
 
         <Select
+          name="status"
+          control={control}
           label="Status"
           optional={true}
           options={mockStatuses}

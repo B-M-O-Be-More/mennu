@@ -8,6 +8,7 @@ import { EditUnitModalProps } from "./";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { unitSchema } from "@/schemas/unitSchema";
+import React from "react";
 
 
 export default function EditUnitModal({
@@ -20,6 +21,8 @@ export default function EditUnitModal({
   const {
     register,
     handleSubmit,
+    reset,
+    control,
     formState: { errors },
   } = useForm<IUnit>(
     {
@@ -46,6 +49,14 @@ export default function EditUnitModal({
     onSave(data);
     onClose();
   };
+
+  React.useEffect(() => {
+    if (open && unitItem) {
+      reset(unitItem
+
+      )
+    }
+  }, [open, unitItem, reset]);
 
 
   return (
@@ -76,12 +87,11 @@ export default function EditUnitModal({
           register={register("responsavel")}
           error={errors.responsavel?.message}
         />
-
         <Select
+          name="status"
+          control={control}
           label="Status"
-          optional={true}
           options={mockStatuses}
-          register={register("status")}
           error={errors.status?.message}
         />
 

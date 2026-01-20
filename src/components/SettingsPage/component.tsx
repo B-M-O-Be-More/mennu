@@ -34,9 +34,9 @@ export function SettingsPage({ }: SettingsPageProps) {
                   borderRadius: "1rem",
                   justifyContent: "flex-start",
                   textTransform: "none",
-                  paddingY: 1.5,
+                  paddingY: 1,
                   paddingX: 2,
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: 400
                 }}
                 onClick={() => setTab(index)}

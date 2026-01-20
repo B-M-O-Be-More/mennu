@@ -63,7 +63,7 @@ const cardsModules = [
     subtitle: "Acesse o módulo",
     link: "/usuarios",
     icon: <UsuariosIcon color="#E17100" />,
-    iconBgColor: "#FFBEB",
+    iconBgColor: "#FFFBEB",
   },
 ];
 
@@ -94,27 +94,27 @@ const cardsStock = [
 const tabsSettings = [
   {
     label: "Geral",
-    icon: <ConfiguracoesIcon width={22} height={22} />,
+    icon: <ConfiguracoesIcon width={24} height={24} />,
     tabComponent: <GeneralTab />,
   },
   {
     label: "Unidades",
-    icon: <BuildingIcon width={22} height={22} />,
+    icon: <BuildingIcon width={24} height={24} />,
     tabComponent: <UnitsTab />,
   },
   {
     label: "Terminais",
-    icon: <TerminalIcon width={22} height={22} />,
+    icon: <TerminalIcon width={24} height={24} />,
     tabComponent: <TerminalsTab />,
   },
   {
     label: "Políticas",
-    icon: <PerfisPermissoesIcon width={22} height={22} />,
+    icon: <PerfisPermissoesIcon width={24} height={24} />,
     tabComponent: <PoliciesTab />,
   },
   {
     label: "Segurança",
-    icon: <LockIcon width={22} height={22} />,
+    icon: <LockIcon width={24} height={24} />,
     tabComponent: <SecurityTab />,
   },
 ];

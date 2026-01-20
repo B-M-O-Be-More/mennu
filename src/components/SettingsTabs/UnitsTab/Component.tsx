@@ -18,7 +18,7 @@ export default function UnitsTab({ }: UnitsTabProps) {
   const mockUnits = [
     {
       nome: "Unidade 1",
-      status: "Ativo",
+      status: "ativo",
       endereco: "Endereço da Unidade 1",
       responsavel: "João Silva",
       politicas: {
@@ -45,7 +45,7 @@ export default function UnitsTab({ }: UnitsTabProps) {
     },
     {
       nome: "Unidade 2",
-      status: "Ativo",
+      status: "ativo",
       endereco: "Endereço da Unidade 2",
       responsavel: "Maria Oliveira",
       politicas: {
@@ -72,7 +72,7 @@ export default function UnitsTab({ }: UnitsTabProps) {
     },
     {
       nome: "Unidade 3",
-      status: "Inativo",
+      status: "inativo",
       endereco: "Endereço da Unidade 3",
       responsavel: "Carlos Santos",
       politicas: {
@@ -131,19 +131,19 @@ export default function UnitsTab({ }: UnitsTabProps) {
             <IconBox
               icon={
                 <BuildingIcon
-                  color={unit.status === "Ativo" ? "#00A63E" : "#6B7280"}
-                  width={22}
-                  height={22}
+                  color={unit.status === "ativo" ? "#00A63E" : "#6B7280"}
+                  width={24}
+                  height={24}
                 />}
-              bgColor={unit.status === "Ativo" ? "#F0FDF4" : "background.default"} />
+              bgColor={unit.status === "ativo" ? "#F0FDF4" : "background.default"} />
             <Stack gap={0.6}>
               <Box display="inline-flex" alignItems="center" height={18}>
                 <Typography variant="body1">{unit.nome}</Typography>
                 <Chip
                   label={unit.status}
-                  color={unit.status === "Ativo" ? "success" : "default"}
+                  color={unit.status === "ativo" ? "success" : "default"}
                   size="small"
-                  sx={{ marginLeft: 1, fontSize: 12 }}
+                  sx={{ marginLeft: 1, textTransform: "capitalize", fontSize: 12 }}
                 />
               </Box>
               <Typography variant="body2" color="text.secondary">{unit.endereco}</Typography>

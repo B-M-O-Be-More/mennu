@@ -1,18 +1,21 @@
 import { FormControl, Select, MenuItem, Typography } from "@mui/material";
-import { SelectGProps } from "./interface";
+import { Controller } from "react-hook-form";
+import { SelectGProps } from "./";
+
 
 export default function SelectG<T>({
   label = "",
   optional = true,
-  onChange,
   options,
-  register,
   error,
   formControlSx,
   selectSx,
-}: SelectGProps<T>) {
+  name,
+  control,
+  register,
+}: SelectGProps) {
   return (
-    <FormControl fullWidth sx={{ ...formControlSx, }} >
+    <FormControl fullWidth sx={{ ...formControlSx }}>
       {label && (
         <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
           {label}{" "}
@@ -24,34 +27,60 @@ export default function SelectG<T>({
         </Typography>
       )}
 
-      <Select
-        defaultValue={String(options[0]?.value)}
-        onChange={(e) => onChange?.(e.target.value as T)}
-        {...register}
-        sx={{
-          width: "100%",
-          fontSize: 14,
-          borderRadius: 3,
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "divider",
-            transition: "border-color 0.1s ease",
-          },
-          height: "57px",
-          ...selectSx
-        }}
-      >
-        {options.map((opt) => (
-          <MenuItem
-            key={String(opt.value)}
-            value={String(opt.value)}
-            sx={{ fontSize: 14 }}
-          >
-            {opt.label}
-          </MenuItem>
-        ))}
-      </Select>
+      {control && name ? (
+        <Controller
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              sx={{
+                width: "100%",
+                fontSize: 14,
+                borderRadius: 3,
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "divider",
+                  transition: "border-color 0.1s ease",
+                },
+                height: "57px",
+                ...selectSx
+              }}>
+              {options.map((opt: { label: string; value: string }) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+        />
+      ) : (
+        <Select
+          {...register}
+          defaultValue={options[0]?.value}
+          sx={{
+            width: "100%",
+            fontSize: 14,
+            borderRadius: 3,
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "divider",
+              transition: "border-color 0.1s ease",
+            },
+            height: "57px",
+            ...selectSx
+          }}
+        >
+          {options.map((opt: { label: string; value: string }) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
 
-      <Typography variant="caption" color={error ? "error.contrastText" : "transparent"} >
+      <Typography
+        variant="caption"
+        color={error ? "error.contrastText" : "transparent"}
+      >
         {error}
       </Typography>
     </FormControl>

@@ -23,6 +23,7 @@ export default function EditStockModal({
     formState: { errors },
     setValue,
     watch,
+    control,
   } = useForm<IStock>({
     resolver: yupResolver(stockSchema),
     defaultValues:
@@ -46,6 +47,8 @@ export default function EditStockModal({
         />
         <Stack direction="row" spacing={2}>
           <Select
+            name="categoria"
+            control={control}
             label="Categoria"
             optional={false}
             options={mockCategorias}
@@ -54,6 +57,8 @@ export default function EditStockModal({
           />
 
           <Select
+            name="unidadeMedida"
+            control={control}
             label="Unidade de Medida"
             optional={false}
             options={mockUnidadesMedida}
@@ -82,6 +87,8 @@ export default function EditStockModal({
         </Stack>
 
         <Select
+          name="unidade"
+          control={control}
           label="Unidade"
           optional={true}
           options={mockUnidades}
