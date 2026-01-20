@@ -1,4 +1,4 @@
-import { UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
+import { AlertIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
 import { CardapiosIcon, EstoqueIcon, RefeicoesIcon, RelatoriosIcon, UsuariosIcon } from "../components/Sidebar/icons";
 
 const cardsUsers = [
@@ -66,4 +66,28 @@ const cardsModules = [
   },
 ];
 
-export { cardsUsers, cardsModules }
+const cardsStock = [
+  {
+    title: "Total de Itens",
+    subtitle: "Ativos no sistema",
+    value: 0,
+    icon: <EstoqueIcon color="#00A63E" />,
+    bgColor: "#F0FDF4",
+  },
+  {
+    title: "Itens Críticos",
+    subtitle: "Abaixo do mínimo",
+    value: 0,
+    icon: <AlertIcon color="#E7000B" />,
+    bgColor: "#FEF2F2",
+  },
+  {
+    title: "Movimentações",
+    subtitle: "Últimos 7 dias",
+    value: 0,
+    icon: <TwistedArrowIcon color="#155DFC" />,
+    bgColor: "#EFF6FF",
+  },
+];
+
+export { cardsUsers, cardsModules, cardsStock }

@@ -185,6 +185,38 @@ export const theme = createTheme(baseTheme, {
         },
       },
     },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          height: 26,
+          padding: 0,
+        },
+
+        switchBase: {
+          padding: 3,
+          "&.Mui-checked": {
+            transform: "translateX(32px)",
+            color: "#fff",
+
+            "& + .MuiSwitch-track": {
+              backgroundColor: baseTheme.palette.primary.main,
+              opacity: 1,
+            },
+          },
+        },
+
+        thumb: {
+          width: 20,
+          height: 20,
+        },
+
+        track: {
+          borderRadius: 13,
+          backgroundColor: baseTheme.palette.grey[300],
+          opacity: 1,
+        },
+      },
+    },
   },
 });
 
