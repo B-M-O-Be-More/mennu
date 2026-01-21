@@ -101,8 +101,8 @@ export default function UnitsTab({ }: UnitsTabProps) {
 
   return (
     <>
-      <Stack spacing={2} justifyContent={'space-between'} direction={'row'}>
-        <Typography variant="h5" >Unidades Cadastradas</Typography>
+      <Stack spacing={2} justifyContent={'space-between'} direction={'row'} alignItems={'center'} >
+        <Typography variant="h3" fontWeight={'400'}>Unidades Cadastradas</Typography>
         <Button
           variant="contained"
           startIcon={<PlusIcon />}
