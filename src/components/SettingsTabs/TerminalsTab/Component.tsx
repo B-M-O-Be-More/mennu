@@ -24,7 +24,7 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
           startIcon={<PlusIcon />}
           sx={{
             fontWeight: '400',
-            paddingY: 1
+            paddingY: 1.5
           }}
           onClick={() => setOpenNewTerminalModal(true)}
         >

@@ -6,7 +6,7 @@ import { DownloadIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Ic
 import { StockPageProps } from "./";
 import Card from "../Cards/Card";
 import Table from "../Tables/Table";
-import { IMovement, movementColumns, stockColumns } from "@/data/tableColumns";
+import { movementColumns, movementData, stockColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import { cardsStock } from "@/data/infos";
@@ -25,7 +25,7 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "50",
     unidade: "Kg",
     unidadeMedida: "kg",
-    status: <Chip label="OK" color="success" size="small" />,
+    status: <Chip label="OK" color="success" size="small" sx={{ minWidth: "100px" }} />,
     acoes: (
       <ActionCell
         checked={true}
@@ -41,7 +41,7 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "60",
     unidadeMedida: "kg",
     unidade: "Kg",
-    status: <Chip label="Baixo" color="warning" size="small" />,
+    status: <Chip label="Baixo" color="warning" size="small" sx={{ minWidth: "100px" }} />,
     acoes: (
       <ActionCell
         checked={true}
@@ -57,7 +57,7 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "20",
     unidadeMedida: "kg",
     unidade: "Un",
-    status: <Chip label="Crítico" color="error" size="small" />,
+    status: <Chip label="Crítico" color="error" size="small" sx={{ minWidth: "100px" }} />,
     acoes: (
       <ActionCell
         checked={true}
@@ -79,10 +79,10 @@ const stockMock =
   status: true,
 }
 
-export const mockMovements: IMovement[] = [
+export const mockMovements: movementData[] = [
   {
     data: "10/01/2026",
-    tipo: "Entrada",
+    tipo: <Chip label="Entrada" color="success" size="small" sx={{ minWidth: "100px" }} />,
     item: "Arroz Branco",
     quantidade: 50,
     responsavel: "João Silva",
@@ -90,7 +90,7 @@ export const mockMovements: IMovement[] = [
   },
   {
     data: "11/01/2026",
-    tipo: "Saída",
+    tipo: <Chip label="Saída" color="info" size="small" sx={{ minWidth: "100px" }} />,
     item: "Feijão Carioca",
     quantidade: 20,
     responsavel: "Maria Oliveira",
@@ -98,7 +98,7 @@ export const mockMovements: IMovement[] = [
   },
   {
     data: "12/01/2026",
-    tipo: "Ajuste",
+    tipo: <Chip label="Perda" color="error" size="small" sx={{ minWidth: "100px" }} />,
     item: "Óleo de Soja",
     quantidade: 5,
     responsavel: "Carlos Santos",
@@ -106,7 +106,7 @@ export const mockMovements: IMovement[] = [
   },
   {
     data: "13/01/2026",
-    tipo: "Saída",
+    tipo: <Chip label="Ajuste" color="warning" size="small" sx={{ minWidth: "100px" }} />,
     item: "Açúcar Refinado",
     quantidade: 15,
     responsavel: "Ana Costa",

@@ -108,7 +108,7 @@ export default function UnitsTab({ }: UnitsTabProps) {
           startIcon={<PlusIcon />}
           sx={{
             fontWeight: '400',
-            paddingY: 1
+            paddingY: 1.5
           }}
           onClick={() => setOpenNewUnitModal(true)}
         >

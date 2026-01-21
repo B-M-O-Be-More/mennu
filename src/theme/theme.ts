@@ -23,16 +23,16 @@ const palette = {
     contrastText: "#E7000B",
   },
   warning: {
-    main: "#F59E0B",
+    main: "#FAF5FF",
     light: "#FBBF24",
     dark: "#B45309",
-    contrastText: "#0A0A0A",
+    contrastText: "#8200DB",
   },
   info: {
-    main: "#0EA5E9",
-    light: "#38BDF8",
+    main: "#EFF6FF",
+    light: "#1447E6",
     dark: "#0369A1",
-    contrastText: "#FFFFFF",
+    contrastText: "#1447E6",
   },
   success: {
     main: "#F0FDF4",

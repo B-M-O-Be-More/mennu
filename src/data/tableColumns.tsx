@@ -1,6 +1,6 @@
 import ActionCell from "@/components/ActionCell";
 import { IColumn } from "@/components/Tables/Table";
-import { Avatar, Stack, Typography } from "@mui/material";
+import { Avatar, Chip, Stack, Typography } from "@mui/material";
 
 interface usersData {
   nome: string;
@@ -32,7 +32,12 @@ const userColumns: IColumn<usersData>[] = [
   },
   { key: "matricula", label: "Matrícula" },
   { key: "unidade", label: "Unidade", align: "right" },
-  { key: "status", label: "Status" },
+  {
+    key: "status", label: "Status",
+    render: (row) => (
+      <Chip label={row.status} color={row.status === "Ativo" ? "success" : "default"} size="small" sx={{ minWidth: "100px" }} />
+    ),
+  },
   { key: "categoria", label: "Tipo de Acesso" },
   { key: "ultimaRefeicao", label: "Última Refeição" },
   {
@@ -152,4 +157,4 @@ interface IUnit {
 }
 
 export { userColumns, stockColumns, movementColumns };
-export type { IUser, usersData, IStock, IMovement, IUnit, IPolicy };
+export type { IUser, usersData, IStock, IMovement, IUnit, IPolicy, movementData };
