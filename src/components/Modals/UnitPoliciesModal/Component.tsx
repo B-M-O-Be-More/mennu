@@ -51,7 +51,7 @@ export default function UnitPoliciesModal({
     >
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={2} border="1px solid" borderColor="divider" padding={2} borderRadius={2}>
-          <Typography variant="h4" fontWeight={"400"}>Horários por Refeição</Typography>
+          <Typography variant="h6" fontWeight={"400"}>Horários por Refeição</Typography>
           <Stack
             direction="row"
             spacing={2}
@@ -135,7 +135,7 @@ export default function UnitPoliciesModal({
         </Stack>
 
         <Stack gap={2} border="1px solid" borderColor="divider" padding={2} borderRadius={2}>
-          <Typography variant="h4" fontWeight={"400"}>Limites de Consumo</Typography>
+          <Typography variant="h6" fontWeight={"400"}>Limites de Consumo</Typography>
 
           <Stack direction="row" spacing={2}>
             <Input

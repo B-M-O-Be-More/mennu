@@ -42,11 +42,11 @@ export default function SelectG<T>({
                   borderColor: "divider",
                   transition: "border-color 0.1s ease",
                 },
-                height: "57px",
+                height: "100%",
                 ...selectSx
               }}>
               {options.map((opt: { label: string; value: string }) => (
-                <MenuItem key={opt.value} value={opt.value}>
+                <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12 }}>
                   {opt.label}
                 </MenuItem>
               ))}
@@ -65,12 +65,12 @@ export default function SelectG<T>({
               borderColor: "divider",
               transition: "border-color 0.1s ease",
             },
-            height: "57px",
+            height: "100%",
             ...selectSx
           }}
         >
           {options.map((opt: { label: string; value: string }) => (
-            <MenuItem key={opt.value} value={opt.value}>
+            <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12 }}>
               {opt.label}
             </MenuItem>
           ))}

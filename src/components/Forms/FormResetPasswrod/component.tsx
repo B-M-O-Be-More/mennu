@@ -84,26 +84,27 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
           alignSelf: "center",
         }}
       />
+      <Stack alignItems="center" gap={1} width="100%">
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: "center",
+            fontWeight: 600,
+          }}
+        >
+          Recuperar Senha
+        </Typography>
 
-      <Typography
-        variant="h1"
-        sx={{
-          textAlign: "center",
-          fontWeight: 600,
-        }}
-      >
-        Recuperar Senha
-      </Typography>
-
-      <Typography
-        variant="subtitle1"
-        color="text.secondary"
-        sx={{
-          textAlign: "center",
-        }}
-      >
-        Insira seu e-mail cadastrado e enviaremos um link para redefinir sua senha
-      </Typography>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{
+            textAlign: "center",
+          }}
+        >
+          Insira seu e-mail cadastrado e enviaremos um link para redefinir sua senha
+        </Typography>
+      </Stack>
 
       <Input
         icon={<MailOutline sx={{ color: "#BBB", fontSize: 22 }} />}

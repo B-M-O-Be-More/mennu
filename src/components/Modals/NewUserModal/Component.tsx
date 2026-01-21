@@ -104,10 +104,10 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
         <Stack direction={"row"} border={"1px solid #BEDBFF"} bgcolor={"#EFF6FF"} borderRadius={2} p={2} gap={1}>
           <UsuariosIcon color="#155DFC" />
           <Box>
-            <Typography variant="h5" fontWeight={"400"} color="#1C398E" mb={1}>
+            <Typography variant="body1" fontWeight={"400"} color="#1C398E" mb={1}>
               Acesso aos Terminais
             </Typography>
-            <Typography variant="body2" color="#1447E6" fontWeight={400}>
+            <Typography variant="caption" color="#1447E6" fontWeight={400}>
               Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
             </Typography>
           </Box>

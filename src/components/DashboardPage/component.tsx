@@ -20,7 +20,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
 
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
         <Box component="span">
-          <Typography variant="h1" fontWeight={"600"} color="text.primary">
+          <Typography variant="h4" fontWeight={"600"} color="text.primary">
             Dashboard Operacional
           </Typography>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
@@ -155,7 +155,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               borderRadius={3}
             />
           </Stack>
-          <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
+          <Typography variant="h4" fontWeight="400" color="text.primary">–</Typography>
         </Card>
         <Card>
           <Stack direction={"row"} justifyContent={"space-between"}>
@@ -174,7 +174,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               borderRadius={3}
             />
           </Stack>
-          <Typography variant="h3" fontWeight="400" color="text.primary">–</Typography>
+          <Typography variant="h4" fontWeight="400" color="text.primary">–</Typography>
         </Card>
       </Stack>
 

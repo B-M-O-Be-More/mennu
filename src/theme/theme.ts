@@ -85,53 +85,43 @@ const typography = {
   fontFamily: 'var(--font-poppins), "Poppins", "Helvetica", "Arial", sans-serif',
   h1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 700,
-    fontSize: "2.5rem",
+    fontWeight: 700
   },
   h2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "2rem",
+    fontWeight: 600
   },
   h3: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "1.5rem",
+    fontWeight: 600
   },
   h4: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "1.25rem",
+    fontWeight: 600
   },
   h5: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500,
-    fontSize: "1rem",
+    fontWeight: 500
   },
   h6: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500,
-    fontSize: "0.875rem",
+    fontWeight: 500
   },
   body1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "1rem",
+    fontWeight: 400
   },
   body2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "0.875rem",
+    fontWeight: 400
   },
   caption: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "0.75rem",
+    fontWeight: 400
   },
   overline: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "0.625rem",
+    fontWeight: 600
   },
   button: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
@@ -152,8 +142,7 @@ export const theme = createTheme(baseTheme, {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
-          border: "1px solid",
-          borderColor: baseTheme.palette.primary.main,
+          border: "px solid",
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
@@ -162,19 +151,25 @@ export const theme = createTheme(baseTheme, {
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
           },
+          outlineOffset: "0px",
+          outline: "1px solid",
+          outlineColor: 'transparent',
         },
         outlined: {
           backgroundColor: "transparent",
           color: baseTheme.palette.secondary.main,
-          fontweight: 500,
+          fontWeight: 500,
           fontFamily: typography.fontFamily,
-          borderColor: baseTheme.palette.divider,
+          height: "fit-content",
           padding: "1rem 1.5rem",
           borderRadius: "1rem",
-          height: "fit-content",
           "&:hover": {
             backgroundColor: "rgba(0, 0, 0, 0.04)",
           },
+          border: "0px solid",
+          outlineOffset: "0px",
+          outline: "1px solid",
+          outlineColor: baseTheme.palette.divider,
         },
       },
     },

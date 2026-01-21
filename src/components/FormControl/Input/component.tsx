@@ -61,6 +61,7 @@ export default function Input({
           </InputAdornment>
         }
         sx={{
+          height: "100%",
           borderRadius: 3,
           fontSize: 14,
           "& .MuiOutlinedInput-notchedOutline": {

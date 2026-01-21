@@ -11,7 +11,7 @@ export function SettingsPage({ }: SettingsPageProps) {
   return (
     <Stack gap={2}>
       <Box component="span">
-        <Typography variant="h1" fontWeight={"600"} color="text.primary">
+        <Typography variant="h4" fontWeight={"600"} color="text.primary">
           Configurações
         </Typography>
         <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>

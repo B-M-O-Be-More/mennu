@@ -75,7 +75,7 @@ export function UsersPage({ }: UsersPageProps) {
     <Stack gap={2}>
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
         <Box component="span">
-          <Typography variant="h1" fontWeight={"600"} color="text.primary">
+          <Typography variant="h4" fontWeight={"600"} color="text.primary">
             Usuários
           </Typography>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
@@ -145,7 +145,7 @@ export function UsersPage({ }: UsersPageProps) {
         <Box
           display="grid"
           gap={2}
-          gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))"
+          gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))"
         >
           {cardsUsers.map((card, i) => (
             <Card key={i} flexDirection="row" alignItems="center" gap={2}>
@@ -156,10 +156,10 @@ export function UsersPage({ }: UsersPageProps) {
                 borderRadius={3}
               />
               <Box>
-                <Typography color="text.secondary" variant="h5" fontWeight={400}>
+                <Typography color="text.secondary" variant="body1" fontWeight={400}>
                   {card.title}
                 </Typography>
-                <Typography variant="h2" fontWeight={400} color="text.primary">
+                <Typography variant="h4" fontWeight={400} color="text.primary">
                   {card.value}
                 </Typography>
               </Box>

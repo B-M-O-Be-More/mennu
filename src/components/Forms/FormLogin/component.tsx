@@ -51,16 +51,18 @@ export function FormLogin({ }: FormLoginProps) {
           paddingX={4}
           paddingY={2}
         >
-          <Typography variant="h2" color="primary.contrastText" fontWeight={"400"}>
+          <Typography variant="h4" color="primary.contrastText" fontWeight={"400"}>
             Mennu
           </Typography>
         </Stack>
-        <Typography variant="h2" fontWeight={"600"}>
-          Bem-vindo de volta
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" fontWeight={"400"}>
-          Acesse sua conta para continuar
-        </Typography>
+        <Stack alignItems="center" gap={1} width="100%">
+          <Typography variant="h4" fontWeight={"600"}>
+            Bem-vindo de volta
+          </Typography>
+          <Typography variant="subtitle2" color="text.secondary" fontWeight={"400"}>
+            Acesse sua conta para continuar
+          </Typography>
+        </Stack>
 
         <Input icon={<MdOutlineEmail size={18} />}
           label="E-mail"

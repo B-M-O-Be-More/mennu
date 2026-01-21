@@ -137,7 +137,7 @@ export function StockPage({ }: StockPageProps) {
 
       <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
         <Box component="span">
-          <Typography variant="h1" fontWeight={"600"} color="text.primary">
+          <Typography variant="h4" fontWeight={"600"} color="text.primary">
             Estoque
           </Typography>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
@@ -167,7 +167,7 @@ export function StockPage({ }: StockPageProps) {
       <Stack gap={2} direction={"row"}>
         <Button
           variant={openTable === 0 ? "contained" : "outlined"}
-          startIcon={<EstoqueIcon width={22} />}
+          startIcon={<EstoqueIcon width={22} height={22} />}
           onClick={() => setOpenTable(0)}
           sx={{ transition: "all .4s ease-in-out", color: openTable === 1 ? "#4A5565" : "" }}
         >
@@ -176,7 +176,7 @@ export function StockPage({ }: StockPageProps) {
 
         <Button
           variant={openTable === 1 ? "contained" : "outlined"}
-          startIcon={<PaperIcon width={20} />}
+          startIcon={<PaperIcon width={22} height={22} />}
           onClick={() => setOpenTable(1)}
           sx={{ transition: "all .4s ease-in-out", color: openTable === 0 ? "#4A5565" : "" }}
 
@@ -194,10 +194,10 @@ export function StockPage({ }: StockPageProps) {
           <Card key={i} spacing={0}>
             <Stack alignItems={"center"} direction="row" gap={2} justifyContent={"space-between"} width={"100%"}>
               <Box>
-                <Typography color="text.primary" variant="h5" fontWeight={400}>
+                <Typography color="text.primary" variant="body1" fontWeight={400}>
                   {card.title}
                 </Typography>
-                <Typography color="text.secondary" variant="h6" fontWeight={400}>
+                <Typography color="text.secondary" variant="body2" fontWeight={400}>
                   {card.subtitle}
                 </Typography>
               </Box>
@@ -207,7 +207,7 @@ export function StockPage({ }: StockPageProps) {
                 bgColor={card.bgColor}
               />
             </Stack>
-            <Typography variant="h2" fontWeight={400} color="text.primary">
+            <Typography variant="h4" fontWeight={400} color="text.primary">
               {card.value}
             </Typography>
           </Card>
