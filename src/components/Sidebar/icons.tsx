@@ -1,11 +1,6 @@
 "use client";
 
-interface SidebarIconProps {
-  color?: string;
-  width?: number;
-  height?: number;
-  className?: string;
-}
+import { SidebarIconProps } from "@/Interfaces/Sidebar/iconProps";
 
 export const DashboardIcon = ({ color = "currentColor", width = 28, height = 28, className }: SidebarIconProps) => (
   <svg width={width} height={height} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>

@@ -17,12 +17,15 @@ import {
   ConfiguracoesIcon,
   SairIcon,
 } from "@/components/Sidebar/icons";
+import { useUser } from "@/context/AuthContext";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthenticated } = useUser();
+
   const pathname = usePathname();
 
   const menuItems = [
@@ -48,7 +51,7 @@ export default function MainLayout({
     avatarInitial: "A",
   };
 
-  return (
+  return(
     <Box
       sx={{
         display: "flex",
@@ -57,6 +60,7 @@ export default function MainLayout({
         overflow: "hidden",
       }}
     > 
+    { isAuthenticated && (
       <SidebarComponent
         menuItems={menuItems}
         adminMenuItems={adminMenuItems}
@@ -66,12 +70,13 @@ export default function MainLayout({
         showAdminSection
         activePath={pathname}
       />
+    )}
       <Box
         component="main"
         sx={{
           flex: 1,
           overflowY: "auto",
-          p: 3,
+          p: isAuthenticated ? 3 : 0,
           backgroundColor: (theme) => theme.palette.background.default,
         }}
       >
