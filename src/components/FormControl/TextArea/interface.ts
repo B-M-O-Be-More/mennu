@@ -1,12 +1,13 @@
 import { SxProps, Theme } from "@mui/material";
 import { UseFormRegisterReturn } from "react-hook-form";
 
-export interface SelectGProps<T> {
+export interface TextAreaProps {
   label?: string;
   optional?: boolean;
-  options: { label: string; value: T }[];
-  formControlSx?: SxProps<Theme>;
-  selectSx?: SxProps<Theme>;
+  placeholder?: string;
+  sx?: SxProps<Theme>;
+  rows?: number;
+  maxRows?: number;
   error?: string;
   register?: UseFormRegisterReturn;
 }

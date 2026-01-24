@@ -1,12 +1,12 @@
 import { SxProps, Theme } from "@mui/material";
 import { UseFormRegisterReturn } from "react-hook-form";
 
-export interface SelectGProps<T> {
+export interface CheckboxGroupProps {
   label?: string;
+  sublabel?: string;
   optional?: boolean;
-  options: { label: string; value: T }[];
-  formControlSx?: SxProps<Theme>;
-  selectSx?: SxProps<Theme>;
+  options: { id: string, label: string }[];
+  sx?: SxProps<Theme>;
   error?: string;
   register?: UseFormRegisterReturn;
 }

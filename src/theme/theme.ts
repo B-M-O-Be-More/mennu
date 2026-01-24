@@ -20,7 +20,7 @@ const palette = {
     main: "#EF4444",
     light: "#F87171",
     dark: "#B91C1C",
-    contrastText: "#FFFFFF",
+    contrastText: "#E7000B",
   },
   warning: {
     main: "#F59E0B",

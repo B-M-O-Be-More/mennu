@@ -4,11 +4,10 @@ import { SelectGProps } from "./";
 export default function SelectG<T>({
   label = "",
   optional = true,
-  value,
-  onChange,
   options,
   formControlSx,
   selectSx,
+  register,
 }: SelectGProps<T>) {
   return (
     <FormControl fullWidth sx={{ ...formControlSx, }} >
@@ -24,8 +23,8 @@ export default function SelectG<T>({
       )}
 
       <Select
-        value={value}
-        onChange={(e) => onChange(e.target.value as T)}
+        {...register}
+        defaultValue={options[0]?.value}
         sx={{
           width: "100%", ...selectSx, fontSize: 14, borderRadius: 3, "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "divider",

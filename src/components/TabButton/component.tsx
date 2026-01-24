@@ -15,9 +15,13 @@ export function TabButton({
       variant={isActive ? "contained" : "outlined"}
       onClick={() => onChange(tabIndex)}
       startIcon={icon}
+      size="medium"
       sx={{
         transition: "all .4s ease-in-out",
         color: isActive ? "" : "text.secondary",
+        bgcolor: isActive ? "" : "#fff",
+        maxHeight: '3.75rem',
+        padding: "1.5rem"
       }}>
       {label}
     </Button>

@@ -11,14 +11,14 @@ import { FiEye } from "react-icons/fi";
 
 export default function Input
   ({
-    value,
-    onChange,
     label,
     optional = true,
     placeholder = "Buscar...",
     sx,
     icon,
     type = "text",
+    error,
+    register,
   }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -43,10 +43,9 @@ export default function Input
         </Typography>
       )}
       <OutlinedInput
-        value={value}
         type={inputType}
-        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        {...register}
         startAdornment={
           <InputAdornment position="start">
             {type === "password" ? (
@@ -86,6 +85,11 @@ export default function Input
           ...sx,
         }}
       />
+      <Typography
+        variant="caption"
+        color={error ? "error.contrastText" : "transparent"}>
+        {error}
+      </Typography>
     </FormControl>
   );
 }

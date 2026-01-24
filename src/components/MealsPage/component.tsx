@@ -7,14 +7,16 @@ import PageHeader from "../PageHeader";
 import { DownloadIcon, PaperIcon, PlusIcon } from "../Icons";
 import { ConfiguracoesIcon, RefeicoesIcon } from "../Sidebar/icons";
 import TabButton from "../TabButton";
+import NewMealTypeModal from "../Modals/NewMealTypeModal";
 
 export function MealsPage() {
   const [activeTab, setActiveTab] = React.useState(0);
+  const [openNewTypeModal, setOpenNewTypeModal] = React.useState(false);
 
   const tabs = [
     { label: "Registros", icon: <PaperIcon /> },
-    { label: "Tipos de Refeição", icon: <RefeicoesIcon /> },
-    { label: "Regras de Consumo", icon: <ConfiguracoesIcon /> },
+    { label: "Tipos de Refeição", icon: <RefeicoesIcon height={22} /> },
+    { label: "Regras de Consumo", icon: <ConfiguracoesIcon height={24} /> },
   ];
 
   return (
@@ -24,7 +26,10 @@ export function MealsPage() {
         subtitle="Gerencie os registros e configurações de refeições">
         {activeTab === 0 && (
           <>
-            <Button variant="outlined" startIcon={<PlusIcon />}>
+            <Button
+              variant="outlined"
+              startIcon={<PlusIcon />}
+              sx={{ maxHeight: "60px" }}>
               Registro Manual
             </Button>
             <Button variant="contained" startIcon={<DownloadIcon />}>
@@ -33,9 +38,19 @@ export function MealsPage() {
           </>
         )}
         {activeTab === 1 && (
-          <Button variant="contained" startIcon={<PlusIcon />}>
-            Novo Tipo de Refeição
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              startIcon={<PlusIcon />}
+              onClick={() => setOpenNewTypeModal(true)}>
+              Novo Tipo de Refeição
+            </Button>
+
+            <NewMealTypeModal
+              open={openNewTypeModal}
+              onClose={() => setOpenNewTypeModal(false)}
+            />
+          </>
         )}
       </PageHeader>
 
