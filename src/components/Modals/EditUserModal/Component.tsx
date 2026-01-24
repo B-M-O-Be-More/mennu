@@ -1,5 +1,5 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
-import { mockCategorias, mockStatuses, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { mockCategorias, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
@@ -9,6 +9,7 @@ import { CircledCheckIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
 import { userSchema } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import React from "react";
 
 
 export default function EditUserModal({
@@ -21,6 +22,7 @@ export default function EditUserModal({
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<IUser>(
     {
@@ -33,8 +35,16 @@ export default function EditUserModal({
     onClose();
   };
 
+  React.useEffect(() => {
+    if (open && user) {
+      reset(user
+
+      )
+    }
+  }, [open, user, reset]);
+
   return (
-    <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
+    <Modal open={open} onClose={onClose} title="Editar Usuário">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Nome Completo"
@@ -98,20 +108,19 @@ export default function EditUserModal({
 
         <Stack
           direction="row"
-          border={"1px solid #BEDBFF"}
+          border={"1px solid"}
+          borderColor={"info.light"}
           borderRadius={3}
           padding={2}
           gap={2}
-          sx={{
-            backgroundColor: "#EFF6FF",
-          }}
+          bgcolor={"info.main"}
         >
           <CircledCheckIcon color="#155DFC" />
           <Box>
-            <Typography variant="body1" color="#1C398E">Acesso aos Terminais</Typography>
+            <Typography variant="body1" color="info.contrastText">Acesso aos Terminais</Typography>
             <Typography
               variant="body2"
-              color="#1447E6">
+              color="info.light">
               Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
             </Typography>
           </Box>

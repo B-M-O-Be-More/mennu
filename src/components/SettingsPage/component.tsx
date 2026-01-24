@@ -9,7 +9,7 @@ export function SettingsPage({ }: SettingsPageProps) {
   const [tab, setTab] = React.useState(0);
 
   return (
-    <Stack gap={2}>
+    <Stack gap={2} height={"100%"} maxHeight={"100%"}>
       <Box component="span">
         <Typography variant="h4" fontWeight={"600"} color="text.primary">
           Configurações
@@ -18,8 +18,8 @@ export function SettingsPage({ }: SettingsPageProps) {
           Gerencie as configurações do sistema
         </Typography>
       </Box>
-      <Stack direction={"row"} gap={2} >
-        <Card sx={{ flex: 0.3, minWidth: "200px", height: "fit-content" }}>
+      <Stack direction={"row"} gap={2} height={"100%"}>
+        <Card sx={{ flex: 0.3, minWidth: "200px", height: "100%" }} >
           {tabsSettings.map((tabItem, index) => {
             const color = index === tab ? "primary.main" : "#4A5565";
             const backgroundColor = index === tab ? "#FFE9E3" : "transparent";
@@ -46,7 +46,7 @@ export function SettingsPage({ }: SettingsPageProps) {
             );
           })}
         </Card>
-        <Card sx={{ flex: 1 }}>
+        <Card sx={{ flex: 1, height: "fit-content" }}>
           {tabsSettings[tab].tabComponent}
         </Card>
       </Stack>

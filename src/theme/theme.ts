@@ -23,10 +23,10 @@ const palette = {
     contrastText: "#E7000B",
   },
   warning: {
-    main: "#FAF5FF",
-    light: "#FBBF24",
+    main: "#FFFBEB",
+    light: "#E17100",
     dark: "#B45309",
-    contrastText: "#8200DB",
+    contrastText: "#BB4D00",
   },
   info: {
     main: "#EFF6FF",
@@ -39,6 +39,18 @@ const palette = {
     light: "#4ADE80",
     dark: "#16A34A",
     contrastText: "#008236",
+  },
+  default: {
+    main: "#F9FAFB",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#364153",
+  },
+  purple: {
+    main: "#FAF5FF",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#8200DB",
   },
   grey: {
     50: "#F9FAFB",
@@ -242,8 +254,8 @@ export const theme = createTheme(baseTheme, {
           color: palette.error.contrastText,
         },
         colorDefault: {
-          backgroundColor: palette.background.default,
-          color: palette.text.label,
+          backgroundColor: palette.default.main,
+          color: palette.default.contrastText,
         },
         colorWarning: {
           backgroundColor: palette.warning.main,
@@ -252,6 +264,10 @@ export const theme = createTheme(baseTheme, {
         colorInfo: {
           backgroundColor: palette.info.main,
           color: palette.info.contrastText,
+        },
+        colorPurple: {
+          backgroundColor: palette.purple.main,
+          color: palette.purple.contrastText,
         },
         outlined: {
           border: `1px solid ${palette.divider}`,

@@ -11,12 +11,13 @@ import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades } from "@/data/menuItems";
-import { userColumns, usersData } from "@/data/tableColumns";
+import { IUser, userColumns } from "@/data/tableColumns";
 import Table from "../Tables/Table";
 import EditUserModal from "../Modals/EditUserModal";
 import { useForm } from "react-hook-form";
+import ActionCell from "../ActionCell";
 
-export const mockUsers: usersData[] = [
+export const mockUsers: IUser[] = [
   {
     nome: "João Silva",
     matricula: "12345",
@@ -24,7 +25,8 @@ export const mockUsers: usersData[] = [
     status: "Ativo",
     ultimaRefeicao: "05/01/2026 12:30",
     categoria: "Administrador",
-    acoes: <></>,
+    CPF: "123.456.789-00",
+    numeroCartao: "1234567890",
   },
   {
     nome: "Maria Souza",
@@ -33,7 +35,8 @@ export const mockUsers: usersData[] = [
     status: "Inativo",
     ultimaRefeicao: "04/01/2026 11:45",
     categoria: "Usuário",
-    acoes: <></>,
+    CPF: "987.654.321-00",
+    numeroCartao: "0987654321",
   },
 ];
 
@@ -52,7 +55,9 @@ const userMock =
 export function UsersPage({ }: UsersPageProps) {
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
-  const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
+  const [openEditUserModal, setOpenEditUserModal] = React.useState(false);
+
+  const [selectedUser, setSelectedUser] = React.useState<IUser>({} as IUser);
 
   const {
     register,
@@ -148,7 +153,7 @@ export function UsersPage({ }: UsersPageProps) {
           gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))"
         >
           {cardsUsers.map((card, i) => (
-            <Card key={i} flexDirection="row" alignItems="center" gap={2}>
+            <Card key={i} flexDirection="row" alignItems="center" gap={2} paddingY={1.5}>
               <IconBox
                 icon={card.icon}
                 bgColor={card.bgColor}
@@ -163,16 +168,33 @@ export function UsersPage({ }: UsersPageProps) {
                   {card.value}
                 </Typography>
               </Box>
-
             </Card>
           ))}
         </Box>
 
-        <Table columns={userColumns} rows={mockUsers} initialRowsPerPage={5} />
+        <Table
+          columns={userColumns.map(col =>
+            col.key === "acoes"
+              ? {
+                ...col,
+                render: (row: IUser) => (
+                  <ActionCell checked={true} onToggle={(newState) => { console.log("Switch:", newState); }}
+                    onEdit={() => {
+                      setSelectedUser(row);
+                      setOpenEditUserModal(true);
+                    }}
+                  />
+                ),
+              }
+              : col
+          )}
+          rows={mockUsers}
+          initialRowsPerPage={5}
+        />
         <EditUserModal
-          open={openUpdateModal}
-          onClose={() => setOpenUpdateModal(false)}
-          user={userMock}
+          open={openEditUserModal}
+          onClose={() => setOpenEditUserModal(false)}
+          user={selectedUser}
           onSave={() => { }}
         />
 

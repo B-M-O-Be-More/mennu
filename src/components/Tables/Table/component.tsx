@@ -45,7 +45,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export default function TableG<T extends { [key: string]: any }>({
+export default function TableG<T extends Record<string, any>>({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25, 50],

@@ -23,6 +23,7 @@ export default function EditStockModal({
     formState: { errors },
     setValue,
     watch,
+    reset,
     control,
   } = useForm<IStock>({
     resolver: yupResolver(stockSchema),
@@ -34,6 +35,14 @@ export default function EditStockModal({
     onSave(data);
     onClose();
   };
+
+  React.useEffect(() => {
+    if (open && stockItem) {
+      reset(stockItem
+
+      )
+    }
+  }, [open, stockItem, reset]);
 
   return (
     <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
