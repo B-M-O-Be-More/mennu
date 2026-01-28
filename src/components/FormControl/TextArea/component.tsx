@@ -52,6 +52,11 @@ export function TextArea({
           ...sx,
         }}
       />
+      <Typography
+        variant="caption"
+        color={error ? "error.contrastText" : "transparent"}>
+        {error}
+      </Typography>
     </FormControl>
   );
 }

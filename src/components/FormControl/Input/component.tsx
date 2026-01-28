@@ -9,17 +9,19 @@ import { InputProps } from "./";
 import React from "react";
 import { FiEye } from "react-icons/fi";
 
-export default function Input
-  ({
-    label,
-    optional = true,
-    placeholder = "Buscar...",
-    sx,
-    icon,
-    type = "text",
-    error,
-    register,
-  }: InputProps) {
+export default function Input({
+  value,
+  onChange,
+  label,
+  optional = true,
+  placeholder = "Buscar...",
+  sx,
+  icon,
+  type = "text",
+  error,
+  register,
+}: InputProps) {
+  const isRHF = register
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
@@ -28,10 +30,7 @@ export default function Input
   return (
     <FormControl fullWidth>
       {label && (
-        <Typography
-          variant="body2"
-          mb={1} color="text.label" fontWeight={400}
-        >
+        <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
           {label}{" "}
           <Typography
             variant="body2"
@@ -42,18 +41,23 @@ export default function Input
           </Typography>
         </Typography>
       )}
+
       <OutlinedInput
         type={inputType}
         placeholder={placeholder}
-        {...register}
+        {...(isRHF
+          ? register
+          : {
+              value: value,
+              onChange: (e) => onChange?.(e.target.value),
+            })}
         startAdornment={
           <InputAdornment position="start">
             {type === "password" ? (
               <IconButton
                 onClick={() => setShowPassword((prev) => !prev)}
                 edge="start"
-                size="small"
-              >
+                size="small">
                 {showPassword ? <FiEye /> : icon}
               </IconButton>
             ) : (
@@ -85,6 +89,7 @@ export default function Input
           ...sx,
         }}
       />
+
       <Typography
         variant="caption"
         color={error ? "error.contrastText" : "transparent"}>

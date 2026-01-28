@@ -21,7 +21,9 @@ export function TabButton({
         color: isActive ? "" : "text.secondary",
         bgcolor: isActive ? "" : "#fff",
         maxHeight: '3.75rem',
-        padding: "1.5rem"
+        width: "fit-content",
+        padding: "1.5rem",
+        fontSize: {xs: "0.7rem", sm: "0.9rem"},
       }}>
       {label}
     </Button>

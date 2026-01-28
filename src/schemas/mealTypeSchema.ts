@@ -4,7 +4,7 @@ import { normalizeTime } from "@/utils/normalizeTime";
 
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
 
-export const NewMealTypeSchema = yup.object({
+export const MealTypeSchema = yup.object({
   typeName: yup.string().required("O nome da refeição é obrigatório"),
   description: yup.string().required("A descrição obrigatória"),
   startTime: yup
@@ -23,10 +23,10 @@ export const NewMealTypeSchema = yup.object({
     .optional(),
   units: yup
     .array()
-    .of(yup.string())
+    .of(yup.string().required())
     .min(1, "Selecione pelo menos uma unidade")
     .required(),
-  validations: yup.array().of(yup.string()).optional(),
+  validations: yup.array().of(yup.string().required()).optional(),
 });
 
-export type NewMealTypeInput = yup.InferType<typeof NewMealTypeSchema>;
+export type MealTypeInput = yup.InferType<typeof MealTypeSchema>;

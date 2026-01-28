@@ -17,28 +17,40 @@ const palette = {
     contrastText: "#FFFFFF",
   },
   error: {
-    main: "#EF4444",
+    main: "#FEF2F2",
     light: "#F87171",
     dark: "#B91C1C",
     contrastText: "#E7000B",
   },
   warning: {
-    main: "#F59E0B",
-    light: "#FBBF24",
+    main: "#FFFBEB",
+    light: "#E17100",
     dark: "#B45309",
-    contrastText: "#0A0A0A",
+    contrastText: "#BB4D00",
   },
   info: {
-    main: "#0EA5E9",
-    light: "#38BDF8",
+    main: "#EFF6FF",
+    light: "#1447E6",
     dark: "#0369A1",
-    contrastText: "#FFFFFF",
+    contrastText: "#1447E6",
   },
   success: {
-    main: "#22C55E",
+    main: "#F0FDF4",
     light: "#4ADE80",
     dark: "#16A34A",
-    contrastText: "#0A0A0A",
+    contrastText: "#008236",
+  },
+  default: {
+    main: "#F9FAFB",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#364153",
+  },
+  purple: {
+    main: "#FAF5FF",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#8200DB",
   },
   grey: {
     50: "#F9FAFB",
@@ -183,6 +195,60 @@ export const theme = createTheme(baseTheme, {
         style: {
           fontFamily: typography.fontFamily,
         },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          fontFamily: typography.fontFamily,
+          textTransform: "none",
+          borderRadius: 8,
+          height: 24,
+          padding: "0 8px",
+        },
+        colorPrimary: {
+          backgroundColor: palette.primary.main,
+          color: palette.primary.contrastText,
+          "&.MuiChip-clickable:hover": {
+            backgroundColor: palette.primary.dark,
+          },
+        },
+        colorSecondary: {
+          backgroundColor: palette.secondary.main,
+          color: palette.secondary.contrastText,
+        },
+        colorSuccess: {
+          backgroundColor: palette.success.main,
+          color: palette.success.contrastText,
+        },
+        colorError: {
+          backgroundColor: palette.error.main,
+          color: palette.error.contrastText,
+        },
+        colorDefault: {
+          backgroundColor: palette.default.main,
+          color: palette.default.contrastText,
+        },
+        colorWarning: {
+          backgroundColor: palette.warning.main,
+          color: palette.warning.contrastText,
+        },
+        colorInfo: {
+          backgroundColor: palette.info.main,
+          color: palette.info.contrastText,
+        },
+        colorPurple: {
+          backgroundColor: palette.purple.main,
+          color: palette.purple.contrastText,
+        },
+        outlined: {
+          border: `1px solid ${palette.divider}`,
+          backgroundColor: "transparent",
+        },
+      },
+      defaultProps: {
+        size: "small",
       },
     },
   },

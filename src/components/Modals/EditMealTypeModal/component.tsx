@@ -1,20 +1,24 @@
-"use client";
-
-import Modal from "@/components/Modals/Modal";
-import type { NewMealTypeModalProps } from "./interface";
-import Input from "@/components/FormControl/Input";
 import { Button, Stack } from "@mui/material";
+import Modal from "../Modal";
+import { EditMealTypeModalProps } from "./interface";
 import TextArea from "@/components/FormControl/TextArea";
-import Select from "@/components/FormControl/Select";
-import { mockStatuses } from "@/data/menuItems";
 import CheckboxGroup from "@/components/FormControl/CheckboxGroup";
 import MealValidationList from "@/components/MealsPage/MealValidationList";
+import Input from "@/components/FormControl/Input";
+import Select from "@/components/FormControl/Select";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { MealTypeInput, MealTypeSchema } from "@/schemas/mealTypeSchema";
-import { useForm } from "react-hook-form";
+import { mockStatuses } from "@/data/menuItems";
+import React from "react";
 import { mealValidations, unitsMock } from "@/data/meals";
 
-export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
+export function EditMealTypeModal({
+  open,
+  onClose,
+  typeId,
+  initialData,
+}: EditMealTypeModalProps) {
   const {
     register,
     handleSubmit,
@@ -24,23 +28,31 @@ export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
   } = useForm({
     resolver: yupResolver(MealTypeSchema),
     defaultValues: {
-      typeName: "",
-      description: "",
-      status: mockStatuses[0].value,
-      units: [],
-      validations: [],
+      ...initialData,
+      units: initialData.units.map((u) => u.id),
+      validations: initialData.validations?.map((v) => v.id),
     },
   });
 
-  function onSubmit(data: MealTypeInput) {
+  React.useEffect(() => {
+    if (open && initialData) {
+      reset({
+        ...initialData,
+        units: initialData.units.map((u) => u.id),
+        validations: initialData.validations?.map((v) => v.id),
+      });
+    }
+  }, [open, initialData, reset]);
+
+  const onEdit = (data: MealTypeInput) => {
     reset();
-    console.log(data);
+    console.log(typeId, data);
     onClose();
-  }
+  };
 
   return (
-    <Modal open={open} onClose={onClose} title="Novo tipo de refeição">
-      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+    <Modal open={open} onClose={onClose} title="Editar Tipo de Refeição">
+      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onEdit)}>
         <Stack gap={2}>
           <Input
             label="Nome do tipo"
@@ -98,10 +110,10 @@ export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
         />
 
         <Select
-          label={"Status"}
-          options={mockStatuses}
           name="status"
           control={control}
+          label={"Status"}
+          options={mockStatuses}
           error={errors.status?.message}
         />
 
@@ -110,7 +122,7 @@ export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
             Cancelar
           </Button>
           <Button sx={{ flex: 1 }} variant="contained" type="submit">
-            Criar Tipo
+            Salvar Alterações
           </Button>
         </Stack>
       </Stack>

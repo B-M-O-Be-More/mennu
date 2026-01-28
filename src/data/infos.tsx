@@ -1,8 +1,5 @@
-"use client"
-
 import { UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
 import { CardapiosIcon, EstoqueIcon, RefeicoesIcon, RelatoriosIcon, UsuariosIcon } from "../components/Sidebar/icons";
-import { Balance, CreditCard, ErrorOutline } from "@mui/icons-material";
 
 const cardsUsers = [
   {
@@ -69,25 +66,4 @@ const cardsModules = [
   },
 ];
 
-const mealValidations = [
-  {
-    id: "1",
-    label: "Exige Pesagem",
-    description: "O terminal solicitará pesagem da refeição",
-    icon: <Balance sx={{ color: "#9810FA" }} />,
-  },
-  {
-    id: "2",
-    label: "Exige Cartão",
-    description: "Validação por cartão/NFC obrigatória",
-    icon: <CreditCard sx={{ color: "#198754" }} />,
-  },
-  {
-    id: "3",
-    label: "Validação Extra",
-    description: "Requer confirmação adicional no terminal",
-    icon: <ErrorOutline sx={{ color: "#E17100" }} />,
-  },
-];
-
-export { cardsUsers, cardsModules, mealValidations }
+export { cardsUsers, cardsModules }

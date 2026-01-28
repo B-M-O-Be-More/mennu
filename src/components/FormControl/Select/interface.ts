@@ -1,12 +1,15 @@
 import { SxProps, Theme } from "@mui/material";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { Control } from "react-hook-form";
 
 export interface SelectGProps<T> {
+  value?: string;
+  onChange?: (value: string) => void;
   label?: string;
   optional?: boolean;
-  options: { label: string; value: T }[];
+  options: { label: string; value: string }[];
   formControlSx?: SxProps<Theme>;
   selectSx?: SxProps<Theme>;
   error?: string;
-  register?: UseFormRegisterReturn;
+  name?: string;
+  control?: Control<any>;
 }

@@ -1,14 +1,10 @@
-import { ReactElement } from "react";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { ValidationProps } from "@/Interfaces/Meals/MealTypes";
+import { Control } from "react-hook-form";
 
 export interface MealValidationListProps {
   label?: string;
-  options: {
-    id: string;
-    label: string;
-    description: string;
-    icon: ReactElement;
-  }[];
+  options: ValidationProps[];
+  name: string;
+  control: Control<any>;
   error?: string;
-  register?: UseFormRegisterReturn;
 }

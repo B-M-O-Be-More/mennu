@@ -8,6 +8,7 @@ import { DownloadIcon, PaperIcon, PlusIcon } from "../Icons";
 import { ConfiguracoesIcon, RefeicoesIcon } from "../Sidebar/icons";
 import TabButton from "../TabButton";
 import NewMealTypeModal from "../Modals/NewMealTypeModal";
+import MealTypesTab from "./Tabs/MealTypesTab";
 
 export function MealsPage() {
   const [activeTab, setActiveTab] = React.useState(0);
@@ -68,7 +69,7 @@ export function MealsPage() {
       </Stack>
 
       {activeTab === 0 && "Registros"}
-      {activeTab === 1 && "Tipos de Refeição"}
+      {activeTab === 1 && <MealTypesTab />}
       {activeTab === 2 && "Regras de Consumo"}
     </Stack>
   );
