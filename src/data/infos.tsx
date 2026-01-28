@@ -1,5 +1,6 @@
-import { UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
-import { CardapiosIcon, EstoqueIcon, RefeicoesIcon, RelatoriosIcon, UsuariosIcon } from "../components/Sidebar/icons";
+import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
+import { AlertIcon, BuildingIcon, CircledCheckIcon, LockIcon, NoWifiIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
+import { CardapiosIcon, ConfiguracoesIcon, EstoqueIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, UsuariosIcon } from "../components/Sidebar/icons";
 
 const cardsUsers = [
   {
@@ -62,8 +63,84 @@ const cardsModules = [
     subtitle: "Acesse o módulo",
     link: "/usuarios",
     icon: <UsuariosIcon color="#E17100" />,
-    iconBgColor: "#FFBEB",
+    iconBgColor: "#FFFBEB",
   },
 ];
 
-export { cardsUsers, cardsModules }
+const cardsStock = [
+  {
+    title: "Total de Itens",
+    subtitle: "Ativos no sistema",
+    value: 0,
+    icon: <EstoqueIcon color="#00A63E" />,
+    bgColor: "#F0FDF4",
+  },
+  {
+    title: "Itens Críticos",
+    subtitle: "Abaixo do mínimo",
+    value: 0,
+    icon: <AlertIcon color="#E7000B" />,
+    bgColor: "#FEF2F2",
+  },
+  {
+    title: "Movimentações",
+    subtitle: "Últimos 7 dias",
+    value: 0,
+    icon: <TwistedArrowIcon color="#155DFC" />,
+    bgColor: "#EFF6FF",
+  },
+];
+
+const tabsSettings = [
+  {
+    label: "Geral",
+    icon: <ConfiguracoesIcon width={24} height={24} />,
+    tabComponent: <GeneralTab />,
+  },
+  {
+    label: "Unidades",
+    icon: <BuildingIcon width={24} height={24} />,
+    tabComponent: <UnitsTab />,
+  },
+  {
+    label: "Terminais",
+    icon: <TerminalIcon width={24} height={24} />,
+    tabComponent: <TerminalsTab />,
+  },
+  {
+    label: "Políticas",
+    icon: <PerfisPermissoesIcon width={24} height={24} />,
+    tabComponent: <PoliciesTab />,
+  },
+  {
+    label: "Segurança",
+    icon: <LockIcon width={24} height={24} />,
+    tabComponent: <SecurityTab />,
+  },
+];
+
+const cardsTerminalsConfig = [
+  {
+    title: "Online",
+    value: 2,
+    icon: <CircledCheckIcon color="#00A63E" />
+  },
+  {
+    title: "Offline",
+    value: 1,
+    icon: <NoWifiIcon color="#E7000B" />
+  },
+  {
+    title: "Desatualizados",
+    value: 1,
+    icon: <AlertIcon color="#BB4D00" />
+  },
+  {
+    title: "Total",
+    value: 4,
+    icon: <TerminalIcon color="#155DFC" />
+  },
+];
+
+
+export { cardsUsers, cardsModules, cardsStock, tabsSettings, cardsTerminalsConfig }

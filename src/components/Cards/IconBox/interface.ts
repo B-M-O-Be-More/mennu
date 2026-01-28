@@ -1,3 +1,4 @@
+import { SxProps } from "@mui/material";
 import { ReactNode } from "react";
 
 export interface IconBoxProps {
@@ -7,4 +8,5 @@ export interface IconBoxProps {
   borderRadius?: number | string;
   maxWidth?: string;
   maxHeight?: string;
+  sx?: SxProps;
 }

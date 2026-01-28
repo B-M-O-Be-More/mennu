@@ -6,95 +6,94 @@ import { NewUserModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import { useForm } from "react-hook-form";
+import { IUser } from "@/data/tableColumns";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { userSchema } from "@/schemas/userSchema";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
-  const [newUserName, setNewUserName] = React.useState("");
-  const [newUserCpf, setNewUserCpf] = React.useState("");
-  const [newUserMatricula, setNewUserMatricula] = React.useState("");
-  const [newUserCategoria, setNewUserCategoria] = React.useState(mockCategorias[0].value);
-  const [newUserUnidade, setNewUserUnidade] = React.useState(mockUnidades[0].value);
-  const [newUserStatus, setNewUserStatus] = React.useState(mockStatuses[0].value);
-  const [newUserNumeroCartao, setNewUserNumeroCartao] = React.useState("");
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<IUser>({
+    resolver: yupResolver(userSchema),
+    defaultValues: {
+      nome: "",
+      CPF: "",
+      matricula: "",
+      categoria: mockCategorias[0].value,
+      unidade: mockUnidades[0].value,
+      status: mockStatuses[0].value,
+      numeroCartao: "",
+    },
+  });
 
-  const handleSave = () => {
-    console.log({
-      newUserName,
-      newUserCpf,
-      newUserMatricula,
-      newUserCategoria,
-      newUserUnidade,
-      newUserStatus,
-      newUserNumeroCartao,
-    });
-
-    onClose();
-  };
+  const onSubmit = (data: IUser) => { console.log("Novo usuário:", data); onClose(); };
 
   return (
     <Modal open={open} onClose={onClose} title="Novo Usuário">
-      <Stack gap={2}>
-        <Stack direction="row" spacing={2}>
-          <Input
-            value={newUserName}
-            onChange={setNewUserName}
-            label="Nome Completo"
-            placeholder="Ex. João Silva"
-            optional={false}
-            sx={{ flex: 1 }}
-          />
-        </Stack>
+      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label="Nome Completo"
+          placeholder="Ex. João Silva"
+          optional={false}
+          sx={{ flex: 1 }}
+          register={register("nome")}
+          error={errors.nome?.message}
+        />
 
         <Stack direction="row" spacing={2}>
           <Input
-            value={newUserCpf}
-            onChange={setNewUserCpf}
             label="CPF"
             placeholder="Ex. 000.000.000-00"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("CPF")}
+            error={errors.CPF?.message}
           />
+
           <Input
-            value={newUserMatricula}
-            onChange={setNewUserMatricula}
             label="Matrícula"
             placeholder="Ex. 123456"
             optional={false}
             sx={{ flex: 1 }}
+            register={register("matricula")}
+            error={errors.matricula?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
           <Select
-            value={newUserCategoria}
             label="Categoria"
-            optional={false}
-            onChange={setNewUserCategoria}
             options={mockCategorias}
+            register={register("categoria")}
+            error={errors.categoria?.message}
           />
+
           <Select
-            value={newUserUnidade}
             label="Unidade"
-            optional={false}
-            onChange={setNewUserUnidade}
             options={mockUnidades}
+            register={register("unidade")}
+            error={errors.unidade?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
           <Select
-            value={newUserStatus}
             label="Status"
-            optional={true}
-            onChange={setNewUserStatus}
             options={mockStatuses}
+            register={register("status")}
+            error={errors.status?.message}
           />
+
           <Input
-            value={newUserNumeroCartao}
-            onChange={setNewUserNumeroCartao}
             label="Número do Cartão"
             placeholder="Ex: 1250458-25"
-            optional={true}
+            optional={false}
             sx={{ flex: 1 }}
+            register={register("numeroCartao")}
+            error={errors.numeroCartao?.message}
           />
         </Stack>
 
@@ -105,10 +104,10 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
         <Stack direction={"row"} border={"1px solid #BEDBFF"} bgcolor={"#EFF6FF"} borderRadius={2} p={2} gap={1}>
           <UsuariosIcon color="#155DFC" />
           <Box>
-            <Typography variant="h5" fontWeight={"400"} color="#1C398E" mb={1}>
+            <Typography variant="body1" fontWeight={"400"} color="#1C398E" mb={1}>
               Acesso aos Terminais
             </Typography>
-            <Typography variant="body2" color="#1447E6" fontWeight={400}>
+            <Typography variant="caption" color="#1447E6" fontWeight={400}>
               Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
             </Typography>
           </Box>
@@ -128,11 +127,9 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
             Cancelar
           </Button>
           <Button
-            sx={{
-              flex: 1,
-            }}
+            sx={{ flex: 1 }}
             variant="contained"
-            onClick={handleSave}
+            type="submit"
           >
             Criar Novo Usuário
           </Button>

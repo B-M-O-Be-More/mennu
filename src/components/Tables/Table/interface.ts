@@ -1,5 +1,5 @@
 export interface IColumn<T> {
-  key: keyof T;
+  key: keyof T | string;
   label: string;
   align?: "left" | "right" | "center";
   render?: (row: T) => React.ReactNode;

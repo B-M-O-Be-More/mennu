@@ -17,28 +17,40 @@ const palette = {
     contrastText: "#FFFFFF",
   },
   error: {
-    main: "#EF4444",
+    main: "#FEF2F2",
     light: "#F87171",
     dark: "#B91C1C",
-    contrastText: "#FFFFFF",
+    contrastText: "#E7000B",
   },
   warning: {
-    main: "#F59E0B",
-    light: "#FBBF24",
+    main: "#FFFBEB",
+    light: "#E17100",
     dark: "#B45309",
-    contrastText: "#0A0A0A",
+    contrastText: "#BB4D00",
   },
   info: {
-    main: "#0EA5E9",
-    light: "#38BDF8",
+    main: "#EFF6FF",
+    light: "#1447E6",
     dark: "#0369A1",
-    contrastText: "#FFFFFF",
+    contrastText: "#1447E6",
   },
   success: {
-    main: "#22C55E",
+    main: "#F0FDF4",
     light: "#4ADE80",
     dark: "#16A34A",
-    contrastText: "#0A0A0A",
+    contrastText: "#008236",
+  },
+  default: {
+    main: "#F9FAFB",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#364153",
+  },
+  purple: {
+    main: "#FAF5FF",
+    light: "#FFFFFF",
+    dark: "#6A7282",
+    contrastText: "#8200DB",
   },
   grey: {
     50: "#F9FAFB",
@@ -85,53 +97,43 @@ const typography = {
   fontFamily: 'var(--font-poppins), "Poppins", "Helvetica", "Arial", sans-serif',
   h1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 700,
-    fontSize: "2.5rem",
+    fontWeight: 700
   },
   h2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "2rem",
+    fontWeight: 600
   },
   h3: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "1.5rem",
+    fontWeight: 600
   },
   h4: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "1.25rem",
+    fontWeight: 600
   },
   h5: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500,
-    fontSize: "1rem",
+    fontWeight: 500
   },
   h6: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500,
-    fontSize: "0.875rem",
+    fontWeight: 500
   },
   body1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "1rem",
+    fontWeight: 400
   },
   body2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "0.875rem",
+    fontWeight: 400
   },
   caption: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400,
-    fontSize: "0.75rem",
+    fontWeight: 400
   },
   overline: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600,
-    fontSize: "0.625rem",
+    fontWeight: 600
   },
   button: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
@@ -152,8 +154,7 @@ export const theme = createTheme(baseTheme, {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
-          border: "1px solid",
-          borderColor: baseTheme.palette.primary.main,
+          border: "px solid",
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
@@ -162,19 +163,25 @@ export const theme = createTheme(baseTheme, {
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
           },
+          outlineOffset: "0px",
+          outline: "1px solid",
+          outlineColor: 'transparent',
         },
         outlined: {
           backgroundColor: "transparent",
           color: baseTheme.palette.secondary.main,
-          fontweight: 500,
+          fontWeight: 500,
           fontFamily: typography.fontFamily,
-          borderColor: baseTheme.palette.divider,
+          height: "fit-content",
           padding: "1rem 1.5rem",
           borderRadius: "1rem",
-          height: "fit-content",
           "&:hover": {
             backgroundColor: "rgba(0, 0, 0, 0.04)",
           },
+          border: "0px solid",
+          outlineOffset: "0px",
+          outline: "1px solid",
+          outlineColor: baseTheme.palette.divider,
         },
       },
     },
@@ -183,6 +190,92 @@ export const theme = createTheme(baseTheme, {
         style: {
           fontFamily: typography.fontFamily,
         },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          height: 26,
+          padding: 0,
+        },
+
+        switchBase: {
+          padding: 3,
+          "&.Mui-checked": {
+            transform: "translateX(32px)",
+            color: "#fff",
+
+            "& + .MuiSwitch-track": {
+              backgroundColor: baseTheme.palette.primary.main,
+              opacity: 1,
+            },
+          },
+        },
+
+        thumb: {
+          width: 20,
+          height: 20,
+        },
+
+        track: {
+          borderRadius: 13,
+          backgroundColor: baseTheme.palette.grey[300],
+          opacity: 1,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          fontFamily: typography.fontFamily,
+          textTransform: "none",
+          borderRadius: 8,
+          height: 24,
+          padding: "0 8px",
+        },
+        colorPrimary: {
+          backgroundColor: palette.primary.main,
+          color: palette.primary.contrastText,
+          "&.MuiChip-clickable:hover": {
+            backgroundColor: palette.primary.dark,
+          },
+        },
+        colorSecondary: {
+          backgroundColor: palette.secondary.main,
+          color: palette.secondary.contrastText,
+        },
+        colorSuccess: {
+          backgroundColor: palette.success.main,
+          color: palette.success.contrastText,
+        },
+        colorError: {
+          backgroundColor: palette.error.main,
+          color: palette.error.contrastText,
+        },
+        colorDefault: {
+          backgroundColor: palette.default.main,
+          color: palette.default.contrastText,
+        },
+        colorWarning: {
+          backgroundColor: palette.warning.main,
+          color: palette.warning.contrastText,
+        },
+        colorInfo: {
+          backgroundColor: palette.info.main,
+          color: palette.info.contrastText,
+        },
+        colorPurple: {
+          backgroundColor: palette.purple.main,
+          color: palette.purple.contrastText,
+        },
+        outlined: {
+          border: `1px solid ${palette.divider}`,
+          backgroundColor: "transparent",
+        },
+      },
+      defaultProps: {
+        size: "small",
       },
     },
   },

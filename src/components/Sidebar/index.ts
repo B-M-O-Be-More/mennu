@@ -1,3 +1,5 @@
-export { SidebarComponent } from "./component";
-export type { SidebarProps, SidebarMenuItem, SidebarUser } from "./interface";
+import { SidebarComponent } from "./component";
+import { SidebarProps } from "./interface";
 
+export type { SidebarProps };
+export { SidebarComponent };

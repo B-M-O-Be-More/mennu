@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Stack,
@@ -11,191 +10,128 @@ import {
 } from "@mui/material";
 import { ArrowBack, MailOutline } from "@mui/icons-material";
 import { FormResetPasswordProps } from "./interface";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { resetSchema } from "@/schemas/resetSchema";
+import IconBox from "@/components/Cards/IconBox";
+import Input from "@/components/FormControl/Input";
 
-export function FormResetPassword({
-  onBack,
-  onSubmit,
-}: FormResetPasswordProps) {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+
+export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) {
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-      await onSubmit?.(email);
-    } finally {
-      setLoading(false);
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<{ email: string }>({
+    resolver: yupResolver(resetSchema),
+    defaultValues: { email: "" },
+  });
+
+  const handleFormSubmit = async (data: { email: string }) => {
+    await onSubmit?.(data.email);
   };
 
   return (
     <Stack
       component="form"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleFormSubmit)}
       sx={{
-        bgcolor: "#FFFF",
+        bgcolor: "background.paper",
         borderRadius: 4,
         p: 5,
-        maxWidth: 750,
+        maxWidth: 600,
         width: "100%",
         boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
       }}
-      spacing={0}
+      gap={2}
     >
-      {/* Botão Voltar */}
-      <Box sx={{ mb: 5, alignSelf: "flex-start" }}>
-        <Button
-          onClick={() => {
-            if (onBack) return onBack();
-            router.push("/");
-          }}
-          startIcon={<ArrowBack sx={{ fontSize: 20 }} />}
-          sx={{
-            color: "#666",
-            textTransform: "none",
-            fontSize: "1rem",
-            p: 0,
-            minWidth: "auto",
-            "&:hover": { 
-              bgcolor: "transparent",
-              color: "#333"
-            },
-          }}
-        >
-          Voltar ao login
-        </Button>
-      </Box>
-
-      {/* Ícone de Email */}
-      <Box
+      <Button
+        onClick={() => {
+          if (onBack) return onBack();
+          router.push("/");
+        }}
+        startIcon={<ArrowBack sx={{ fontSize: 20 }} />}
+        variant="text"
         sx={{
-          width: 72,
-          height: 72,
-          borderRadius: "50%",
-          bgcolor: "#E3F2FD",
+          alignSelf: "flex-start",
+          color: "text.secondary",
+          textTransform: "none",
+          fontSize: "1rem",
+          p: 0,
+          transition: "0.2s",
+          "&:hover": {
+            bgcolor: "transparent",
+            color: "#333",
+            textShadow: "0 0 5px rgba(0,0,0,0.1)",
+            transform: "translateX(-2px)",
+          },
+        }}
+      >
+        Voltar ao login
+      </Button>
+
+      <IconBox
+        icon={<MailOutline sx={{ color: "#1976D2", width: 42, height: 42 }} />}
+        bgColor="#E3F2FD"
+        padding={2}
+        borderRadius={"100%"}
+        sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          mb: 4,
           alignSelf: "center",
         }}
-      >
-        <MailOutline sx={{ fontSize: 36, color: "#1976D2" }} />
-      </Box>
-
-      {/* Título */}
-      <Typography
-        variant="h4"
-        component="h1"
-        sx={{
-          fontWeight: 700,
-          color: "#1A1A1A",
-          mb: 2.5,
-          fontSize: "2.5rem",
-          textAlign: "center",
-        }}
-      >
-        Recuperar Senha
-      </Typography>
-
-      {/* Descrição */}
-      <Typography
-        variant="body1"
-        sx={{
-          color: "#999",
-          mb: 4,
-          lineHeight: 1.6,
-          fontSize: "1.05rem",
-          textAlign: "center",
-          px: 4,
-        }}
-      >
-        Insira seu e-mail cadastrado e enviaremos um link para redefinir sua senha
-      </Typography>
-
-      {/* Campo de Email */}
-      <Stack spacing={1.5} sx={{ mb: 3 }}>
+      />
+      <Stack alignItems="center" gap={1} width="100%">
         <Typography
-          variant="body1"
+          variant="h4"
           sx={{
-            color: "#333",
-            fontWeight: 500,
-            fontSize: "1rem",
+            textAlign: "center",
+            fontWeight: 600,
           }}
         >
-          E-mail
+          Recuperar Senha
         </Typography>
-        <TextField
-          fullWidth
-          placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          required
-          InputProps={{
-            startAdornment: (
-              <MailOutline
-                sx={{ color: "#BBB", mr: 1.5, fontSize: 22 }}
-              />
-            ),
-          }}
+
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
           sx={{
-            "& .MuiOutlinedInput-root": {
-              bgcolor: "white",
-              borderRadius: 3,
-              border: "1px solid #E0E0E0",
-              "& fieldset": {
-                border: "none",
-              },
-              "&:hover": {
-                borderColor: "#D0D0D0",
-              },
-              "&.Mui-focused": {
-                borderColor: "#C0C0C0",
-              },
-              "& input": {
-                py: 2,
-                fontSize: "1rem",
-                color: "#BBB",
-              },
-              "& input::placeholder": {
-                color: "#BBB",
-                opacity: 1,
-              },
-            },
+            textAlign: "center",
           }}
-        />
+        >
+          Insira seu e-mail cadastrado e enviaremos um link para redefinir sua senha
+        </Typography>
       </Stack>
 
-      {/* Botão de Enviar */}
+      <Input
+        icon={<MailOutline sx={{ color: "#BBB", fontSize: 22 }} />}
+        label="E-mail"
+        placeholder="seu@email.com"
+        type="email"
+        register={register("email")}
+        error={errors.email?.message}
+      />
+
       <Button
         type="submit"
         fullWidth
-        disabled={loading}
+        disabled={isSubmitting}
+        variant="contained"
         sx={{
-          bgcolor: "#FF3D00",
-          color: "white",
-          py: 2.25,
-          borderRadius: 3,
           textTransform: "none",
           fontSize: "1.1rem",
           fontWeight: 600,
           boxShadow: "none",
-          mt: 2,
-          "&:hover": {
-            bgcolor: "#F4511E",
-            boxShadow: "none",
-          },
           "&:disabled": {
             bgcolor: "#FFB4A3",
             color: "white",
           },
         }}
       >
-        {loading ? "Enviando..." : "Enviar Link de Recuperação"}
+        {isSubmitting ? "Enviando..." : "Enviar Link de Recuperação"}
       </Button>
     </Stack>
   );

@@ -8,6 +8,10 @@ import {
   Button,
   Avatar,
   useTheme,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import * as React from "react";
 import NextLink from "next/link";
@@ -28,70 +32,29 @@ export function SidebarComponent({
   const sidebarColors = (theme.palette as any).sidebar;
 
   // Lógica de item ativo com suporte a rotas aninhadas
-  const isActive = (path: string) => {
-    if (!activePath) return false;
-    if (activePath === path) return true;
-    // Para rotas aninhadas: /cardapios/criar deve ativar /cardapios
-    if (path !== "/dashboard" && activePath.startsWith(path + "/")) {
-      return true;
-    }
-    return false;
-  };
-
-  // Estilos base compartilhados para botões de menu
-  const getMenuItemStyles = (itemActive: boolean) => ({
-    justifyContent: "flex-start",
-    paddingLeft: { xs: "1rem", sm: "1.125rem", lg: "20px" },
-    paddingRight: "0",
-    borderRadius: "16.4px",
-    textTransform: "none",
-    position: "relative",
-    backgroundColor: itemActive ? sidebarColors.bgActive : "transparent",
-    transition: "all 0.2s ease-in-out",
-    "&:hover": {
-      backgroundColor: itemActive ? sidebarColors.bgActiveHover : sidebarColors.bgHover,
+  const isActive = React.useCallback(
+    (path: string) => {
+      if (!activePath) return false;
+      if (activePath === path) return true;
+      // Para rotas aninhadas: /cardapios/criar deve ativar /cardapios
+      if (path !== "/dashboard" && activePath.startsWith(path + "/")) {
+        return true;
+      }
+      return false;
     },
-    "&::before": {
-      content: '""',
-      position: "absolute",
-      left: 0,
-      top: "50%",
-      transform: "translateY(-50%)",
-      width: "4px",
-      height: "32px",
-      borderRadius: "0 4px 4px 0",
-      backgroundColor: sidebarColors.indicator,
-      opacity: itemActive ? 1 : 0,
-      transition: "opacity 0.2s ease-in-out",
-    },
-    "& .MuiButton-startIcon": {
-      marginRight: { xs: "0.75rem", sm: "0.875rem", lg: "16px" },
-      display: "flex",
-      alignItems: "center",
-      transition: "color 0.2s ease-in-out",
-    },
-  });
-
-  // Estilos para texto de menu
-  const getMenuTextStyles = (itemActive: boolean) => ({
-    fontFamily: "var(--font-poppins), Poppins, sans-serif",
-    fontSize: { xs: "15px", sm: "16px", lg: "18px" },
-    fontWeight: itemActive ? 600 : 500,
-    lineHeight: "28px",
-    color: itemActive ? sidebarColors.textActive : sidebarColors.text,
-    letterSpacing: "-0.01em",
-    textRendering: "optimizeLegibility",
-    WebkitFontSmoothing: "antialiased",
-    transition: "all 0.2s ease-in-out",
-  });
+    [activePath]
+  );
 
   // Renderizar ícone com cor apropriada
-  const renderIcon = (icon: React.ReactNode, isActive: boolean) => (
-    <Box component="span" className="MuiButton-startIcon">
-      {React.cloneElement(icon as React.ReactElement<{ color?: string }>, {
-        color: isActive ? sidebarColors.textActive : sidebarColors.text,
-      })}
-    </Box>
+  const renderIcon = React.useCallback(
+    (icon: React.ReactNode, active: boolean) => (
+      <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
+        {React.cloneElement(icon as React.ReactElement<{ color?: string }>, {
+          color: active ? sidebarColors.textActive : sidebarColors.text,
+        })}
+      </Box>
+    ),
+    [sidebarColors]
   );
 
   return (
@@ -100,40 +63,39 @@ export function SidebarComponent({
       role="navigation"
       aria-label="Menu principal"
       sx={{
-        width: { xs: "240px", sm: "260px", lg: "279px" },
+        width: { xs: 240, sm: 260, lg: 279 },
         height: "100vh",
-        backgroundColor: (theme) => theme.palette.sidebar.background,
+        bgcolor: "sidebar.background",
         display: "flex",
         flexDirection: "column",
         position: "relative",
-        padding: { xs: "1rem 0 0 0", sm: "1.25rem 0 0 0", lg: "24px 0 0 0" },
+        pt: { xs: 2, sm: 2.5, lg: 3 },
         transition: "width 0.3s ease",
-        borderRight: `1px solid ${sidebarColors.divider}`,
+        borderRight: 1,
+        borderColor: "sidebar.divider",
       }}
     >
       {/* Logo Container */}
       <Box
         sx={{
-          width: { xs: "200px", sm: "215px", lg: "231px" },
-          height: { xs: "56px", sm: "60px", lg: "64px" },
-          backgroundColor: "background.auth",
-          borderRadius: "16.4px",
-          marginLeft: { xs: "1rem", sm: "1.25rem", lg: "24px" },
+          width: { xs: 200, sm: 215, lg: 231 },
+          height: { xs: 56, sm: 60, lg: 64 },
+          bgcolor: "background.auth",
+          borderRadius: 2.05,
+          ml: { xs: 2, sm: 2.5, lg: 3 },
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
         <Typography
+          variant="h6"
+          component="h1"
           sx={{
-            fontFamily: "var(--font-poppins), Poppins, sans-serif",
-            fontSize: { xs: "20px", sm: "22px", lg: "24px" },
+            fontSize: { xs: 20, sm: 22, lg: 24 },
             fontWeight: 400,
-            color: "white",
-            lineHeight: "32px",
+            color: "common.white",
             letterSpacing: "-0.01em",
-            textRendering: "optimizeLegibility",
-            WebkitFontSmoothing: "antialiased",
           }}
         >
           Mennu
@@ -141,52 +103,92 @@ export function SidebarComponent({
       </Box>
 
       {/* Navigation Items */}
-      <Stack
+      <List
+        component="div"
+        disablePadding
         sx={{
-          marginTop: { xs: "2rem", sm: "2.5rem", lg: "48px" },
-          paddingX: { xs: "0.75rem", sm: "0.875rem", lg: "16px" },
-          paddingTop: 0,
-          gap: "4px",
+          mt: { xs: 4, sm: 5, lg: 6 },
+          px: { xs: 1.5, sm: 1.75, lg: 2 },
           flex: 1,
           overflowY: "auto",
           minHeight: 0,
+          "& > *:not(:last-child)": {
+            mb: 0.5,
+          },
         }}
       >
         {menuItems.map((item) => {
           const itemActive = isActive(item.path);
           return (
-            <Button
+            <ListItemButton
               key={item.id}
               component={NextLink}
               href={item.path}
               onClick={item.onClick}
+              selected={itemActive}
               aria-current={itemActive ? "page" : undefined}
               aria-label={item.label}
               sx={{
-                ...getMenuItemStyles(itemActive),
-                height: { xs: "56px", sm: "58px", lg: "60px" },
-                "& .MuiButton-startIcon": {
-                  ...getMenuItemStyles(itemActive)["& .MuiButton-startIcon"],
-                  "& svg": {
-                    width: { xs: "22px", sm: "24px", lg: "28px" },
-                    height: { xs: "22px", sm: "24px", lg: "28px" },
+                pl: { xs: 2, sm: 2.25, lg: 2.5 },
+                pr: 0,
+                borderRadius: 2.05,
+                height: { xs: 56, sm: 58, lg: 60 },
+                position: "relative",
+                transition: theme.transitions.create(
+                  ["background-color", "color"],
+                  { duration: theme.transitions.duration.shorter }
+                ),
+                "&.Mui-selected": {
+                  bgcolor: "sidebar.bgActive",
+                  "&:hover": {
+                    bgcolor: "sidebar.bgActiveHover",
                   },
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    left: 0,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    width: 4,
+                    height: 32,
+                    borderRadius: "0 4px 4px 0",
+                    bgcolor: "sidebar.indicator",
+                  },
+                },
+                "&:hover": {
+                  bgcolor: "sidebar.bgHover",
                 },
               }}
             >
-              {renderIcon(item.icon, itemActive)}
-              <Typography sx={getMenuTextStyles(itemActive)}>
-                {item.label}
-              </Typography>
-            </Button>
+              <ListItemIcon
+                sx={{
+                  minWidth: { xs: 38, sm: 42, lg: 44 },
+                  "& svg": {
+                    width: { xs: 22, sm: 24, lg: 28 },
+                    height: { xs: 22, sm: 24, lg: 28 },
+                  },
+                }}
+              >
+                {renderIcon(item.icon, itemActive)}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{
+                  fontSize: { xs: 15, sm: 16, lg: 18 },
+                  fontWeight: itemActive ? 600 : 500,
+                  color: itemActive ? "sidebar.textActive" : "sidebar.text",
+                  letterSpacing: "-0.01em",
+                }}
+              />
+            </ListItemButton>
           );
         })}
 
-        {/* Divider */}
         <Divider
+          component="li"
           sx={{
-            marginY: "1rem",
-            borderColor: sidebarColors.divider,
+            my: 2,
+            borderColor: "sidebar.divider",
           }}
         />
 
@@ -194,21 +196,21 @@ export function SidebarComponent({
         {showAdminSection && (
           <>
             <Box
+              component="li"
               sx={{
-                paddingX: { xs: "1rem", sm: "1.125rem", lg: "20px" },
-                paddingY: "0.5rem",
-                height: "36px",
+                px: { xs: 2, sm: 2.25, lg: 2.5 },
+                py: 1,
+                height: 36,
               }}
             >
               <Typography
+                variant="overline"
                 sx={{
-                  fontFamily: "var(--font-poppins), Poppins, sans-serif",
-                  fontSize: { xs: "12px", sm: "13px", lg: "14px" },
+                  fontSize: { xs: 12, sm: 13, lg: 14 },
                   fontWeight: 400,
-                  color: sidebarColors.section,
-                  lineHeight: "20px",
+                  color: "sidebar.section",
                   letterSpacing: "0.01em",
-                  textRendering: "optimizeLegibility",
+                  lineHeight: 1.43,
                 }}
               >
                 Administração
@@ -217,103 +219,121 @@ export function SidebarComponent({
 
             {adminMenuItems.map((item) => {
               const itemActive = isActive(item.path);
-              const isLongLabel = item.label === "Perfis & Permissões";
 
               return (
-                <Button
+                <ListItemButton
                   key={item.id}
                   component={NextLink}
                   href={item.path}
                   onClick={item.onClick}
+                  selected={itemActive}
                   aria-current={itemActive ? "page" : undefined}
                   aria-label={item.label}
                   sx={{
-                    ...getMenuItemStyles(itemActive),
-                    height: isLongLabel
-                      ? { xs: "80px", sm: "84px", lg: "88px" }
-                      : { xs: "56px", sm: "58px", lg: "60px" },
-                    "& .MuiButton-startIcon": {
-                      ...getMenuItemStyles(itemActive)["& .MuiButton-startIcon"],
-                      "& svg": {
-                        width: isLongLabel
-                          ? { xs: "22px", sm: "24px", lg: "26.25px" }
-                          : { xs: "22px", sm: "24px", lg: "28px" },
-                        height: isLongLabel
-                          ? { xs: "22px", sm: "24px", lg: "26.25px" }
-                          : { xs: "22px", sm: "24px", lg: "28px" },
+                    pl: { xs: 2, sm: 2.25, lg: 2.5 },
+                    pr: 0,
+                    borderRadius: 2.05,
+                    height: { xs: 56, sm: 58, lg: 60 },
+                    position: "relative",
+                    transition: theme.transitions.create(
+                      ["background-color", "color"],
+                      { duration: theme.transitions.duration.shorter }
+                    ),
+                    "&.Mui-selected": {
+                      bgcolor: "sidebar.bgActive",
+                      "&:hover": {
+                        bgcolor: "sidebar.bgActiveHover",
                       },
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        left: 0,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: 4,
+                        height: 32,
+                        borderRadius: "0 4px 4px 0",
+                        bgcolor: "sidebar.indicator",
+                      },
+                    },
+                    "&:hover": {
+                      bgcolor: "sidebar.bgHover",
                     },
                   }}
                 >
-                  {renderIcon(item.icon, itemActive)}
-                  <Typography
+                  <ListItemIcon
                     sx={{
-                      ...getMenuTextStyles(itemActive),
-                      whiteSpace: "pre-wrap",
+                      minWidth: { xs: 38, sm: 42, lg: 44 },
+                      "& svg": {
+                        width: { xs: 22, sm: 24, lg: 28 },
+                        height: { xs: 22, sm: 24, lg: 28 },
+                      },
                     }}
                   >
-                    {item.label}
-                  </Typography>
-                </Button>
+                    {renderIcon(item.icon, itemActive)}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontSize: { xs: 15, sm: 16, lg: 18 },
+                      fontWeight: itemActive ? 600 : 500,
+                      color: itemActive ? "sidebar.textActive" : "sidebar.text",
+                      letterSpacing: "-0.01em",
+                    }}
+                  />
+                </ListItemButton>
               );
             })}
           </>
         )}
-      </Stack>
+      </List>
 
       {/* User Profile Section */}
       <Box
         role="contentinfo"
         aria-label="Perfil do usuário"
         sx={{
-          padding: { xs: "1.25rem 1rem 0 1rem", sm: "1.375rem 1.25rem 0 1.25rem", lg: "25px 24px 0 24px" },
-          borderTop: `1px solid ${sidebarColors.divider}`,
-          paddingTop: { xs: "1.25rem", sm: "1.375rem", lg: "25px" },
+          p: { xs: "1.25rem 1rem 1rem", sm: "1.375rem 1.25rem 1.25rem", lg: "1.5625rem 1.5rem 1.5rem" },
+          borderTop: 1,
+          borderColor: "sidebar.divider",
         }}
       >
         <Stack
           direction="row"
           spacing={2}
           alignItems="center"
-          sx={{
-            marginBottom: "1rem",
-          }}
+          sx={{ mb: 2 }}
         >
           <Avatar
             sx={{
-              width: { xs: "48px", sm: "52px", lg: "56px" },
-              height: { xs: "48px", sm: "52px", lg: "56px" },
-              backgroundColor: "background.auth",
-              borderRadius: "50%",
-              fontSize: { xs: "18px", sm: "19px", lg: "20px" },
+              width: { xs: 48, sm: 52, lg: 56 },
+              height: { xs: 48, sm: 52, lg: 56 },
+              bgcolor: "background.auth",
+              fontSize: { xs: 18, sm: 19, lg: 20 },
               fontWeight: 400,
             }}
           >
             {user.avatarInitial || user.name.charAt(0).toUpperCase()}
           </Avatar>
-          <Stack>
+          <Stack spacing={0.25}>
             <Typography
+              variant="body1"
               sx={{
-                fontFamily: "var(--font-poppins), Poppins, sans-serif",
-                fontSize: { xs: "15px", sm: "16px", lg: "18px" },
+                fontSize: { xs: 15, sm: 16, lg: 18 },
                 fontWeight: 400,
-                color: sidebarColors.userNameColor,
-                lineHeight: "28px",
+                color: "sidebar.userNameColor",
                 letterSpacing: "-0.01em",
-                textRendering: "optimizeLegibility",
               }}
             >
               {user.name}
             </Typography>
             <Typography
+              variant="body2"
               sx={{
-                fontFamily: "var(--font-poppins), Poppins, sans-serif",
-                fontSize: { xs: "12px", sm: "13px", lg: "14px" },
+                fontSize: { xs: 12, sm: 13, lg: 14 },
                 fontWeight: 400,
-                color: sidebarColors.userEmailColor,
-                lineHeight: "20px",
+                color: "sidebar.userEmailColor",
                 letterSpacing: "0.01em",
-                textRendering: "optimizeLegibility",
               }}
             >
               {user.email}
@@ -323,43 +343,37 @@ export function SidebarComponent({
 
         <Button
           onClick={onLogout}
+          fullWidth
           aria-label="Sair da aplicação"
+          startIcon={renderIcon(logoutIcon, false)}
           sx={{
-            width: "100%",
-            height: { xs: "48px", sm: "50px", lg: "52px" },
-            borderRadius: "16.4px",
-            textTransform: "none",
+            height: { xs: 48, sm: 50, lg: 52 },
+            borderRadius: 2.05,
             justifyContent: "flex-start",
-            paddingLeft: { xs: "0.875rem", sm: "0.9375rem", lg: "16px" },
-            backgroundColor: "transparent",
-            transition: "all 0.2s ease-in-out",
+            pl: { xs: 1.75, sm: 1.875, lg: 2 },
+            textTransform: "none",
+            bgcolor: "transparent",
+            transition: theme.transitions.create("background-color", {
+              duration: theme.transitions.duration.shorter,
+            }),
             "&:hover": {
-              backgroundColor: sidebarColors.bgHover,
+              bgcolor: "sidebar.bgHover",
             },
             "& .MuiButton-startIcon": {
-              marginRight: { xs: "0.75rem", sm: "0.875rem", lg: "16px" },
-              display: "flex",
-              alignItems: "center",
-              transition: "color 0.2s ease-in-out",
+              mr: { xs: 1.5, sm: 1.75, lg: 2 },
               "& svg": {
-                width: { xs: "18px", sm: "20px", lg: "24px" },
-                height: { xs: "18px", sm: "20px", lg: "24px" },
+                width: { xs: 18, sm: 20, lg: 24 },
+                height: { xs: 18, sm: 20, lg: 24 },
               },
             },
           }}
         >
-          {renderIcon(logoutIcon, false)}
           <Typography
             sx={{
-              fontFamily: "var(--font-poppins), Poppins, sans-serif",
-              fontSize: { xs: "15px", sm: "16px", lg: "18px" },
+              fontSize: { xs: 15, sm: 16, lg: 18 },
               fontWeight: 500,
-              lineHeight: "28px",
-              color: sidebarColors.text,
+              color: "sidebar.text",
               letterSpacing: "-0.01em",
-              textRendering: "optimizeLegibility",
-              WebkitFontSmoothing: "antialiased",
-              transition: "color 0.2s ease-in-out",
             }}
           >
             Sair
@@ -367,16 +381,15 @@ export function SidebarComponent({
         </Button>
 
         <Typography
+          variant="caption"
           sx={{
-            fontFamily: "var(--font-poppins), Poppins, sans-serif",
-            fontSize: { xs: "12px", sm: "13px", lg: "14px" },
+            display: "block",
+            fontSize: { xs: 12, sm: 13, lg: 14 },
             fontWeight: 400,
-            color: sidebarColors.section,
+            color: "sidebar.section",
             textAlign: "center",
-            marginTop: "1rem",
-            lineHeight: "20px",
+            mt: 2,
             letterSpacing: "0.01em",
-            textRendering: "optimizeLegibility",
           }}
         >
           Mennu — Gestão Inteligente

@@ -5,21 +5,22 @@ import {
   Typography,
   IconButton,
 } from "@mui/material";
-import { InputProps } from "./";
 import React from "react";
 import { FiEye } from "react-icons/fi";
+import { InputProps } from "./";
 
-export default function Input
-  ({
-    value,
-    onChange,
-    label,
-    optional = true,
-    placeholder = "Buscar...",
-    sx,
-    icon,
-    type = "text",
-  }: InputProps) {
+
+
+export default function Input({
+  label,
+  optional = true,
+  placeholder = "Buscar...",
+  sx,
+  icon,
+  type = "text",
+  error,
+  register,
+}: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
@@ -28,25 +29,22 @@ export default function Input
   return (
     <FormControl fullWidth>
       {label && (
-        <Typography
-          variant="body2"
-          mb={1} color="text.label" fontWeight={400}
-        >
+        <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
           {label}{" "}
           <Typography
             variant="body2"
             component="span"
             color={!optional ? "primary.main" : "transparent"}
-            sx={{ transition: "all 0.2s ease-in-out" }}>
+            sx={{ transition: "all 0.2s ease-in-out" }}
+          >
             *
           </Typography>
         </Typography>
       )}
       <OutlinedInput
-        value={value}
         type={inputType}
-        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        {...register}
         startAdornment={
           <InputAdornment position="start">
             {type === "password" ? (
@@ -63,6 +61,7 @@ export default function Input
           </InputAdornment>
         }
         sx={{
+          height: "100%",
           borderRadius: 3,
           fontSize: 14,
           "& .MuiOutlinedInput-notchedOutline": {
@@ -86,6 +85,9 @@ export default function Input
           ...sx,
         }}
       />
+      <Typography variant="caption" color={error ? "error.contrastText" : "transparent"} >
+        {error}
+      </Typography>
     </FormControl>
   );
 }

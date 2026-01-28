@@ -146,7 +146,56 @@ const TrashIcon = ({ color = "currentColor", width = 24, height = 24, className,
   </svg>
 );
 
+const BuildingIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
+    <path d="M14 11.667H14.0117" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14 16.333H14.0117" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14 7H14.0117" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18.6665 11.667H18.6782" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18.6665 16.333H18.6782" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18.6665 7H18.6782" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.3335 11.667H9.34516" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.3335 16.333H9.34516" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.3335 7H9.34516" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10.5 25.6667V22.1667C10.5 21.8572 10.6229 21.5605 10.8417 21.3417C11.0605 21.1229 11.3572 21 11.6667 21H16.3333C16.6428 21 16.9395 21.1229 17.1583 21.3417C17.3771 21.5605 17.5 21.8572 17.5 22.1667V25.6667" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M20.9998 2.33301H6.99984C5.71117 2.33301 4.6665 3.37768 4.6665 4.66634V23.333C4.6665 24.6217 5.71117 25.6663 6.99984 25.6663H20.9998C22.2885 25.6663 23.3332 24.6217 23.3332 23.333V4.66634C23.3332 3.37768 22.2885 2.33301 20.9998 2.33301Z" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
+const LockIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
+    <path d="M22.1667 12.833H5.83333C4.54467 12.833 3.5 13.8777 3.5 15.1663V23.333C3.5 24.6217 4.54467 25.6663 5.83333 25.6663H22.1667C23.4553 25.6663 24.5 24.6217 24.5 23.333V15.1663C24.5 13.8777 23.4553 12.833 22.1667 12.833Z" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.1665 12.833V8.16634C8.1665 6.61924 8.78109 5.13551 9.87505 4.04155C10.969 2.94759 12.4527 2.33301 13.9998 2.33301C15.5469 2.33301 17.0307 2.94759 18.1246 4.04155C19.2186 5.13551 19.8332 6.61924 19.8332 8.16634V12.833" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const WifiIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+    <path d="M12 20H12.01" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2 8.81966C4.75011 6.35989 8.31034 5 12 5C15.6897 5 19.2499 6.35989 22 8.81966" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5 12.8586C6.86929 11.0263 9.38247 10 12 10C14.6175 10 17.1307 11.0263 19 12.8586" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8.5 16.4293C9.43464 15.5132 10.6912 15 12 15C13.3088 15 14.5654 15.5132 15.5 16.4293" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const NoWifiIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <path d="M16 26.667H16.0133" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M11.3335 21.9057C12.5797 20.6842 14.2551 20 16.0002 20C17.7452 20 19.4206 20.6842 20.6668 21.9057" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6.6665 17.1453C8.55721 15.2918 10.9569 14.0432 13.5598 13.5586" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M25.3332 17.1449C24.5304 16.3579 23.6313 15.6756 22.6572 15.1143" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2.6665 11.7603C4.3153 10.2858 6.19729 9.09493 8.23584 8.23633" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M29.3334 11.7596C27.2997 9.94064 24.9153 8.55708 22.327 7.694C19.7386 6.83092 17.0011 6.50656 14.2827 6.74089" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2.6665 2.66699L29.3332 29.3337" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const ClockIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <path d="M10 5V10L13.3333 11.6667" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.99984 18.3337C14.6022 18.3337 18.3332 14.6027 18.3332 10.0003C18.3332 5.39795 14.6022 1.66699 9.99984 1.66699C5.39746 1.66699 1.6665 5.39795 1.6665 10.0003C1.6665 14.6027 5.39746 18.3337 9.99984 18.3337Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 export {
   LuUserPlus,
@@ -172,5 +221,10 @@ export {
   TwistedArrowIcon,
   EditIcon,
   CircledCheckIcon,
-  TrashIcon
+  TrashIcon,
+  BuildingIcon,
+  LockIcon,
+  NoWifiIcon,
+  WifiIcon,
+  ClockIcon
 };

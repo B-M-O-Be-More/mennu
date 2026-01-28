@@ -15,22 +15,29 @@ export default function Modal({
   title,
   subtitle,
   children,
+  dialogSx,
 }: ModalProps) {
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      keepMounted={false}
       slotProps={{
         paper: {
           sx: {
             borderRadius: 3,
+            ...dialogSx,
           },
-        }
-
-      }}>
+        },
+      }}
+    >
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1 }}>
         <Box component="span">
-          <Typography variant="h3" fontWeight={"600"} color="text.primary">{title}</Typography>
+          <Typography variant="h5" fontWeight={"600"} color="text.primary">{title}</Typography>
           {subtitle && (
-            <Typography variant="h6" fontWeight={"400"} color="text.secondary" >
+            <Typography variant="subtitle2" fontWeight={"400"} color="text.secondary" >
               {subtitle}
             </Typography>
           )}

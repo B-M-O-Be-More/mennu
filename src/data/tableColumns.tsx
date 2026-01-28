@@ -1,18 +1,9 @@
 import ActionCell from "@/components/ActionCell";
 import { IColumn } from "@/components/Tables/Table";
-import { Avatar, Stack, Typography } from "@mui/material";
+import { Avatar, Chip, Stack, Typography } from "@mui/material";
 
-interface usersData {
-  nome: string;
-  matricula: string;
-  unidade: string;
-  status: string;
-  categoria: string;
-  ultimaRefeicao: string;
-  acoes: React.ReactNode;
-}
 
-const userColumns: IColumn<usersData>[] = [
+const userColumns: IColumn<IUser>[] = [
   {
     key: "nome",
     label: "Nome",
@@ -32,24 +23,17 @@ const userColumns: IColumn<usersData>[] = [
   },
   { key: "matricula", label: "Matrícula" },
   { key: "unidade", label: "Unidade", align: "right" },
-  { key: "status", label: "Status" },
+  {
+    key: "status", label: "Status",
+    render: (row) => (
+      <Chip label={row.status} color={row.status === "Ativo" ? "success" : "default"} size="small" sx={{ minWidth: "100px" }} />
+    ),
+  },
   { key: "categoria", label: "Tipo de Acesso" },
   { key: "ultimaRefeicao", label: "Última Refeição" },
   {
     key: "acoes",
     label: "Ações",
-    render: (row) => (
-      <ActionCell
-        checked={true}
-        onToggle={(newState) => {
-          console.log("Switch:", newState);
-          console.log("Row clicada:", row);
-        }}
-        onEdit={() => {
-          console.log("Editar row:", row);
-        }}
-      />
-    ),
   },
 ];
 
@@ -61,6 +45,7 @@ interface IUser {
   unidade: string;
   status: string;
   numeroCartao: string;
+  ultimaRefeicao?: string;
 }
 
 interface stockData {
@@ -121,5 +106,48 @@ interface IMovement {
   justificativa: string;
 }
 
+interface IPolicy {
+  horarios: {
+    cafeManha: {
+      inicio: string;
+      fim: string;
+    };
+    almoco: {
+      inicio: string;
+      fim: string;
+    };
+    jantar: {
+      inicio: string;
+      fim: string;
+    };
+  }
+  limites: {
+    diario: number;
+    semanal: number;
+    mensal: number;
+  };
+}
+
+interface IUnit {
+  nome: string;
+  endereco: string;
+  responsavel: string;
+  status: string;
+  politicas: IPolicy
+}
+
+interface ITerminal {
+  id: string;
+  nome: string;
+  codigo: string;
+  unidade: string;
+  tipo: string;
+  status: "online" | "offline" | "desatualizado";
+  ultimaSync?: string;
+  refeicoesPermitidas: string[];
+  categoriasPermitidas: string[];
+  ativo: boolean;
+}
+
 export { userColumns, stockColumns, movementColumns };
-export type { IUser, usersData, IStock, IMovement, };
+export type { IUser, IStock, IMovement, IUnit, IPolicy, movementData, ITerminal };
