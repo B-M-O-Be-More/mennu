@@ -2,17 +2,8 @@ import ActionCell from "@/components/ActionCell";
 import { IColumn } from "@/components/Tables/Table";
 import { Avatar, Chip, Stack, Typography } from "@mui/material";
 
-interface usersData {
-  nome: string;
-  matricula: string;
-  unidade: string;
-  status: string;
-  categoria: string;
-  ultimaRefeicao: string;
-  acoes: React.ReactNode;
-}
 
-const userColumns: IColumn<usersData>[] = [
+const userColumns: IColumn<IUser>[] = [
   {
     key: "nome",
     label: "Nome",
@@ -43,18 +34,6 @@ const userColumns: IColumn<usersData>[] = [
   {
     key: "acoes",
     label: "Ações",
-    render: (row) => (
-      <ActionCell
-        checked={true}
-        onToggle={(newState) => {
-          console.log("Switch:", newState);
-          console.log("Row clicada:", row);
-        }}
-        onEdit={() => {
-          console.log("Editar row:", row);
-        }}
-      />
-    ),
   },
 ];
 
@@ -66,6 +45,7 @@ interface IUser {
   unidade: string;
   status: string;
   numeroCartao: string;
+  ultimaRefeicao?: string;
 }
 
 interface stockData {
@@ -156,5 +136,18 @@ interface IUnit {
   politicas: IPolicy
 }
 
+interface ITerminal {
+  id: string;
+  nome: string;
+  codigo: string;
+  unidade: string;
+  tipo: string;
+  status: "online" | "offline" | "desatualizado";
+  ultimaSync?: string;
+  refeicoesPermitidas: string[];
+  categoriasPermitidas: string[];
+  ativo: boolean;
+}
+
 export { userColumns, stockColumns, movementColumns };
-export type { IUser, usersData, IStock, IMovement, IUnit, IPolicy, movementData };
+export type { IUser, IStock, IMovement, IUnit, IPolicy, movementData, ITerminal };

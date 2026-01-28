@@ -1,5 +1,5 @@
 import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
-import { AlertIcon, BuildingIcon, LockIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
+import { AlertIcon, BuildingIcon, CircledCheckIcon, LockIcon, NoWifiIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
 import { CardapiosIcon, ConfiguracoesIcon, EstoqueIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, UsuariosIcon } from "../components/Sidebar/icons";
 
 const cardsUsers = [
@@ -119,5 +119,28 @@ const tabsSettings = [
   },
 ];
 
+const cardsTerminalsConfig = [
+  {
+    title: "Online",
+    value: 2,
+    icon: <CircledCheckIcon color="#00A63E" />
+  },
+  {
+    title: "Offline",
+    value: 1,
+    icon: <NoWifiIcon color="#E7000B" />
+  },
+  {
+    title: "Desatualizados",
+    value: 1,
+    icon: <AlertIcon color="#BB4D00" />
+  },
+  {
+    title: "Total",
+    value: 4,
+    icon: <TerminalIcon color="#155DFC" />
+  },
+];
 
-export { cardsUsers, cardsModules, cardsStock, tabsSettings }
+
+export { cardsUsers, cardsModules, cardsStock, tabsSettings, cardsTerminalsConfig }

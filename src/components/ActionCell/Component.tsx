@@ -1,4 +1,4 @@
-import { IconButton, Switch } from "@mui/material";
+import { IconButton, Stack, Switch } from "@mui/material";
 import { ActionCellProps } from "./";
 import { EditIcon } from "../Icons";
 
@@ -7,9 +7,10 @@ const ActionCell: React.FC<ActionCellProps> = ({
   onToggle,
   onEdit,
   switchSize = "medium",
+  sxProps,
 }) => {
   return (
-    <>
+    <Stack direction="row" alignItems="center" spacing={1} height={"fit-content"} sx={{ ...sxProps }}>
       <IconButton
         aria-label="edit"
         size="small"
@@ -19,6 +20,8 @@ const ActionCell: React.FC<ActionCellProps> = ({
           border: "1px solid",
           borderColor: "divider",
           borderRadius: 2,
+          height: "fit-content",
+          color: "default.contrastText",
         }}
       >
         <EditIcon width={20} />
@@ -29,7 +32,7 @@ const ActionCell: React.FC<ActionCellProps> = ({
         size={switchSize}
         onChange={(e) => onToggle(e.target.checked)}
       />
-    </>
+    </Stack>
   );
 };
 

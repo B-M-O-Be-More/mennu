@@ -41,7 +41,7 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "60",
     unidadeMedida: "kg",
     unidade: "Kg",
-    status: <Chip label="Baixo" color="warning" size="small" sx={{ minWidth: "100px" }} />,
+    status: <Chip label="Baixo" color="purple" size="small" sx={{ minWidth: "100px" }} />,
     acoes: (
       <ActionCell
         checked={true}
@@ -107,6 +107,14 @@ export const mockMovements: movementData[] = [
   {
     data: "13/01/2026",
     tipo: <Chip label="Ajuste" color="warning" size="small" sx={{ minWidth: "100px" }} />,
+    item: "Açúcar Refinado",
+    quantidade: 15,
+    responsavel: "Ana Costa",
+    justificativa: "Motivo da saída",
+  },
+  {
+    data: "13/01/2026",
+    tipo: <Chip label="Teste" color="purple" size="small" sx={{ minWidth: "100px" }} />,
     item: "Açúcar Refinado",
     quantidade: 15,
     responsavel: "Ana Costa",

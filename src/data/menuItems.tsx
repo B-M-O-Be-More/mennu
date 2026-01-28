@@ -22,4 +22,10 @@ const mockUnidadesMedida = [
   { label: "Grama", value: "g" },
 ];
 
-export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida };
+const mockTiposTerminal = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Principal", value: "principal" },
+  { label: "Secundário", value: "secundario" },
+];
+
+export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal };

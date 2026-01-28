@@ -157,8 +157,6 @@ export default function UnitsTab({ }: UnitsTabProps) {
                   minWidth: 0,
                   height: 40,
                   color: "#155DFC",
-                  border: "1px solid",
-                  borderColor: "divider",
                   borderRadius: 3,
                   display: "flex",
                   fontSize: 14,
@@ -173,7 +171,13 @@ export default function UnitsTab({ }: UnitsTabProps) {
               <IconButton
                 aria-label="edit"
                 size="medium"
-                sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, height: 'fit-content' }}
+                sx={{
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 3,
+                  height: 'fit-content',
+                  color: 'text.secondary'
+                }}
                 onClick={() => {
                   setSelectedUnit(unit);
                   setOpenEditUnitModal(true);
