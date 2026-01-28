@@ -1,11 +1,11 @@
-import { Stack, Typography, Box, Button, Checkbox } from "@mui/material";
+import { Stack, Typography, Box, Button, Checkbox, FormControlLabel } from "@mui/material";
 import { mockTiposTerminal, mockUnidades } from "../../../data/menuItems";
 import { NewTerminalModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
-import { ITerminal, IUser } from "@/data/tableColumns";
+import { ITerminal } from "@/data/tableColumns";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { terminalSchema } from "@/schemas/terminalSchema";
 import Card from "@/components/Cards/Card";
@@ -15,7 +15,6 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
   const {
     handleSubmit,
     register,
-    watch,
     formState: { errors },
   } = useForm<ITerminal>({
     resolver: yupResolver(terminalSchema),
@@ -81,13 +80,16 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
           </Typography>
           <Stack direction="row" flexWrap="wrap" gap={2}>
             {["Café da Manhã", "Almoço", "Jantar"].map((ref) => (
-              <label key={ref}>
-                <Checkbox
-                  value={ref}
-                  {...register("refeicoesPermitidas")}
-                />
-                <Typography variant="body2" component="span">{ref}</Typography>
-              </label>
+              <FormControlLabel
+                key={ref}
+                control={
+                  <Checkbox
+                    value={ref}
+                    {...register("refeicoesPermitidas")}
+                  />
+                }
+                label={ref}
+              />
             ))}
           </Stack>
         </Card>
@@ -98,13 +100,16 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
           </Typography>
           <Stack direction="row" flexWrap="wrap" gap={2}>
             {["Funcionário", "Gestor", "Visitante", "Terceirizado"].map((cat) => (
-              <label key={cat}>
-                <Checkbox
-                  value={cat}
-                  {...register("categoriasPermitidas")}
-                />
-                <Typography variant="body2" component="span">{cat}</Typography>
-              </label>
+              <FormControlLabel
+                key={cat}
+                control={
+                  <Checkbox
+                    value={cat}
+                    {...register("categoriasPermitidas")}
+                  />
+                }
+                label={cat}
+              />
             ))}
           </Stack>
         </Card>

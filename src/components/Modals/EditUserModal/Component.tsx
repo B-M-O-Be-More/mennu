@@ -37,9 +37,7 @@ export default function EditUserModal({
 
   React.useEffect(() => {
     if (open && user) {
-      reset(user
-
-      )
+      reset(user)
     }
   }, [open, user, reset]);
 

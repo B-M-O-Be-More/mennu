@@ -38,11 +38,11 @@ export default function EditStockModal({
 
   React.useEffect(() => {
     if (open && stockItem) {
-      reset(stockItem
-
-      )
+      reset(stockItem)
     }
   }, [open, stockItem, reset]);
+
+  const status = watch("status")
 
   return (
     <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
@@ -112,7 +112,7 @@ export default function EditStockModal({
               Itens inativos não aparecem nas movimentações
             </Typography>
           </Box>
-          <Switch checked={watch("status")} onChange={(e) => setValue("status", e.target.checked)}
+          <Switch checked={status} onChange={(e) => setValue("status", e.target.checked)}
           />
         </Stack>
 
