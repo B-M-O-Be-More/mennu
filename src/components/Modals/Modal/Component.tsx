@@ -24,6 +24,7 @@ export default function Modal({
       maxWidth="sm"
       fullWidth
       keepMounted={false}
+      disableRestoreFocus
       slotProps={{
         paper: {
           sx: {

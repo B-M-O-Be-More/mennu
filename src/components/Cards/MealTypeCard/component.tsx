@@ -2,11 +2,10 @@
 
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
-import { EditIcon } from "@/components/Icons";
+import { ClockIcon, EditIcon } from "@/components/Icons";
 import { RefeicoesIcon } from "@/components/Sidebar/icons";
 import { Box, Chip, IconButton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { FiClock } from "react-icons/fi";
 import { MealTypeCardProps } from "./interface";
 import React from "react";
 import EditMealTypeModal from "@/components/Modals/EditMealTypeModal";
@@ -59,13 +58,13 @@ export function MealTypeCard({ type }: MealTypeCardProps) {
           aria-label="edit"
           size="small"
           onClick={() => setOpenEditTypeModal(true)}
-          color="inherit"
           sx={{
             marginRight: 1,
             border: "1px solid",
             borderColor: "divider",
             borderRadius: 2,
             height: "2.25rem",
+            color: "default.dark",
           }}>
           <EditIcon height={20} />
         </IconButton>
@@ -84,7 +83,10 @@ export function MealTypeCard({ type }: MealTypeCardProps) {
           </Typography>
 
           <Stack direction={"row"} gap={1} alignItems={"center"}>
-            <FiClock color={"grey"} />
+            <Stack sx={{ color: "default.dark" }}>
+              <ClockIcon />
+            </Stack>
+
             <Typography>
               {startTime} – {endTime}
             </Typography>

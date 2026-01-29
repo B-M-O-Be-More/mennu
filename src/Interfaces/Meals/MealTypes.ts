@@ -8,7 +8,7 @@ export interface ValidationProps {
   description: string;
   icon: ReactElement;
   chipColor?: ChipProps["color"];
-};
+}
 
 export interface Unit {
   id: string;
@@ -24,4 +24,14 @@ export interface MealTypeResponse {
   status?: string | undefined;
   validations?: ValidationProps[];
   units: Unit[];
+}
+
+export interface MealRuleResponse {
+  id: string;
+  unit: string;
+  dailyLimit: number;
+  weeklyLimit: number;
+  monthlyLimit: number;
+  minInterval: number;
+  isTimeRestricted: boolean;
 }

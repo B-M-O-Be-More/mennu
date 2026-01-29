@@ -9,8 +9,6 @@ import React from "react";
 import { FiEye } from "react-icons/fi";
 import { InputProps } from "./";
 
-
-
 export default function Input({
   label,
   optional = true,
@@ -19,6 +17,7 @@ export default function Input({
   icon,
   type = "text",
   error,
+  helperText,
   register,
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -35,8 +34,7 @@ export default function Input({
             variant="body2"
             component="span"
             color={!optional ? "primary.main" : "transparent"}
-            sx={{ transition: "all 0.2s ease-in-out" }}
-          >
+            sx={{ transition: "all 0.2s ease-in-out" }}>
             *
           </Typography>
         </Typography>
@@ -51,8 +49,7 @@ export default function Input({
               <IconButton
                 onClick={() => setShowPassword((prev) => !prev)}
                 edge="start"
-                size="small"
-              >
+                size="small">
                 {showPassword ? <FiEye /> : icon}
               </IconButton>
             ) : (
@@ -85,7 +82,14 @@ export default function Input({
           ...sx,
         }}
       />
-      <Typography variant="caption" color={error ? "error.contrastText" : "transparent"} >
+      {helperText && !error && (
+        <Typography variant="body2" color={"text.secondary"}>
+          {helperText}
+        </Typography>
+      )}
+      <Typography
+        variant="caption"
+        color={error ? "error.contrastText" : "transparent"}>
         {error}
       </Typography>
     </FormControl>

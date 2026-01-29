@@ -1,8 +1,5 @@
 import { UseFormRegisterReturn } from "react-hook-form";
-import {
-  SxProps,
-  Theme
-} from "@mui/material";
+import { SxProps, Theme } from "@mui/material";
 
 export interface InputProps {
   label?: string;
@@ -13,4 +10,5 @@ export interface InputProps {
   type?: React.HTMLInputTypeAttribute;
   error?: string;
   register?: UseFormRegisterReturn;
+  helperText?: string;
 }

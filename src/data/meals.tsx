@@ -1,4 +1,9 @@
-import { MealTypeResponse, Unit, ValidationProps } from "@/Interfaces/Meals/MealTypes";
+import {
+  MealRuleResponse,
+  MealTypeResponse,
+  Unit,
+  ValidationProps,
+} from "@/Interfaces/Meals/MealTypes";
 import { Balance, CreditCard, ErrorOutline } from "@mui/icons-material";
 
 export const mealValidations: ValidationProps[] = [
@@ -76,5 +81,44 @@ export const mealTypesMock: MealTypeResponse[] = [
     endTime: "20:00",
     validations: [mealValidations[0], mealValidations[2]],
     units: [unitsMock[0], unitsMock[1], unitsMock[2]],
+  },
+];
+
+export const mealRulesMock: MealRuleResponse[] = [
+  {
+    id: "1",
+    unit: unitsMock[0].label,
+    dailyLimit: 3,
+    weeklyLimit: 15,
+    monthlyLimit: 60,
+    minInterval: 240,
+    isTimeRestricted: true,
+  },
+  {
+    id: "2",
+    unit: unitsMock[1].label,
+    dailyLimit: 3,
+    weeklyLimit: 15,
+    monthlyLimit: 60,
+    minInterval: 240,
+    isTimeRestricted: true,
+  },
+    {
+    id: "3",
+    unit: unitsMock[2].label,
+    dailyLimit: 3,
+    weeklyLimit: 15,
+    monthlyLimit: 60,
+    minInterval: 240,
+    isTimeRestricted: false,
+  },
+    {
+    id: "4",
+    unit: unitsMock[3].label,
+    dailyLimit: 3,
+    weeklyLimit: 15,
+    monthlyLimit: 60,
+    minInterval: 240,
+    isTimeRestricted: false,
   },
 ];

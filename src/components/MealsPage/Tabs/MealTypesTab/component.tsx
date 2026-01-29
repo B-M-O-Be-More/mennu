@@ -1,7 +1,7 @@
 "use client";
 
 import Card from "@/components/Cards/Card";
-import MealTypeCard from "../../MealTypeCard";
+import MealTypeCard from "../../../Cards/MealTypeCard";
 import { Stack, Typography } from "@mui/material";
 import { mealTypesMock } from "@/data/meals";
 

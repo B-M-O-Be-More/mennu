@@ -9,6 +9,7 @@ import { ConfiguracoesIcon, RefeicoesIcon } from "../Sidebar/icons";
 import TabButton from "../TabButton";
 import NewMealTypeModal from "../Modals/NewMealTypeModal";
 import MealTypesTab from "./Tabs/MealTypesTab";
+import MealRulesTab from "./Tabs/MealRulesTab";
 
 export function MealsPage() {
   const [activeTab, setActiveTab] = React.useState(0);
@@ -70,7 +71,7 @@ export function MealsPage() {
 
       {activeTab === 0 && "Registros"}
       {activeTab === 1 && <MealTypesTab />}
-      {activeTab === 2 && "Regras de Consumo"}
+      {activeTab === 2 && <MealRulesTab />}
     </Stack>
   );
 }
