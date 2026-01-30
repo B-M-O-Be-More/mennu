@@ -1,10 +1,10 @@
-import { mockExtraRequestTypes, mockUnidades, mockUsers } from "@/data/menuItems";
+import { mockExtraRequestTypes, mockUsers } from "@/data/menuItems";
 import * as yup from "yup";
 
 export const extraRequestSchema = yup.object({
   usuario: yup
     .string()
-    .required("O tipo é obrigatório")
+    .required("O usuário é obrigatório")
     .oneOf(mockUsers.slice(1).map(u => u.value), "Usuário inválido"),
 
   tipo: yup

@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades, mockUsers } from "@/data/menuItems";
 import NewExtraRequestModal from "../Modals/NewExtraRequestModal";
-import ReviewExtraRequestModal from "../Modals/ApprovalExtraRequestModal";
+import ReviewExtraRequestModal from "../Modals/ReviewExtraRequestModal";
 
 const unitMock = {
   nome: "Unidade 1",

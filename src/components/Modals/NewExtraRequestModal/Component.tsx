@@ -57,19 +57,19 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
           label="Motivo"
           placeholder="Descreva o motivo da solicitação..."
           optional={false}
-          sx={{ flex: 1}}
+          sx={{ flex: 1 }}
           register={register("motivo")}
           error={errors.motivo?.message}
           multiline
         />
 
-        <Stack direction={"row"} border={"1px solid #BEDBFF"} bgcolor={"#EFF6FF"} borderRadius={2} p={2} gap={1}>
-          <EyeIcon color="#155DFC" />
+        <Stack direction={"row"} border={"1px solid"} borderColor={"info.light"} bgcolor={"info.main"} borderRadius={2} p={2} gap={1}>
+          <EyeIcon color="info.contrastText" />
           <Box>
-            <Typography variant="body1" fontWeight={"400"} color="#1C398E" mb={1}>
+            <Typography variant="body1" fontWeight={"400"} color="info.dark" mb={1}>
               Workflow de Aprovação
             </Typography>
-            <Typography variant="caption" color="#1447E6" fontWeight={400}>
+            <Typography variant="caption" color="info.contrastText" fontWeight={400}>
               A solicitação será criada com status "Pendente" e encaminhada para análise do gestor responsável. Todas as solicitações são registradas em log de auditoria.
             </Typography>
           </Box>
@@ -93,7 +93,7 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
             variant="contained"
             type="submit"
           >
-            Criar Novo Usuário
+            Criar Solicitação
           </Button>
         </Stack>
       </Stack>

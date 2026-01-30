@@ -1,11 +1,11 @@
 import { Stack, Typography, Button, Box, useTheme, Divider } from "@mui/material";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
-import { ReviewExtraRequestModalProps } from "./";
+import { ReviewExtraRequestModalProps } from ".";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ReviewExtraRequestSchema } from "@/schemas/extraRequestSchema";
-import { AlertIcon, CircledCheckIcon, CircledXIcon } from "@/components/Icons";
+import { AlertIcon, CircledCheckIcon } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
 
 export default function ReviewExtraRequestModal({

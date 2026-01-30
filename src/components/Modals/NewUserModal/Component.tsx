@@ -131,7 +131,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
             variant="contained"
             type="submit"
           >
-            Criar Solicitação
+            Criar Novo Usuário
           </Button>
         </Stack>
       </Stack>

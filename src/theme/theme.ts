@@ -30,8 +30,8 @@ const palette = {
   },
   info: {
     main: "#EFF6FF",
-    light: "#1447E6",
-    dark: "#0369A1",
+    light: "#BEDBFF",
+    dark: "#1C398E",
     contrastText: "#1447E6",
   },
   success: {
