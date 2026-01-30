@@ -4,19 +4,16 @@ import { normalizeTime, timeRegex } from "@/utils/normalizeTime";
 
 export const mealRecordSchema = yup.object({
   user: yup.string().required().notOneOf(["1"], "Usuário inválido"),
-  mealType: yup
-    .string()
-    .required()
-    .notOneOf(["1"], "Tipo inválido"),
+  mealType: yup.string().required().notOneOf(["1"], "Tipo inválido"),
   date: yup
     .string()
     .transform((value) => normalizeDate(value))
-    .matches(dateRegex, "Formato inválido. Use DD/MM/AAAA")
+    .matches(dateRegex, "Formato inválido")
     .optional(),
   time: yup
     .string()
     .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Formato inválido. Use HH:mm")
+    .matches(timeRegex, "Formato inválido")
     .optional(),
   reason: yup.string().required("Motivo é obrigatório"),
 });
@@ -24,5 +21,5 @@ export const mealRecordSchema = yup.object({
 export type MealRecordInput = yup.InferType<typeof mealRecordSchema>;
 
 export type ManualMealRecord = MealRecordInput & {
-  isManual: true
-}
+  isManual: true;
+};

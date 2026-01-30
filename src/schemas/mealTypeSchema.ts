@@ -4,16 +4,16 @@ import { normalizeTime, timeRegex } from "@/utils/normalizeTime";
 
 export const MealTypeSchema = yup.object({
   typeName: yup.string().required("O nome da refeição é obrigatório"),
-  description: yup.string().required("A descrição obrigatória"),
+  description: yup.string().required("A descrição é obrigatória"),
   startTime: yup
     .string()
     .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Formato inválido. Use HH:mm")
+    .matches(timeRegex, "Formato inválido")
     .optional(),
   endTime: yup
     .string()
     .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Digite um horário no formato HH:mm")
+    .matches(timeRegex, "Formato inválido")
     .optional(),
   status: yup
     .string()

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import React from "react";
 
 import PageHeader from "../PageHeader";
@@ -20,8 +20,8 @@ export function MealsPage() {
     React.useState(false);
 
   const tabs = [
-    { label: "Registros", icon: <PaperIcon height={25} /> },
-    { label: "Tipos de Refeição", icon: <RefeicoesIcon height={22} /> },
+    { label: "Registros", icon: <PaperIcon height={24} /> },
+    { label: "Tipos de Refeição", icon: <RefeicoesIcon height={24} /> },
     { label: "Regras de Consumo", icon: <ConfiguracoesIcon height={24} /> },
   ];
 

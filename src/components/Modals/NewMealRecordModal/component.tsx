@@ -50,7 +50,7 @@ export function NewMealRecordModal({
 
   return (
     <Modal
-      title={"Registro New de Refeição"}
+      title={"Registro Manual de Refeição"}
       open={isOpen}
       onClose={onClose}>
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
@@ -69,7 +69,7 @@ export function NewMealRecordModal({
             </Typography>
             <Typography variant="body2" color="warning.contrastText">
               Use este recurso apenas em casos excepcionais, como falha no
-              terminal. O registro será marcado como "New" e auditado.
+              terminal. O registro será marcado como "Manual" e auditado.
             </Typography>
           </Box>
         </Stack>

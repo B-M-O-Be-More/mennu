@@ -108,7 +108,7 @@ export const mealRulesMock: MealRuleResponse[] = [
     minInterval: 240,
     isTimeRestricted: true,
   },
-    {
+  {
     id: "3",
     unit: unitsMock[2].label,
     dailyLimit: 3,
@@ -117,7 +117,7 @@ export const mealRulesMock: MealRuleResponse[] = [
     minInterval: 240,
     isTimeRestricted: false,
   },
-    {
+  {
     id: "4",
     unit: unitsMock[3].label,
     dailyLimit: 3,

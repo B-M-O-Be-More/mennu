@@ -8,4 +8,4 @@ export const mealRuleSchema = yup.object({
   isTimeRestricted: yup.boolean().optional(),
 });
 
-export type mealRuleInput = yup.InferType<typeof mealRuleSchema>;
+export type MealRuleInput = yup.InferType<typeof mealRuleSchema>;

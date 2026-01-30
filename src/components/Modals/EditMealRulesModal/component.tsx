@@ -5,7 +5,7 @@ import Input from "@/components/FormControl/Input";
 import { CircledCheckIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { mealRuleInput, mealRuleSchema } from "@/schemas/mealRulesSchema";
+import { MealRuleInput, mealRuleSchema } from "@/schemas/mealRulesSchema";
 import Card from "@/components/Cards/Card";
 import { ErrorOutline } from "@mui/icons-material";
 import React from "react";
@@ -32,9 +32,9 @@ export function EditMealRulesModal({
     if (isOpen && initialData) {
       reset(initialData);
     }
-  }, [open, initialData, reset]);
+  }, [isOpen, initialData, reset]);
 
-  function handleEdit(data: mealRuleInput) {
+  function handleEdit(data: MealRuleInput) {
     reset();
     console.log(id, data);
     onClose();

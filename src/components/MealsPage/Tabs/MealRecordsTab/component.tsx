@@ -12,12 +12,7 @@ import { Box, Button, Stack } from "@mui/material";
 import { mealInfoCards, mealRecordsMock } from "@/data/meals";
 import { useForm } from "react-hook-form";
 import React from "react";
-
-interface SearchFields {
-  userSearch: string;
-  unit: string;
-  status: string;
-}
+import { SearchFields } from "./interface";
 
 export function MealRecordsTab() {
   const { register, watch } = useForm<SearchFields>({
