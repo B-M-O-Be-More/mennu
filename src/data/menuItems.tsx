@@ -28,4 +28,25 @@ const mockTiposTerminal = [
   { label: "Secundário", value: "secundario" },
 ];
 
-export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal };
+const mockUsuarios = [
+  { label: "Selecione um usuário", value: "1" },
+  { label: "Maria Santos", value: "maria" },
+  { label: "João Silva", value: "joao" },
+];
+
+const mockTiposRefeicao = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Café", value: "cafe" },
+  { label: "Almoço", value: "almoco" },
+  { label: "Jantar", value: "jantar" },
+];
+
+export {
+  mockCategorias,
+  mockUnidades,
+  mockStatuses,
+  mockUnidadesMedida,
+  mockTiposTerminal,
+  mockUsuarios,
+  mockTiposRefeicao,
+};

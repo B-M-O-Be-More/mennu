@@ -3,6 +3,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 
 export interface TextAreaProps {
   label?: string;
+  sublabel?: string;
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;

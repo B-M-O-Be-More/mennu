@@ -1,7 +1,7 @@
 import ActionCell from "@/components/ActionCell";
+import { PaperIcon } from "@/components/Icons";
 import { IColumn } from "@/components/Tables/Table";
 import { Avatar, Chip, Stack, Typography } from "@mui/material";
-
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -10,8 +10,13 @@ const userColumns: IColumn<IUser>[] = [
     render: (row) => (
       <Stack direction="row" alignItems="center">
         <Avatar
-          sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}
-        >
+          sx={{
+            bgcolor: "primary.main",
+            mr: 1,
+            width: 32,
+            height: 32,
+            fontSize: 14,
+          }}>
           {row.nome
             .split(" ")
             .map((n) => n[0])
@@ -24,9 +29,15 @@ const userColumns: IColumn<IUser>[] = [
   { key: "matricula", label: "Matrícula" },
   { key: "unidade", label: "Unidade", align: "right" },
   {
-    key: "status", label: "Status",
+    key: "status",
+    label: "Status",
     render: (row) => (
-      <Chip label={row.status} color={row.status === "Ativo" ? "success" : "default"} size="small" sx={{ minWidth: "100px" }} />
+      <Chip
+        label={row.status}
+        color={row.status === "Ativo" ? "success" : "default"}
+        size="small"
+        sx={{ minWidth: "100px" }}
+      />
     ),
   },
   { key: "categoria", label: "Tipo de Acesso" },
@@ -120,7 +131,7 @@ interface IPolicy {
       inicio: string;
       fim: string;
     };
-  }
+  };
   limites: {
     diario: number;
     semanal: number;
@@ -133,7 +144,7 @@ interface IUnit {
   endereco: string;
   responsavel: string;
   status: string;
-  politicas: IPolicy
+  politicas: IPolicy;
 }
 
 interface ITerminal {
@@ -149,5 +160,51 @@ interface ITerminal {
   ativo: boolean;
 }
 
-export { userColumns, stockColumns, movementColumns };
-export type { IUser, IStock, IMovement, IUnit, IPolicy, movementData, ITerminal };
+interface MealRecordsData {
+  isManual?: boolean;
+  usuario: string;
+  matricula: string;
+  tipo: string;
+  unidade: string;
+  horario: string;
+  terminal: string;
+  status: React.ReactNode;
+}
+
+const mealRecordsColumns: IColumn<MealRecordsData>[] = [
+  {
+    key: "usuario",
+    label: "Usuário",
+    render: (row) => (
+      <Stack direction={{ md: "row" }} gap={0.5}>
+        <Typography variant="body2">{row.usuario}</Typography>
+        {row.isManual && (
+          <Chip
+            icon={<PaperIcon color="#8200DB" height={18} />}
+            color="purple"
+            label="Manual"
+            sx={{ padding: "0.5rem" }}
+          />
+        )}
+      </Stack>
+    ),
+  },
+  { key: "matricula", label: "Matrícula" },
+  { key: "tipo", label: "Tipo" },
+  { key: "unidade", label: "Unidade" },
+  { key: "horario", label: "Horário" },
+  { key: "terminal", label: "Terminal" },
+  { key: "status", label: "Status" },
+];
+
+export { userColumns, stockColumns, movementColumns, mealRecordsColumns };
+export type {
+  IUser,
+  IStock,
+  IMovement,
+  IUnit,
+  IPolicy,
+  movementData,
+  ITerminal,
+  MealRecordsData,
+};

@@ -1,8 +1,6 @@
 import { mockStatuses } from "@/data/menuItems";
 import * as yup from "yup";
-import { normalizeTime } from "@/utils/normalizeTime";
-
-const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/
+import { normalizeTime, timeRegex } from "@/utils/normalizeTime";
 
 export const MealTypeSchema = yup.object({
   typeName: yup.string().required("O nome da refeição é obrigatório"),

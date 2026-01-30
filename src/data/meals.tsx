@@ -5,6 +5,11 @@ import {
   ValidationProps,
 } from "@/Interfaces/Meals/MealTypes";
 import { Balance, CreditCard, ErrorOutline } from "@mui/icons-material";
+import { Chip } from "@mui/material";
+import { MealRecordsData } from "./tableColumns";
+import { CircledCheckIcon, ClockIcon } from "@/components/Icons";
+import { FiX } from "react-icons/fi";
+import { InfoCardProps } from "@/components/Cards/InfoCard";
 
 export const mealValidations: ValidationProps[] = [
   {
@@ -120,5 +125,88 @@ export const mealRulesMock: MealRuleResponse[] = [
     monthlyLimit: 60,
     minInterval: 240,
     isTimeRestricted: false,
+  },
+];
+
+export const mealInfoCards: InfoCardProps[] = [
+  {
+    key: "served",
+    label: "Refeições Servidas",
+    value: 4,
+    icon: <CircledCheckIcon color="#008236" />,
+    bgColor: "success.main",
+  },
+  {
+    key: "pending",
+    label: "Refeições Pendentes",
+    value: 2,
+    icon: <ClockIcon color="#BB4D00" />,
+    bgColor: "warning.main",
+  },
+  {
+    key: "cancelled",
+    label: "Refeições Canceladas",
+    value: 1,
+    icon: <FiX color="#E7000B" size={24} />,
+    bgColor: "error.main",
+  },
+];
+
+export const mealRecordsMock: MealRecordsData[] = [
+  {
+    usuario: "João Silva",
+    matricula: "12345",
+    tipo: "Almoço",
+    unidade: "Unidade 1",
+    horario: "03/12/2025 12:30",
+    terminal: "Terminal A",
+    status: <Chip label="Servida" color="success" size="small" />,
+  },
+  {
+    isManual: true,
+    usuario: "Maria Santos",
+    matricula: "12346",
+    tipo: "Almoço",
+    unidade: "Unidade 2",
+    horario: "03/12/2025 12:35",
+    terminal: "Terminal B",
+    status: <Chip label="Pendente" color="warning" size="small" />,
+  },
+  {
+    usuario: "Maria Santos",
+    matricula: "12346",
+    tipo: "Jantar",
+    unidade: "Unidade 2",
+    horario: "03/12/2025 19:35",
+    terminal: "Terminal B",
+    status: <Chip label="Pendente" color="warning" size="small" />,
+  },
+  {
+    usuario: "Maria Santos",
+    matricula: "12346",
+    tipo: "Almoço",
+    unidade: "Unidade 2",
+    horario: "03/12/2025 12:35",
+    terminal: "Terminal C",
+    status: <Chip label="Cancelada" color="error" size="small" />,
+  },
+  {
+    isManual: true,
+    usuario: "João Silva",
+    matricula: "12346",
+    tipo: "Almoço",
+    unidade: "Unidade 2",
+    horario: "03/12/2025 12:35",
+    terminal: "Terminal C",
+    status: <Chip label="Cancelada" color="error" size="small" />,
+  },
+  {
+    usuario: "João Silva",
+    matricula: "12345",
+    tipo: "Café",
+    unidade: "Unidade 1",
+    horario: "03/12/2025 18:30",
+    terminal: "Terminal A",
+    status: <Chip label="Servida" color="success" size="small" />,
   },
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 
 import PageHeader from "../PageHeader";
@@ -10,13 +10,17 @@ import TabButton from "../TabButton";
 import NewMealTypeModal from "../Modals/NewMealTypeModal";
 import MealTypesTab from "./Tabs/MealTypesTab";
 import MealRulesTab from "./Tabs/MealRulesTab";
+import MealRecordsTab from "./Tabs/MealRecordsTab";
+import NewMealRecordModal from "../Modals/NewMealRecordModal";
 
 export function MealsPage() {
   const [activeTab, setActiveTab] = React.useState(0);
   const [openNewTypeModal, setOpenNewTypeModal] = React.useState(false);
+  const [openManualRecordModal, setOpenManualRecordModal] =
+    React.useState(false);
 
   const tabs = [
-    { label: "Registros", icon: <PaperIcon /> },
+    { label: "Registros", icon: <PaperIcon height={25} /> },
     { label: "Tipos de Refeição", icon: <RefeicoesIcon height={22} /> },
     { label: "Regras de Consumo", icon: <ConfiguracoesIcon height={24} /> },
   ];
@@ -30,11 +34,33 @@ export function MealsPage() {
           <>
             <Button
               variant="outlined"
-              startIcon={<PlusIcon />}
-              sx={{ maxHeight: "60px" }}>
+              startIcon={<PlusIcon style={{ padding: 0 }} />}
+              sx={{
+                maxHeight: "60px",
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.8rem",
+                  md: "0.9rem",
+                },
+              }}
+              onClick={() => setOpenManualRecordModal(true)}>
               Registro Manual
             </Button>
-            <Button variant="contained" startIcon={<DownloadIcon />}>
+            <NewMealRecordModal
+              isOpen={openManualRecordModal}
+              onClose={() => setOpenManualRecordModal(false)}
+            />
+
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              sx={{
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.8rem",
+                  md: "0.9rem",
+                },
+              }}>
               Exportar
             </Button>
           </>
@@ -44,6 +70,13 @@ export function MealsPage() {
             <Button
               variant="contained"
               startIcon={<PlusIcon />}
+              sx={{
+                fontSize: {
+                  xs: "0.7rem",
+                  sm: "0.8rem",
+                  md: "0.9rem",
+                },
+              }}
               onClick={() => setOpenNewTypeModal(true)}>
               Novo Tipo de Refeição
             </Button>
@@ -69,7 +102,7 @@ export function MealsPage() {
         ))}
       </Stack>
 
-      {activeTab === 0 && "Registros"}
+      {activeTab === 0 && <MealRecordsTab />}
       {activeTab === 1 && <MealTypesTab />}
       {activeTab === 2 && <MealRulesTab />}
     </Stack>

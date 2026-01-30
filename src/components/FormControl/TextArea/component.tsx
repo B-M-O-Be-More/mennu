@@ -1,8 +1,9 @@
-import { FormControl, OutlinedInput, Typography } from "@mui/material";
+import { FormControl, OutlinedInput, Stack, Typography } from "@mui/material";
 import { TextAreaProps } from "./interface";
 
 export function TextArea({
   label,
+  sublabel,
   optional = true,
   placeholder = "Digite aqui...",
   sx,
@@ -14,16 +15,30 @@ export function TextArea({
   return (
     <FormControl fullWidth>
       {label && (
-        <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
-          {label}{" "}
+        <Stack direction={"row"} gap={1}>
           <Typography
             variant="body2"
-            component="span"
-            color={!optional ? "primary.main" : "transparent"}
-            sx={{ transition: "all 0.2s ease-in-out" }}>
-            *
+            mb={1}
+            color="text.label"
+            fontWeight={400}>
+            {label}{" "}
+            <Typography
+              variant="body2"
+              component="span"
+              color={!optional ? "primary.main" : "transparent"}
+              sx={{ transition: "all 0.2s ease-in-out" }}>
+              *
+            </Typography>
           </Typography>
-        </Typography>
+          {sublabel && (
+            <Typography
+              variant="subtitle2"
+              fontWeight={400}
+              color="text.secondary">
+              {sublabel}
+            </Typography>
+          )}
+        </Stack>
       )}
 
       <OutlinedInput
