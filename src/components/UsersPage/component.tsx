@@ -40,18 +40,6 @@ export const mockUsers: IUser[] = [
   },
 ];
 
-
-const userMock =
-{
-  nome: "João Silva",
-  matricula: "12345",
-  unidade: "10",
-  status: "Ativo",
-  CPF: "123.456.789-00",
-  categoria: "Administrador",
-  numeroCartao: "1234567890",
-}
-
 export function UsersPage({ }: UsersPageProps) {
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);

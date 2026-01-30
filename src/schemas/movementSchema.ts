@@ -7,9 +7,9 @@ export const movementSchema = yup.object({
     .required("A data é obrigatória")
     .matches(/^\d{4}-\d{2}-\d{2}$/, "Formato de data inválido (YYYY-MM-DD)"),
   tipo: yup
-    .string()
-    .required("O tipo é obrigatório")
-    .oneOf(["entrada", "saida", "perda", "ajuste"], "Tipo inválido"),
+    .mixed<"entrada" | "saida" | "perda" | "ajuste">()
+    .oneOf(["entrada", "saida", "perda", "ajuste"], "Tipo inválido")
+    .required("Tipo é obrigatório"),
   item: yup
     .string()
     .required("O item é obrigatório")

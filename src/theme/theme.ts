@@ -19,7 +19,7 @@ const palette = {
   error: {
     main: "#FEF2F2",
     light: "#F87171",
-    dark: "#B91C1C",
+    dark: "#82181A",
     contrastText: "#E7000B",
   },
   warning: {
@@ -36,15 +36,15 @@ const palette = {
   },
   success: {
     main: "#F0FDF4",
-    light: "#4ADE80",
-    dark: "#16A34A",
+    light: "#00A63E",
+    dark: "#0D542B",
     contrastText: "#008236",
   },
   default: {
-    main: "#F9FAFB",
+    main: "#E9E9E9",
     light: "#FFFFFF",
     dark: "#6A7282",
-    contrastText: "#364153",
+    contrastText: "#6A7282",
   },
   purple: {
     main: "#FAF5FF",
@@ -154,18 +154,15 @@ export const theme = createTheme(baseTheme, {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
-          border: "px solid",
+          border: "0px solid",
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
-          padding: "1rem 1.5rem",
+          padding: ".8rem 1.5rem",
           borderRadius: "1rem",
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
           },
-          outlineOffset: "0px",
-          outline: "1px solid",
-          outlineColor: 'transparent',
         },
         outlined: {
           backgroundColor: "transparent",
@@ -173,7 +170,7 @@ export const theme = createTheme(baseTheme, {
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
-          padding: "1rem 1.5rem",
+          padding: ".8rem 1.5rem",
           borderRadius: "1rem",
           "&:hover": {
             backgroundColor: "rgba(0, 0, 0, 0.04)",

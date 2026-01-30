@@ -1,41 +1,5 @@
-import ActionCell from "@/components/ActionCell";
 import { IColumn } from "@/components/Tables/Table";
-import { Avatar, Chip, Stack, Typography } from "@mui/material";
-
-
-const userColumns: IColumn<IUser>[] = [
-  {
-    key: "nome",
-    label: "Nome",
-    render: (row) => (
-      <Stack direction="row" alignItems="center">
-        <Avatar
-          sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}
-        >
-          {row.nome
-            .split(" ")
-            .map((n) => n[0])
-            .join("")}
-        </Avatar>
-        <Typography variant="body2">{row.nome}</Typography>
-      </Stack>
-    ),
-  },
-  { key: "matricula", label: "Matrícula" },
-  { key: "unidade", label: "Unidade", align: "right" },
-  {
-    key: "status", label: "Status",
-    render: (row) => (
-      <Chip label={row.status} color={row.status === "Ativo" ? "success" : "default"} size="small" sx={{ minWidth: "100px" }} />
-    ),
-  },
-  { key: "categoria", label: "Tipo de Acesso" },
-  { key: "ultimaRefeicao", label: "Última Refeição" },
-  {
-    key: "acoes",
-    label: "Ações",
-  },
-];
+import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 
 interface IUser {
   nome: string;
@@ -48,25 +12,40 @@ interface IUser {
   ultimaRefeicao?: string;
 }
 
-interface stockData {
-  item: React.ReactNode;
-  categoria: string;
-  saldo: string;
-  estoqueMinimo: string;
-  unidade: string;
-  status: React.ReactNode;
-  acoes: React.ReactNode;
-  unidadeMedida?: string;
-}
-
-const stockColumns: IColumn<stockData>[] = [
-  { key: "item", label: "Item" },
-  { key: "categoria", label: "Categoria" },
-  { key: "saldo", label: "Saldo", align: "right" },
-  { key: "estoqueMinimo", label: "Estoque Mínimo" },
-  { key: "unidade", label: "Unidade" },
-  { key: "status", label: "Status" },
-  { key: "acoes", label: "Ações" },
+const userColumns: IColumn<IUser>[] = [
+  {
+    key: "nome",
+    label: "Nome",
+    render: (row) => (
+      <Stack direction="row" alignItems="center">
+        <Avatar sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}>
+          {row.nome.split(" ").map((n) => n[0]).join("")}
+        </Avatar>
+        <Typography variant="body2">{row.nome}</Typography>
+      </Stack>
+    ),
+  },
+  { key: "matricula", label: "Matrícula" },
+  { key: "unidade", label: "Unidade", align: "right" },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => (
+      <Chip
+        label={row.status}
+        color={row.status === "Ativo" ? "success" : "default"}
+        size="small"
+        sx={{ minWidth: "100px" }}
+      />
+    ),
+  },
+  { key: "categoria", label: "Tipo de Acesso" },
+  { key: "ultimaRefeicao", label: "Última Refeição" },
+  {
+    key: "acoes",
+    label: "Ações",
+    render: () => (<></>),
+  },
 ];
 
 interface IStock {
@@ -79,32 +58,65 @@ interface IStock {
   unidadeMedida: string;
 }
 
-interface movementData {
+const stockColumns: IColumn<IStock>[] = [
+  { key: "item", label: "Item" },
+  { key: "categoria", label: "Categoria" },
+  { key: "saldo", label: "Saldo", align: "right" },
+  { key: "estoqueMinimo", label: "Estoque Mínimo" },
+  { key: "unidade", label: "Unidade" },
+  {
+    key: "status", label: "Status",
+    render: (row) => (
+      <Chip
+        label={row.status ? "Ativo" : "Inativo"}
+        color={row.status ? "success" : "default"}
+        size="small"
+      />
+    ),
+  },
+  {
+    key: "acoes", label: "Ações",
+    render: () => (<></>)
+  },
+];
+
+interface IMovement {
   data: string;
-  tipo: React.ReactNode;
+  tipo: "entrada" | "saida" | "perda" | "ajuste";
   item: string;
   quantidade: number;
   responsavel: string;
   justificativa: string;
 }
 
-const movementColumns: IColumn<movementData>[] = [
+const movementColumns: IColumn<IMovement>[] = [
   { key: "data", label: "Data" },
-  { key: "tipo", label: "Tipo" },
+  {
+    key: "tipo",
+    label: "Tipo",
+    render: (row) => {
+      const colorMap: Record<IMovement["tipo"], "success" | "info" | "error" | "purple"> = {
+        entrada: "success",
+        saida: "info",
+        perda: "error",
+        ajuste: "purple",
+      };
+
+      return (
+        <Chip
+          label={row.tipo}
+          color={colorMap[row.tipo]}
+          size="small"
+          sx={{ minWidth: "100px" }}
+        />
+      );
+    },
+  },
   { key: "item", label: "Item" },
   { key: "quantidade", label: "Quantidade", align: "right" },
   { key: "responsavel", label: "Responsável" },
   { key: "justificativa", label: "Justificativa" },
 ];
-
-interface IMovement {
-  data: string;
-  tipo: string;
-  item: string;
-  quantidade: number;
-  responsavel: string;
-  justificativa: string;
-}
 
 interface IPolicy {
   horarios: {
@@ -149,5 +161,83 @@ interface ITerminal {
   ativo: boolean;
 }
 
-export { userColumns, stockColumns, movementColumns };
-export type { IUser, IStock, IMovement, IUnit, IPolicy, movementData, ITerminal };
+interface IExtraRequest {
+  id: number;
+  data: string;
+  unidade: IUnit;
+  tipo: string;
+  usuario: {
+    nome: string;
+    matricula: string;
+  };
+  motivo: string;
+  status: "aprovado" | "pendente" | "reprovado";
+  resposta: {
+    data: string;
+    usuario: string;
+    comentario: string;
+  } | null;
+}
+
+const extraRequestColumns: IColumn<IExtraRequest>[] = [
+  { key: "data", label: "Data" },
+  {
+    key: "user",
+    label: "Nome",
+    render: (row) => (
+      <Stack direction="row" alignItems="center">
+        <Avatar
+          sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}
+        >
+          {row.usuario.nome
+            .split(" ")
+            .map((n) => n[0])
+            .join("")}
+        </Avatar>
+        <Typography variant="body2">{row.usuario.nome}</Typography>
+      </Stack>
+    ),
+  },
+  { key: "tipo", label: "Tipo" },
+  { key: "motivo", label: "Motivo" },
+  {
+    key: "status", label: "Status",
+    render: (row) => {
+      const colorMap: Record<IExtraRequest["status"], "success" | "warning" | "error"> = {
+        aprovado: "success",
+        pendente: "warning",
+        reprovado: "error",
+      };
+
+      return (
+        <Chip
+          label={row.status}
+          color={colorMap[row.status]}
+          size="small"
+          sx={{ minWidth: "100px", textTransform: "capitalize" }} />);
+    },
+  },
+  {
+    key: "resposta", label: "Resposta",
+    render: (row) =>
+      row.resposta ? (
+        <Stack>
+          <Typography variant="caption" color="text.secondary"> {row.resposta.data} </Typography>
+          <Typography variant="caption"> Por: {row.resposta.usuario} </Typography>
+          <Typography variant="caption" color="text.secondary"> Comentário: {row.resposta.comentario} </Typography>
+        </Stack>
+      ) : (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          width="100%"
+        >
+          <Typography variant="body2" color="text.secondary"> — </Typography>
+        </Box>
+      ),
+  }
+];
+
+export { userColumns, stockColumns, movementColumns, extraRequestColumns };
+export type { IUser, IStock, IMovement, IUnit, IPolicy, ITerminal, IExtraRequest };

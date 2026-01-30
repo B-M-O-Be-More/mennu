@@ -44,7 +44,7 @@ export default function Modal({
         </Box>
 
         <IconButton onClick={onClose}>
-          <CloseIcon />
+          <CloseIcon color="action" />
         </IconButton>
       </DialogTitle>
 

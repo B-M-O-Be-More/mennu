@@ -1,15 +1,13 @@
 import {
   FormControl,
-  OutlinedInput,
-  InputAdornment,
   Typography,
   IconButton,
+  InputAdornment,
+  TextField,
 } from "@mui/material";
 import React from "react";
 import { FiEye } from "react-icons/fi";
 import { InputProps } from "./";
-
-
 
 export default function Input({
   label,
@@ -20,7 +18,9 @@ export default function Input({
   type = "text",
   error,
   register,
-}: InputProps) {
+  multiline = false,
+  minRows = 3,
+}: InputProps & { multiline?: boolean; minRows?: number }) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
@@ -41,53 +41,62 @@ export default function Input({
           </Typography>
         </Typography>
       )}
-      <OutlinedInput
+
+      <TextField
+        variant="outlined"
         type={inputType}
         placeholder={placeholder}
         {...register}
-        startAdornment={
-          <InputAdornment position="start">
-            {type === "password" ? (
-              <IconButton
-                onClick={() => setShowPassword((prev) => !prev)}
-                edge="start"
-                size="small"
-              >
-                {showPassword ? <FiEye /> : icon}
-              </IconButton>
-            ) : (
-              icon
-            )}
-          </InputAdornment>
-        }
+        multiline={multiline}
+        minRows={multiline ? minRows : undefined}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                {type === "password" ? (
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="start"
+                    size="small"
+                  >
+                    {showPassword ? <FiEye /> : icon}
+                  </IconButton>
+                ) : (
+                  icon
+                )}
+              </InputAdornment>
+            ),
+          },
+        }}
         sx={{
-          height: "100%",
-          borderRadius: 3,
-          fontSize: 14,
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "divider",
-            transition: "border-color 0.2s ease",
-          },
-          "& input::placeholder": {
-            color: "text.secondary",
-            opacity: 0.8,
-          },
-          "&.Mui-focused": {
-            "& .MuiOutlinedInput-notchedOutline": {
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 3,
+            fontSize: 14,
+            "& fieldset": {
+              borderColor: "divider",
+              transition: "border-color 0.2s ease",
+            },
+            "& input::placeholder, & textarea::placeholder": {
+              color: "text.secondary",
+              opacity: 0.8,
+            },
+            "&.Mui-focused fieldset": {
               borderColor: "primary.main",
             },
-            "& .MuiInputAdornment-root svg": {
+            "&.Mui-focused .MuiInputAdornment-root svg": {
               color: "primary.main",
               transition: "all 0.2s ease",
               transform: "scale(1.2) rotate(12deg)",
             },
           },
+          "& .MuiFormHelperText-root.Mui-error": {
+            color: "error.contrastText",
+          },
           ...sx,
         }}
+        error={!!error}
+        helperText={error}
       />
-      <Typography variant="caption" color={error ? "error.contrastText" : "transparent"} >
-        {error}
-      </Typography>
     </FormControl>
   );
 }

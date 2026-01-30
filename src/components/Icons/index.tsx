@@ -136,6 +136,14 @@ const CircledCheckIcon = ({ color = "currentColor", width = 24, height = 24, cla
   </svg>
 );
 
+const CircledXIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
+    <path d="M14.0002 25.6673C20.4435 25.6673 25.6668 20.444 25.6668 14.0007C25.6668 7.55733 20.4435 2.33398 14.0002 2.33398C7.55684 2.33398 2.3335 7.55733 2.3335 14.0007C2.3335 20.444 7.55684 25.6673 14.0002 25.6673Z" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17.5 10.5L10.5 17.5" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10.5 10.5L17.5 17.5" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const TrashIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
     <path d="M8.3335 9.16602V14.166" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
@@ -197,6 +205,13 @@ const ClockIcon = ({ color = "currentColor", width = 24, height = 24, className,
   </svg>
 );
 
+const EyeIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <path d="M2.7493 16.4645C2.63817 16.1651 2.63817 15.8358 2.7493 15.5365C3.83156 12.9123 5.66865 10.6685 8.02766 9.08968C10.3867 7.51082 13.1614 6.66797 16 6.66797C18.8386 6.66797 21.6133 7.51082 23.9723 9.08968C26.3313 10.6685 28.1684 12.9123 29.2506 15.5365C29.3617 15.8358 29.3617 16.1651 29.2506 16.4645C28.1684 19.0887 26.3313 21.3324 23.9723 22.9113C21.6133 24.4901 18.8386 25.333 16 25.333C13.1614 25.333 10.3867 24.4901 8.02766 22.9113C5.66865 21.3324 3.83156 19.0887 2.7493 16.4645Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 20C18.2091 20 20 18.2091 20 16C20 13.7909 18.2091 12 16 12C13.7909 12 12 13.7909 12 16C12 18.2091 13.7909 20 16 20Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export {
   LuUserPlus,
   LuLogIn,
@@ -221,10 +236,12 @@ export {
   TwistedArrowIcon,
   EditIcon,
   CircledCheckIcon,
+  CircledXIcon,
   TrashIcon,
   BuildingIcon,
   LockIcon,
   NoWifiIcon,
   WifiIcon,
-  ClockIcon
+  ClockIcon,
+  EyeIcon,
 };

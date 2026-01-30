@@ -1,12 +1,12 @@
 "use client";
 
-import { Stack, Typography, Box, Button, Chip } from "@mui/material";
+import { Stack, Typography, Box, Button } from "@mui/material";
 import React from "react";
 import { DownloadIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Icons";
 import { StockPageProps } from "./";
 import Card from "../Cards/Card";
 import Table from "../Tables/Table";
-import { movementColumns, movementData, stockColumns } from "@/data/tableColumns";
+import { IMovement, IStock, movementColumns, stockColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import { cardsStock } from "@/data/infos";
@@ -17,7 +17,7 @@ import EditStockModal from "../Modals/EditStockModal";
 import NewMovementModal from "../Modals/NewMovementModal";
 import { useForm } from "react-hook-form";
 
-export const getStockMock = (onEdit: () => void) => [
+export const stockMock = [
   {
     item: "Arroz Branco",
     categoria: "Alimentos",
@@ -25,14 +25,7 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "50",
     unidade: "Kg",
     unidadeMedida: "kg",
-    status: <Chip label="OK" color="success" size="small" sx={{ minWidth: "100px" }} />,
-    acoes: (
-      <ActionCell
-        checked={true}
-        onToggle={(newState) => console.log("Switch:", newState)}
-        onEdit={onEdit}
-      />
-    ),
+    status: true,
   },
   {
     item: "Feijão Carioca",
@@ -41,48 +34,15 @@ export const getStockMock = (onEdit: () => void) => [
     estoqueMinimo: "60",
     unidadeMedida: "kg",
     unidade: "Kg",
-    status: <Chip label="Baixo" color="purple" size="small" sx={{ minWidth: "100px" }} />,
-    acoes: (
-      <ActionCell
-        checked={true}
-        onToggle={(newState) => console.log("Switch:", newState)}
-        onEdit={onEdit}
-      />
-    ),
+    status: false,
   },
-  {
-    item: "Detergente Neutro",
-    categoria: "Limpeza",
-    saldo: "10",
-    estoqueMinimo: "20",
-    unidadeMedida: "kg",
-    unidade: "Un",
-    status: <Chip label="Crítico" color="error" size="small" sx={{ minWidth: "100px" }} />,
-    acoes: (
-      <ActionCell
-        checked={true}
-        onToggle={(newState) => console.log("Switch:", newState)}
-        onEdit={onEdit}
-      />
-    ),
-  },
+
 ];
 
-const stockMock =
-{
-  item: "Arroz Branco",
-  categoria: "Alimentos",
-  saldo: "120",
-  estoqueMinimo: "50",
-  unidadeMedida: "Kg",
-  unidade: "Unidade 1",
-  status: true,
-}
-
-export const mockMovements: movementData[] = [
+export const mockMovements: IMovement[] = [
   {
     data: "10/01/2026",
-    tipo: <Chip label="Entrada" color="success" size="small" sx={{ minWidth: "100px" }} />,
+    tipo: "entrada",
     item: "Arroz Branco",
     quantidade: 50,
     responsavel: "João Silva",
@@ -90,7 +50,7 @@ export const mockMovements: movementData[] = [
   },
   {
     data: "11/01/2026",
-    tipo: <Chip label="Saída" color="info" size="small" sx={{ minWidth: "100px" }} />,
+    tipo: "saida",
     item: "Feijão Carioca",
     quantidade: 20,
     responsavel: "Maria Oliveira",
@@ -98,7 +58,7 @@ export const mockMovements: movementData[] = [
   },
   {
     data: "12/01/2026",
-    tipo: <Chip label="Perda" color="error" size="small" sx={{ minWidth: "100px" }} />,
+    tipo: "perda",
     item: "Óleo de Soja",
     quantidade: 5,
     responsavel: "Carlos Santos",
@@ -106,15 +66,7 @@ export const mockMovements: movementData[] = [
   },
   {
     data: "13/01/2026",
-    tipo: <Chip label="Ajuste" color="warning" size="small" sx={{ minWidth: "100px" }} />,
-    item: "Açúcar Refinado",
-    quantidade: 15,
-    responsavel: "Ana Costa",
-    justificativa: "Motivo da saída",
-  },
-  {
-    data: "13/01/2026",
-    tipo: <Chip label="Teste" color="purple" size="small" sx={{ minWidth: "100px" }} />,
+    tipo: "ajuste",
     item: "Açúcar Refinado",
     quantidade: 15,
     responsavel: "Ana Costa",
@@ -123,22 +75,18 @@ export const mockMovements: movementData[] = [
 ];
 
 export function StockPage({ }: StockPageProps) {
-  const [openTable, setOpenTable] = React.useState(0);
+  const [openTab, setOpenTab] = React.useState(0);
 
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
   const [_openExportStockModal, setOpenExportStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
 
-  const { register, watch } = useForm<{ itemSearch: string }>({
+  const [selectedStock, setSelectedStock] = React.useState<IStock>({} as IStock);
+
+  const { register } = useForm<{ itemSearch: string }>({
     defaultValues: { itemSearch: "" },
   });
-
-  const itemSearch = watch("itemSearch");
-
-  React.useEffect(() => {
-    console.log(itemSearch);
-  }, [itemSearch]);
 
   return (
     <Stack gap={2}>
@@ -174,20 +122,19 @@ export function StockPage({ }: StockPageProps) {
 
       <Stack gap={2} direction={"row"}>
         <Button
-          variant={openTable === 0 ? "contained" : "outlined"}
+          variant={openTab === 0 ? "contained" : "outlined"}
           startIcon={<EstoqueIcon width={22} height={22} />}
-          onClick={() => setOpenTable(0)}
-          sx={{ transition: "all .4s ease-in-out", color: openTable === 1 ? "#4A5565" : "" }}
+          onClick={() => setOpenTab(0)}
+          sx={{ transition: "all .4s ease-in-out", color: openTab === 1 ? "#4A5565" : "" }}
         >
           Itens de Estoque
         </Button>
 
         <Button
-          variant={openTable === 1 ? "contained" : "outlined"}
+          variant={openTab === 1 ? "contained" : "outlined"}
           startIcon={<PaperIcon width={22} height={22} />}
-          onClick={() => setOpenTable(1)}
-          sx={{ transition: "all .4s ease-in-out", color: openTable === 0 ? "#4A5565" : "" }}
-
+          onClick={() => setOpenTab(1)}
+          sx={{ transition: "all .4s ease-in-out", color: openTab === 0 ? "#4A5565" : "" }}
         >
           Movimentações
         </Button>
@@ -222,7 +169,7 @@ export function StockPage({ }: StockPageProps) {
         ))}
       </Box>
       <Card>
-        {openTable === 0 ? //tabs
+        {openTab === 0 ? // tabs
           (
             <React.Fragment>
               <Stack direction={"row"} justifyContent={"space-between"} gap={2} alignItems={"center"}>
@@ -248,11 +195,28 @@ export function StockPage({ }: StockPageProps) {
                 </Stack>
               </Stack>
 
-              <Table columns={stockColumns} rows={getStockMock(() => setOpenEditStockModal(true))} initialRowsPerPage={5} />
+              <Table
+                columns={stockColumns.map(col =>
+                  col.key === "acoes"
+                    ? {
+                      ...col,
+                      render: (row: IStock) => (
+                        <ActionCell checked={true} onToggle={(newState) => { console.log("Switch:", newState); }}
+                          onEdit={() => {
+                            setSelectedStock(row);
+                            setOpenEditStockModal(true);
+                          }}
+                        />
+                      ),
+                    }
+                    : col
+                )}
+                rows={stockMock}
+                initialRowsPerPage={5} />
               <EditStockModal
                 open={openEditStockModal}
                 onClose={() => setOpenEditStockModal(false)}
-                stockItem={stockMock}
+                stockItem={selectedStock}
                 onSave={() => { }}
               />
             </React.Fragment>

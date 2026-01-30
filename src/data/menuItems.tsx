@@ -28,4 +28,21 @@ const mockTiposTerminal = [
   { label: "Secundário", value: "secundario" },
 ];
 
-export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal };
+const mockUsers = [
+  { label: "Selecione um usuário", value: "1" },
+  { label: "Victor Souza", value: "victor_souza" },
+  { label: "Maria Oliveira", value: "maria_oliveira" },
+  { label: "João Pereira", value: "joao_pereira" },
+  { label: "Ana Costa", value: "ana_costa" },
+  { label: "Carlos Mendes", value: "carlos_mendes" },
+];
+
+const mockExtraRequestTypes = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Tipo 1", value: "tipo1" },
+  { label: "Tipo 2", value: "tipo2" },
+  { label: "Tipo 3", value: "tipo3" },
+  { label: "Tipo 4", value: "tipo4" },
+];
+
+export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal, mockUsers, mockExtraRequestTypes };

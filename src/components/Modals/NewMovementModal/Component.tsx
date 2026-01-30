@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack, Typography, Box, Button } from "@mui/material";
 import { mockCategorias } from "../../../data/menuItems";
 import { NewMovementModalProps } from ".";
@@ -73,7 +72,12 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
                     transform: "translateY(-2px)",
                   },
                 }}
-                onClick={() => setValue("tipo", item.label.toLowerCase())}
+                onClick={() =>
+                  setValue(
+                    "tipo",
+                    item.label.toLowerCase() as "entrada" | "saida" | "perda" | "ajuste"
+                  )
+                }
               >
                 {item.icon}
                 <Typography variant="body2">{item.label}</Typography>

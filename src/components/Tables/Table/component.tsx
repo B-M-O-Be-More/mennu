@@ -69,7 +69,7 @@ export default function TableG<T extends Record<string, any>>({
       overflowX: "auto",
     }}>
       <Table>
-        <TableHead sx={{ "& .MuiTableCell-root": { color: "tables.text" } }}>
+        <TableHead sx={{ "& .MuiTableCell-root": { color: "tables.text", borderBottom: "1px solid", borderColor: "divider" } }}>
           <TableRow>
             {columns.map((col) => (
               <TableCell key={String(col.key)} align={col.align || "left"}>
@@ -84,7 +84,16 @@ export default function TableG<T extends Record<string, any>>({
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row, idx) => (
-            <TableRow key={idx} sx={{ "& .MuiTableCell-root": { color: "tables.text" } }}>
+            <TableRow
+              key={idx}
+              sx={{
+                "& .MuiTableCell-root": {
+                  color: "tables.text",
+                  borderBottom: "1px solid",
+                  borderColor: "grey.100",
+                }
+              }}
+            >
               {columns.map((col) => (
                 <TableCell key={String(col.key)} align={col.align || "left"}>
                   {col.render ? col.render(row) : row[col.key]}

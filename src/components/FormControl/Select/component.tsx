@@ -80,6 +80,7 @@ export default function SelectG<T>({
       <Typography
         variant="caption"
         color={error ? "error.contrastText" : "transparent"}
+        ml={1.6}
       >
         {error}
       </Typography>
