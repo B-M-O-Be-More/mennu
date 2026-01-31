@@ -1,14 +1,14 @@
-import { UseFormRegisterReturn } from "react-hook-form";
 import { SxProps, Theme } from "@mui/material";
+import { UseFormRegisterReturn } from "react-hook-form";
 
-export interface InputProps {
+export interface TextAreaProps {
   label?: string;
+  sublabel?: string;
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;
-  icon?: React.ReactNode;
-  type?: React.HTMLInputTypeAttribute;
+  rows?: number;
+  maxRows?: number;
   error?: string;
   register?: UseFormRegisterReturn;
-  helperText?: string;
 }

@@ -1,9 +1,12 @@
+
 import { IColumn } from "@/components/Tables/Table";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
+import { PaperIcon } from "@/components/Icons";
+import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -11,8 +14,18 @@ const userColumns: IColumn<IUser>[] = [
     label: "Nome",
     render: (row) => (
       <Stack direction="row" alignItems="center">
-        <Avatar sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}>
-          {row.nome.split(" ").map((n) => n[0]).join("")}
+        <Avatar
+          sx={{
+            bgcolor: "primary.main",
+            mr: 1,
+            width: 32,
+            height: 32,
+            fontSize: 14,
+          }}>
+          {row.nome
+            .split(" ")
+            .map((n) => n[0])
+            .join("")}
         </Avatar>
         <Typography variant="body2">{row.nome}</Typography>
       </Stack>
@@ -152,4 +165,63 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
   }
 ];
 
-export { userColumns, stockColumns, movementColumns, extraRequestColumns };
+const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
+  {
+    key: "usuario",
+    label: "Usuário",
+    render: (row) => (
+      <Stack direction={{ md: "row" }} alignItems="center" gap={0.5}>
+        <Avatar
+          sx={{
+            bgcolor: "primary.main",
+            mr: 1,
+            width: 32,
+            height: 32,
+            fontSize: 14
+          }}
+        >
+          {row.usuario
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+          }
+        </Avatar>
+        <Typography variant="body2">{row.usuario}</Typography>
+        {row.isManual && (
+          <Chip
+            icon={<PaperIcon color="#8200DB" height={18} />}
+            color="purple"
+            label="Manual"
+            sx={{ padding: "0.5rem" }}
+          />
+        )}
+      </Stack>
+    ),
+  },
+  { key: "matricula", label: "Matrícula" },
+  { key: "tipo", label: "Tipo" },
+  { key: "unidade", label: "Unidade" },
+  { key: "horario", label: "Horário" },
+  { key: "terminal", label: "Terminal" },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => {
+      const colorMap: Record<string, "success" | "warning" | "error"> = {
+        Servida: "success",
+        Pendente: "warning",
+        Cancelada: "error",
+      };
+      return (
+        <Chip
+          label={row.status}
+          color={colorMap[row.status]}
+          size="small"
+          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+        />
+      );
+    },
+  },
+];
+
+export { userColumns, stockColumns, movementColumns, extraRequestColumns, mealRecordsColumns };

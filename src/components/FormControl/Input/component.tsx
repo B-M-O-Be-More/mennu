@@ -17,6 +17,7 @@ export default function Input({
   icon,
   type = "text",
   error,
+  helperText,
   register,
   multiline = false,
   minRows = 3,
@@ -35,8 +36,7 @@ export default function Input({
             variant="body2"
             component="span"
             color={!optional ? "primary.main" : "transparent"}
-            sx={{ transition: "all 0.2s ease-in-out" }}
-          >
+            sx={{ transition: "all 0.2s ease-in-out" }}>
             *
           </Typography>
         </Typography>

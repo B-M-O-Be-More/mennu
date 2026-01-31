@@ -46,4 +46,20 @@ const mockExtraRequestTypes = [
   { label: "Tipo 4", value: "tipo4" },
 ];
 
-export { mockTipoUsuario, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal, mockUsers, mockExtraRequestTypes };
+const mockTiposRefeicao = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Café", value: "cafe" },
+  { label: "Almoço", value: "almoco" },
+  { label: "Jantar", value: "jantar" },
+];
+
+export {
+  mockTipoUsuario,
+  mockUnidades,
+  mockStatuses,
+  mockUnidadesMedida,
+  mockTiposTerminal,
+  mockUsers,
+  mockExtraRequestTypes,
+  mockTiposRefeicao
+};
