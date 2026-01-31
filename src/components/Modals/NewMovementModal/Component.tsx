@@ -1,5 +1,5 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
-import { mockCategorias } from "../../../data/menuItems";
+import { mockTipoUsuario } from "../../../data/menuItems";
 import { NewMovementModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -30,7 +30,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
     defaultValues: {
       data: "",
       tipo: "entrada",
-      item: mockCategorias[0].value,
+      item: mockTipoUsuario[0].value,
       quantidade: 0,
       responsavel: "",
       justificativa: "",
@@ -90,7 +90,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
         <Select
           label="Item"
           optional={false}
-          options={mockCategorias}
+          options={mockTipoUsuario}
           register={register("item")}
           error={errors.item?.message}
         />

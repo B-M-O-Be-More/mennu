@@ -1,5 +1,5 @@
 import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
+import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
 import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -20,7 +20,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     resolver: yupResolver(stockSchema),
     defaultValues: {
       item: "",
-      categoria: mockCategorias[0].value,
+      categoria: mockTipoUsuario[0].value,
       unidadeMedida: mockUnidadesMedida[0].value,
       saldo: "0",
       estoqueMinimo: "0",
@@ -51,7 +51,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             <Select
               label="Categoria"
               optional={false}
-              options={mockCategorias}
+              options={mockTipoUsuario}
               register={register("categoria")}
               error={errors.categoria?.message}
             />

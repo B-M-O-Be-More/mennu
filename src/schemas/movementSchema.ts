@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { mockCategorias } from "@/data/menuItems";
+import { mockTipoUsuario } from "@/data/menuItems";
 
 export const movementSchema = yup.object({
   data: yup
@@ -13,7 +13,7 @@ export const movementSchema = yup.object({
   item: yup
     .string()
     .required("O item é obrigatório")
-    .oneOf(mockCategorias.slice(1).map(c => c.value), "Categoria inválida"),
+    .oneOf(mockTipoUsuario.slice(1).map(c => c.value), "Categoria inválida"),
   quantidade: yup
     .number()
     .typeError("Quantidade deve ser numérica")

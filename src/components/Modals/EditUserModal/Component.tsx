@@ -1,5 +1,5 @@
 import { Stack, Typography, Box, Button } from "@mui/material";
-import { mockCategorias, mockStatuses, mockUnidades } from "@/data/menuItems";
+import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
@@ -10,6 +10,8 @@ import { useForm } from "react-hook-form";
 import { userSchema } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
+import { InferType } from "yup";
+
 
 
 export default function EditUserModal({
@@ -24,20 +26,20 @@ export default function EditUserModal({
     control,
     reset,
     formState: { errors },
-  } = useForm<IUser>(
+  } = useForm<InferType<typeof userSchema>>(
     {
       resolver: yupResolver(userSchema),
-      defaultValues: user,
+      defaultValues: { ...user, status: user.status ? "true" : "false" },
     });
 
-  const onSubmit = (data: IUser) => {
-    onSave(data);
+  const onSubmit = (data: InferType<typeof userSchema>) => {
+    onSave({ ...data, status: data.status === "true" ? true : false } as IUser);
     onClose();
   };
 
   React.useEffect(() => {
     if (open && user) {
-      reset(user)
+      reset({ ...user, status: user.status ? "true" : "false" });
     }
   }, [open, user, reset]);
 
@@ -58,8 +60,8 @@ export default function EditUserModal({
             placeholder="12345678900"
             optional={false}
             sx={{ flex: 1 }}
-            register={register("CPF")}
-            error={errors.CPF?.message}
+            register={register("cpf")}
+            error={errors.cpf?.message}
           />
 
           <Input
@@ -78,9 +80,9 @@ export default function EditUserModal({
             control={control}
             label="Categoria"
             optional={false}
-            options={mockCategorias}
-            register={register("categoria")}
-            error={errors.categoria?.message}
+            options={mockTipoUsuario}
+            register={register("tipo_usuario")}
+            error={errors.tipo_usuario?.message}
           />
 
           <Select

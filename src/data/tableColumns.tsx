@@ -1,16 +1,6 @@
 import { IColumn } from "@/components/Tables/Table";
+import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
-
-interface IUser {
-  nome: string;
-  CPF: string;
-  matricula: string;
-  categoria: string;
-  unidade: string;
-  status: string;
-  numeroCartao: string;
-  ultimaRefeicao?: string;
-}
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -33,14 +23,14 @@ const userColumns: IColumn<IUser>[] = [
     render: (row) => (
       <Chip
         label={row.status}
-        color={row.status === "Ativo" ? "success" : "default"}
+        color={row.status === true ? "success" : "default"}
         size="small"
         sx={{ minWidth: "100px" }}
       />
     ),
   },
-  { key: "categoria", label: "Tipo de Acesso" },
-  { key: "ultimaRefeicao", label: "Última Refeição" },
+  { key: "tipo_usuario", label: "Tipo de Acesso" },
+  { key: "ultima_refeicao", label: "Última Refeição" },
   {
     key: "acoes",
     label: "Ações",

@@ -1,7 +1,8 @@
-const mockCategorias = [
+const mockTipoUsuario = [
   { label: "Selecione uma categoria", value: "1" },
-  { label: "Admin", value: "admin" },
-  { label: "Usuário", value: "user" },
+  { label: "Administrador", value: "administrador" },
+  { label: "Gestor", value: "gestor" },
+  { label: "Funcionário", value: "funcionario" },
 ];
 
 const mockUnidades = [
@@ -12,8 +13,8 @@ const mockUnidades = [
 
 const mockStatuses = [
   { label: "Selecione um status", value: "1" },
-  { label: "Ativo", value: "ativo" },
-  { label: "Inativo", value: "inativo" },
+  { label: "Ativo", value: "true" },
+  { label: "Inativo", value: "false" },
 ];
 
 const mockUnidadesMedida = [
@@ -45,4 +46,4 @@ const mockExtraRequestTypes = [
   { label: "Tipo 4", value: "tipo4" },
 ];
 
-export { mockCategorias, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal, mockUsers, mockExtraRequestTypes };
+export { mockTipoUsuario, mockUnidades, mockStatuses, mockUnidadesMedida, mockTiposTerminal, mockUsers, mockExtraRequestTypes };

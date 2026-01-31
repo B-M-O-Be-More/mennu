@@ -1,4 +1,4 @@
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import * as yup from "yup";
 
 export const stockSchema = yup.object({
@@ -6,7 +6,7 @@ export const stockSchema = yup.object({
   categoria: yup
     .string()
     .required("A categoria é obrigatória")
-    .oneOf(mockCategorias.slice(1).map(u => u.value), "Categoria inválida"),
+    .oneOf(mockTipoUsuario.slice(1).map(u => u.value), "Categoria inválida"),
   unidadeMedida: yup
     .string()
     .required("A unidade de medida é obrigatória")

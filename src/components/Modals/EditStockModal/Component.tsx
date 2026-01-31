@@ -1,6 +1,6 @@
 import React from "react";
 import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
@@ -60,7 +60,7 @@ export default function EditStockModal({
             control={control}
             label="Categoria"
             optional={false}
-            options={mockCategorias}
+            options={mockTipoUsuario}
             register={register("categoria")}
             error={errors.categoria?.message}
           />

@@ -1,19 +1,22 @@
-import { User } from "@/Interfaces/User/user";
+import { IUser } from "@/Interfaces/User/user";
 
-export function initialUser(): User {
+export function initialUser(): IUser {
   return {
     id: 0,
     nome: "",
     email: "",
     cpf: "",
-    tipo_usuario: "assinate",
+    matricula: "",
+    tipo_usuario: "funcionario",
+    numero_cartao: "",
+    unidade: "",
+    status: false,
+    status_acesso: false,
+    updated_at: "",
     token_access: {
       token: "",
       expirado_em: "",
     },
-    status: false,
-
-    status_acesso: false,
-    updated_at: "",
+    ultima_refeicao: null,
   };
 }
