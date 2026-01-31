@@ -1,7 +1,7 @@
 import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import * as yup from "yup";
 
-export const stockSchema = yup.object({
+export const createStockSchema = yup.object({
   item: yup.string().required("O nome do item é obrigatório"),
   categoria: yup
     .string()
@@ -25,3 +25,5 @@ export const stockSchema = yup.object({
     .oneOf(mockUnidades.slice(1).map(u => u.value), "Unidade inválida"),
   status: yup.boolean().required(),
 });
+
+export type CreateStockSchemaFormData = yup.InferType<typeof createStockSchema>;

@@ -7,7 +7,7 @@ import Input from "@/components/FormControl/Input";
 import { MdOutlineEmail, FiLock } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
 import { useForm } from "react-hook-form";
-import { loginSchema } from "@/schemas/loginSchema";
+import { loginSchema, LoginSchemaFormData } from "@/schemas/loginSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 export function FormLogin({ }: FormLoginProps) {
@@ -15,7 +15,7 @@ export function FormLogin({ }: FormLoginProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ email: string; password: string; }>(
+  } = useForm<LoginSchemaFormData>(
     {
       resolver: yupResolver(loginSchema),
       defaultValues:
@@ -26,7 +26,7 @@ export function FormLogin({ }: FormLoginProps) {
     }
   );
 
-  const onSubmit = (data: { email: string; password: string; }) => {
+  const onSubmit = (data: LoginSchemaFormData) => {
     console.log("Login:", data);
   };
 

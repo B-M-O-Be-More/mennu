@@ -6,18 +6,16 @@ import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
-import { IUser } from "@/data/tableColumns";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { userSchema } from "@/schemas/userSchema";
-import { InferType } from "yup";
+import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<InferType<typeof userSchema>>({
-    resolver: yupResolver(userSchema),
+  } = useForm<CreateUserSchemaFormData>({
+    resolver: yupResolver(createUserSchema),
     defaultValues: {
       nome: "",
       cpf: "",
@@ -29,7 +27,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
     },
   });
 
-  const onSubmit = (data: InferType<typeof userSchema>) => {
+  const onSubmit = (data: CreateUserSchemaFormData) => {
     const newUser = { ...data, status: data.status === "true" ? true : false };
 
     console.log(newUser);

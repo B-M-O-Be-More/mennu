@@ -1,4 +1,7 @@
 import { IColumn } from "@/components/Tables/Table";
+import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
+import { IMovement } from "@/Interfaces/Movement/movement";
+import { IStock } from "@/Interfaces/Stock/stock";
 import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 
@@ -38,16 +41,6 @@ const userColumns: IColumn<IUser>[] = [
   },
 ];
 
-interface IStock {
-  item: string;
-  categoria: string;
-  saldo: string;
-  estoqueMinimo: string;
-  unidade: string;
-  status: boolean;
-  unidadeMedida: string;
-}
-
 const stockColumns: IColumn<IStock>[] = [
   { key: "item", label: "Item" },
   { key: "categoria", label: "Categoria" },
@@ -69,15 +62,6 @@ const stockColumns: IColumn<IStock>[] = [
     render: () => (<></>)
   },
 ];
-
-interface IMovement {
-  data: string;
-  tipo: "entrada" | "saida" | "perda" | "ajuste";
-  item: string;
-  quantidade: number;
-  responsavel: string;
-  justificativa: string;
-}
 
 const movementColumns: IColumn<IMovement>[] = [
   { key: "data", label: "Data" },
@@ -107,67 +91,6 @@ const movementColumns: IColumn<IMovement>[] = [
   { key: "responsavel", label: "Responsável" },
   { key: "justificativa", label: "Justificativa" },
 ];
-
-interface IPolicy {
-  horarios: {
-    cafeManha: {
-      inicio: string;
-      fim: string;
-    };
-    almoco: {
-      inicio: string;
-      fim: string;
-    };
-    jantar: {
-      inicio: string;
-      fim: string;
-    };
-  }
-  limites: {
-    diario: number;
-    semanal: number;
-    mensal: number;
-  };
-}
-
-interface IUnit {
-  nome: string;
-  endereco: string;
-  responsavel: string;
-  status: string;
-  politicas: IPolicy
-}
-
-interface ITerminal {
-  id: string;
-  nome: string;
-  codigo: string;
-  unidade: string;
-  tipo: string;
-  status: "online" | "offline" | "desatualizado";
-  ultimaSync?: string;
-  refeicoesPermitidas: string[];
-  categoriasPermitidas: string[];
-  ativo: boolean;
-}
-
-interface IExtraRequest {
-  id: number;
-  data: string;
-  unidade: IUnit;
-  tipo: string;
-  usuario: {
-    nome: string;
-    matricula: string;
-  };
-  motivo: string;
-  status: "aprovado" | "pendente" | "reprovado";
-  resposta: {
-    data: string;
-    usuario: string;
-    comentario: string;
-  } | null;
-}
 
 const extraRequestColumns: IColumn<IExtraRequest>[] = [
   { key: "data", label: "Data" },
@@ -230,4 +153,3 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
 ];
 
 export { userColumns, stockColumns, movementColumns, extraRequestColumns };
-export type { IUser, IStock, IMovement, IUnit, IPolicy, ITerminal, IExtraRequest };

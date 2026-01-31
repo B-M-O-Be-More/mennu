@@ -1,7 +1,7 @@
 import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import * as yup from "yup";
 
-export const userSchema = yup.object({
+export const createUserSchema = yup.object({
   nome: yup
     .string()
     .required("O nome é obrigatório")
@@ -36,3 +36,5 @@ export const userSchema = yup.object({
     .required("O número do cartão é obrigatório")
     .matches(/^\d+$/, "O número do cartão deve conter apenas dígitos"),
 });
+
+export type CreateUserSchemaFormData = yup.InferType<typeof createUserSchema>;

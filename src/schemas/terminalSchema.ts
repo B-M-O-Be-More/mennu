@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const terminalSchema = yup.object({
+export const createTerminalSchema = yup.object({
   id: yup
     .string()
     .required("O ID é obrigatório"),
@@ -39,3 +39,5 @@ export const terminalSchema = yup.object({
     .boolean()
     .required("O campo ativo é obrigatório"),
 });
+
+export type CreateTerminalSchemaFormData = yup.InferType<typeof createTerminalSchema>;

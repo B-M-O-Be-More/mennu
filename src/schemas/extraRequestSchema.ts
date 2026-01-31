@@ -1,7 +1,8 @@
 import { mockExtraRequestTypes, mockUsers } from "@/data/menuItems";
 import * as yup from "yup";
+import { InferType } from "yup";
 
-export const extraRequestSchema = yup.object({
+export const createExtraRequestSchema = yup.object({
   usuario: yup
     .string()
     .required("O usuário é obrigatório")
@@ -17,9 +18,12 @@ export const extraRequestSchema = yup.object({
     .required("O motivo é obrigatório"),
 });
 
-export const ReviewExtraRequestSchema = yup.object({
+export type CreateExtraRequestFormData = InferType<typeof createExtraRequestSchema>;
+
+export const reviewExtraRequestSchema = yup.object({
   review: yup
     .string()
     .required("A justificativa é obrigatória"),
 });
 
+export type ReviewExtraRequestFormData = InferType<typeof reviewExtraRequestSchema>;

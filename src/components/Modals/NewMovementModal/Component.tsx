@@ -7,8 +7,7 @@ import Select from "@/components/FormControl/Select";
 import { ArrowIcon, CircledCheckIcon, EditIcon, TrashIcon } from "@/components/Icons";
 import { Card } from "@/components/Cards/Card/Component";
 import { useForm } from "react-hook-form";
-import { IMovement } from "@/data/tableColumns";
-import { movementSchema } from "@/schemas/movementSchema";
+import { createMovementSchema, CreateMovementSchemaFormData } from "@/schemas/movementSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const movementTypeItems = [
@@ -25,8 +24,8 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
     formState: { errors },
     setValue,
     watch,
-  } = useForm<IMovement>({
-    resolver: yupResolver(movementSchema),
+  } = useForm<CreateMovementSchemaFormData>({
+    resolver: yupResolver(createMovementSchema),
     defaultValues: {
       data: "",
       tipo: "entrada",
@@ -37,7 +36,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
     },
   });
 
-  const onSubmit = (data: IMovement) => {
+  const onSubmit = (data: CreateMovementSchemaFormData) => {
     console.log("Nova movimentação:", data);
     onClose();
   };

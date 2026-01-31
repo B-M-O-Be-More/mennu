@@ -1,9 +1,9 @@
 
 import { IUser } from "@/Interfaces/User/user";
-import { LoginSchemaType } from "@/schemas/loginSchema";
+import { LoginSchemaFormData } from "@/schemas/loginSchema";
 
 export interface UserContextProps {
-  login: (params: LoginSchemaType) => Promise<IUser>;
+  login: (params: LoginSchemaFormData) => Promise<IUser>;
   logout: () => Promise<void>;
   handleValidateToken: () => Promise<void>;
   isLoadingLogin: boolean;

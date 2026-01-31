@@ -4,7 +4,7 @@ import React from "react";
 import { destroyCookie, setCookie } from "nookies";
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
-import { LoginSchemaType } from "@/schemas/loginSchema";
+import { LoginSchemaFormData } from "@/schemas/loginSchema";
 import { useRouter } from "next/navigation";
 import { initialUser } from "@/data/initialUser";
 import { IUser } from "@/Interfaces/User/user";
@@ -37,7 +37,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     handleSetCookies(data.token_access.token);
   };
 
-  const login = async (formData: LoginSchemaType) => {
+  const login = async (formData: LoginSchemaFormData) => {
     const resp = await requestLogin("/api/auth/login", {
       method: "POST",
       body: formData,

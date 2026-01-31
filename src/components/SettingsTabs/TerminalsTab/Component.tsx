@@ -7,10 +7,9 @@ import IconBox from "@/components/Cards/IconBox";
 import { cardsTerminalsConfig } from "@/data/infos";
 import { TerminalIcon } from "@/components/Sidebar/icons";
 import ActionCell from "@/components/ActionCell";
-import { ITerminal } from "@/data/tableColumns";
 import NewTerminalModal from "@/components/Modals/NewTerminalModal";
 import EditTerminalModal from "@/components/Modals/EditTerminalModal/Component";
-
+import { ITerminal } from "@/Interfaces/Terminal/terminal";
 
 export const mockTerminals: ITerminal[] = [
   {

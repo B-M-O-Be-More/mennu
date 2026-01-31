@@ -6,7 +6,7 @@ import { DownloadIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Ic
 import { StockPageProps } from "./";
 import Card from "../Cards/Card";
 import Table from "../Tables/Table";
-import { IMovement, IStock, movementColumns, stockColumns } from "@/data/tableColumns";
+import { movementColumns, stockColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import { cardsStock } from "@/data/infos";
@@ -16,8 +16,10 @@ import ActionCell from "../ActionCell";
 import EditStockModal from "../Modals/EditStockModal";
 import NewMovementModal from "../Modals/NewMovementModal";
 import { useForm } from "react-hook-form";
+import { IStock } from "@/Interfaces/Stock/stock";
+import { IMovement } from "@/Interfaces/Movement/movement";
 
-export const stockMock = [
+export const stockMock: IStock[] = [
   {
     item: "Arroz Branco",
     categoria: "Alimentos",

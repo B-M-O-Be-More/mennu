@@ -4,7 +4,7 @@ import Input from "@/components/FormControl/Input";
 import { ReviewExtraRequestModalProps } from ".";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ReviewExtraRequestSchema } from "@/schemas/extraRequestSchema";
+import { ReviewExtraRequestFormData, reviewExtraRequestSchema } from "@/schemas/extraRequestSchema";
 import { AlertIcon, CircledCheckIcon } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
 
@@ -20,14 +20,14 @@ export default function ReviewExtraRequestModal({
   const { register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ review: string }>(
+  } = useForm<ReviewExtraRequestFormData>(
     {
       resolver:
-        yupResolver(ReviewExtraRequestSchema),
+        yupResolver(reviewExtraRequestSchema),
       defaultValues: { review: '' },
     });
 
-  const onSubmit = (data: { review: string }) => {
+  const onSubmit = (data: ReviewExtraRequestFormData) => {
 
     console.log(data);
   };

@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { mockTipoUsuario } from "@/data/menuItems";
 
-export const movementSchema = yup.object({
+export const createMovementSchema = yup.object({
   data: yup
     .string()
     .required("A data é obrigatória")
@@ -32,3 +32,5 @@ export const movementSchema = yup.object({
       otherwise: schema => schema.notRequired(),
     }),
 });
+
+    export type CreateMovementSchemaFormData = yup.InferType<typeof createMovementSchema>;

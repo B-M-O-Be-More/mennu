@@ -5,22 +5,17 @@ import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
-import { IUser } from "@/data/tableColumns";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { EyeIcon } from "@/components/Icons";
-import { extraRequestSchema } from "@/schemas/extraRequestSchema";
+import { createExtraRequestSchema, CreateExtraRequestFormData } from "@/schemas/extraRequestSchema";
 
 export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestModalProps) {
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<{
-    usuario: string;
-    tipo: string;
-    motivo: string;
-  }>({
-    resolver: yupResolver(extraRequestSchema),
+  } = useForm<CreateExtraRequestFormData>({
+    resolver: yupResolver(createExtraRequestSchema),
     defaultValues: {
       usuario: mockUsers[0].value,
       tipo: mockExtraRequestTypes[0].value,
@@ -29,7 +24,7 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
   });
 
 
-  const onSubmit = (data: { usuario: string; tipo: string; motivo: string }) => {
+  const onSubmit = (data: CreateExtraRequestFormData) => {
     console.log("Novo usuário:", data);
     onClose();
   };

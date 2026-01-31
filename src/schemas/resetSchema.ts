@@ -1,5 +1,5 @@
 import * as yup from "yup";
-export const resetSchema = yup.object(
+export const resetPasswordSchema = yup.object(
   {
     email: yup
       .string()
@@ -7,3 +7,5 @@ export const resetSchema = yup.object(
       .email("Formato de e-mail inválido"),
   }
 );
+
+export type ResetPasswordSchemaFormData = yup.InferType<typeof resetPasswordSchema>;

@@ -6,8 +6,7 @@ import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IStock } from "@/data/tableColumns";
-import { stockSchema } from "@/schemas/stockSchema";
+import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
 
 export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const {
@@ -16,8 +15,8 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     formState: { errors },
     setValue,
     watch,
-  } = useForm<IStock>({
-    resolver: yupResolver(stockSchema),
+  } = useForm<CreateStockSchemaFormData>({
+    resolver: yupResolver(createStockSchema),
     defaultValues: {
       item: "",
       categoria: mockTipoUsuario[0].value,
@@ -29,7 +28,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     },
   });
 
-  const onSubmit = (data: IStock) => {
+  const onSubmit = (data: CreateStockSchemaFormData) => {
     console.log("Novo item de estoque:", data);
     onClose();
   };

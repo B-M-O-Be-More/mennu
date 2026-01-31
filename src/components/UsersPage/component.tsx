@@ -11,11 +11,12 @@ import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades } from "@/data/menuItems";
-import { IUser, userColumns } from "@/data/tableColumns";
+import { userColumns } from "@/data/tableColumns";
 import Table from "../Tables/Table";
 import EditUserModal from "../Modals/EditUserModal";
 import { useForm } from "react-hook-form";
 import ActionCell from "../ActionCell";
+import { IUser } from "@/Interfaces/User/user";
 
 export const mockUsers: IUser[] = [
   {

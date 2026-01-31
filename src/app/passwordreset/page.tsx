@@ -1,7 +1,7 @@
 "use client";
 
 import { Stack } from "@mui/material";
-import { FormResetPassword } from "@/components/Forms/FormResetPasswrod";
+import { FormResetPassword } from "@/components/Forms/FormResetPassword";
 
 function ResetPasswordPage() {
     return( 

@@ -8,15 +8,17 @@ import Card from "../Cards/Card";
 import IconBox from "../Cards/IconBox";
 import { cardsExtraRequests } from "@/data/infos";
 import Table from "../Tables/Table";
-import { extraRequestColumns, IExtraRequest } from "@/data/tableColumns";
+import { extraRequestColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
 import { useForm } from "react-hook-form";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades, mockUsers } from "@/data/menuItems";
 import NewExtraRequestModal from "../Modals/NewExtraRequestModal";
 import ReviewExtraRequestModal from "../Modals/ReviewExtraRequestModal";
+import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
+import { IUnit } from "@/Interfaces/Unit/unit";
 
-const unitMock = {
+const unitMock: IUnit = {
   nome: "Unidade 1",
   status: "ativo",
   endereco: "Endereço da Unidade 1",

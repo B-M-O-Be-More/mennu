@@ -1,7 +1,7 @@
 import { mockStatuses } from "@/data/menuItems";
 import * as yup from "yup";
 
-export const policySchema = yup.object({
+export const createPolicySchema = yup.object({
   horarios: yup.object({
     cafeManha: yup.object({
       inicio: yup.string().required("Informe o início"),
@@ -32,7 +32,9 @@ export const policySchema = yup.object({
   }),
 });
 
-export const unitSchema = yup.object({
+export type CreatePolicySchemaFormData = yup.InferType<typeof createPolicySchema>;
+
+export const createUnitSchema = yup.object({
   nome: yup.string().required("O nome da unidade é obrigatório"),
   endereco: yup.string().required("O endereço é obrigatório"),
   responsavel: yup.string().required("O responsável é obrigatório"),
@@ -40,5 +42,7 @@ export const unitSchema = yup.object({
     .string()
     .required("O status é obrigatório")
     .oneOf(mockStatuses.slice(1).map(u => u.value), "Status inválido"),
-  politicas: policySchema,
+  politicas: createPolicySchema,
 });
+
+export type CreateUnitSchemaFormData = yup.InferType<typeof createUnitSchema>;

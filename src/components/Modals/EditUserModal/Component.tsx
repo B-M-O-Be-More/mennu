@@ -3,16 +3,13 @@ import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { IUser } from "@/data/tableColumns";
 import { EditUserModalProps } from "./";
 import { CircledCheckIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
-import { userSchema } from "@/schemas/userSchema";
+import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
-import { InferType } from "yup";
-
-
+import { IUser } from "@/Interfaces/User/user";
 
 export default function EditUserModal({
   open,
@@ -26,13 +23,13 @@ export default function EditUserModal({
     control,
     reset,
     formState: { errors },
-  } = useForm<InferType<typeof userSchema>>(
+  } = useForm<CreateUserSchemaFormData>(
     {
-      resolver: yupResolver(userSchema),
+      resolver: yupResolver(createUserSchema),
       defaultValues: { ...user, status: user.status ? "true" : "false" },
     });
 
-  const onSubmit = (data: InferType<typeof userSchema>) => {
+  const onSubmit = (data: CreateUserSchemaFormData) => {
     onSave({ ...data, status: data.status === "true" ? true : false } as IUser);
     onClose();
   };
