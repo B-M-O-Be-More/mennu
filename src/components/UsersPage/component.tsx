@@ -1,9 +1,9 @@
 "use client";
 
 import { Stack, Typography, Box, Button, Avatar, } from "@mui/material";
-import { ExportUsersModal, UsersPageProps } from "./";
+import { UsersPageProps } from "./";
 import React from "react";
-import { DownloadIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
+import { CSVIcon, DownloadIcon, FileIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
 import { cardsUsers } from "../../data/infos";
 import NewUserModal from "../Modals/NewUserModal";
 import Card from "../Cards/Card";
@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import ActionCell from "../ActionCell";
 import { IUser } from "@/Interfaces/User/user";
 import PageHeader from "../PageHeader";
+import ExportModal from "../Modals/ExportModal";
 
 export const mockUsers: IUser[] = [
   {
@@ -105,9 +106,30 @@ export function UsersPage({ }: UsersPageProps) {
         </Button>
       </PageHeader>
 
-      <ExportUsersModal
+      <ExportModal
         open={openExportUsersModal}
         onClose={() => setOpenExportUsersModal(false)}
+        title="Exportar Usuários"
+        subtitle="Escolha o formato da exportação"
+        options={[
+          {
+            label: "PDF",
+            description: "Relatório completo com gráficos e métricas",
+            icon: <FileIcon color="#E5E7EB" />,
+            bgColor: "#FF3D00",
+            onPreview: () => { console.log("Preview CSV"); },
+            onDownload: () => { console.log("Download CSV"); },
+
+          },
+          {
+            label: "CSV",
+            description: "Dados em formato de tabela separada por vírgulas",
+            icon: <CSVIcon color="#198754" />,
+            bgColor: "#B8EBAD",
+            onPreview: () => { console.log("Preview CSV"); },
+            onDownload: () => { console.log("Download CSV"); },
+          },
+        ]}
       />
 
       <NewUserModal

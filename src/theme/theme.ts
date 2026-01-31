@@ -154,14 +154,20 @@ export const theme = createTheme(baseTheme, {
         contained: {
           backgroundColor: baseTheme.palette.primary.main,
           color: baseTheme.palette.primary.contrastText,
-          border: "0px solid",
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
           padding: ".8rem 1.5rem",
+          transition: "0.2s ease",
           borderRadius: "1rem",
+          border: "0px solid",
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
+          },
+          "&.Mui-disabled": {
+            border: "0px solid",
+            backgroundColor: baseTheme.palette.grey[500],
+            color: baseTheme.palette.primary.contrastText,
           },
         },
         outlined: {
@@ -171,14 +177,19 @@ export const theme = createTheme(baseTheme, {
           fontFamily: typography.fontFamily,
           height: "fit-content",
           padding: ".8rem 1.5rem",
+          transition: "0.2s ease",
           borderRadius: "1rem",
-          "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
-          },
           border: "0px solid",
           outlineOffset: "0px",
           outline: "1px solid",
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.04)",
+          },
           outlineColor: baseTheme.palette.divider,
+          "&.Mui-disabled": {
+            border: "0px solid",
+            color: baseTheme.palette.grey[300],
+          },
         },
       },
     },

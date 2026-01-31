@@ -8,13 +8,13 @@ import React from "react";
 import { cardsModules } from "@/data/infos";
 import ModuleCard from "../ModuleCard";
 import Last7DaysChart from "../Last7DaysChart";
-import Modal from "../Modals/Modal";
 import IconBox from "../Cards/IconBox";
 import Card from "../Cards/Card";
 import PageHeader from "../PageHeader";
+import ExportModal from "../Modals/ExportModal";
 
 export function DashBoardPage({ }: DashBoardPageProps) {
-  const [open, setOpen] = React.useState(false);
+  const [openExportReport, setOpenExportReport] = React.useState(false);
 
   return (
     <Stack gap={2}>
@@ -25,85 +25,36 @@ export function DashBoardPage({ }: DashBoardPageProps) {
         <Button
           variant="contained"
           startIcon={<DownloadIcon />}
-          onClick={() => setOpen(true)}
+          onClick={() => setOpenExportReport(true)}
         >
           Exportar
         </Button>
       </PageHeader>
 
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
+      <ExportModal
+        open={openExportReport}
+        onClose={() => setOpenExportReport(false)}
         title="Exportar Relatório"
         subtitle="Escolha o formato de exportação"
-      >
-        <Stack gap={2}>
-          <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"divider"} borderRadius={3} padding={2}>
-            <IconBox
-              icon={<FileIcon color="#FF0070" />}
-              bgColor="#ff00701a"
-              padding={2}
-              borderRadius={3}
-            />
-            <Box component="span">
-              <Typography variant="body1" color="text.primary">
-                PDF
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Relatório completo com gráficos e métricas
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Stack direction={"row"} gap={2} border={"3px solid"} borderColor={"divider"} borderRadius={3} padding={2}>
-            <IconBox
-              icon={<CSVIcon color="#198754" />}
-              bgColor="#B8EBAD"
-              padding={2}
-              borderRadius={3}
-            />
-            <Box component="span">
-              <Typography variant="body1" color="text.primary">
-                CSV
-              </Typography>
-              <Typography variant="body2" color="text.secondary" >
-                Dados em formato de tabela separada por vírgulas
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Stack direction={"row"} gap={2}>
-            <Button
-              variant="outlined"
-              sx={{
-                flex: 1,
-                fontSize: "1.2rem",
-                border: "1px solid",
-                borderColor: "divider",
-                color: "text.secondary",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  color: "text.primary",
-                },
-              }}
-              onClick={() => { }}
-            >
-              Visualizar
-            </Button>
-            <Button
-              sx={{
-                flex: 1,
-                fontSize: "1.2rem",
-              }}
-              variant="contained"
-              startIcon={<DownloadIcon />}
-              onClick={() => { }}
-            >
-              Baixar
-            </Button>
-          </Stack>
-        </Stack>
-      </Modal>
+        options={[
+          {
+            label: "PDF",
+            description: "Relatório completo com gráficos e métricas",
+            icon: <FileIcon color="#FF0070" />,
+            bgColor: "#ff00701a",
+            onPreview: () => { console.log("Preview PDF"); },
+            onDownload: () => { console.log("Download PDF"); },
+          },
+          {
+            label: "CSV",
+            description: "Dados em formato de tabela separada por vírgulas",
+            icon: <CSVIcon color="#198754" />,
+            bgColor: "#B8EBAD",
+            onPreview: () => { console.log("Preview CSV"); },
+            onDownload: () => { console.log("Download CSV"); },
+          },
+        ]}
+      />
 
       <Box
         display="grid"
