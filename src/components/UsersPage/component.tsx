@@ -17,6 +17,7 @@ import EditUserModal from "../Modals/EditUserModal";
 import { useForm } from "react-hook-form";
 import ActionCell from "../ActionCell";
 import { IUser } from "@/Interfaces/User/user";
+import PageHeader from "../PageHeader";
 
 export const mockUsers: IUser[] = [
   {
@@ -83,44 +84,36 @@ export function UsersPage({ }: UsersPageProps) {
 
   return (
     <Stack gap={2}>
-      <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
-        <Box component="span">
-          <Typography variant="h4" fontWeight={"600"} color="text.primary">
-            Usuários
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
-            Gerencie os usuários do sistema
-          </Typography>
-        </Box>
+      <PageHeader
+        title="Usuários"
+        subtitle="Gerencie os usuários do sistema"
+      >
+        <Button
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          onClick={() => setOpenExportUsersModal(true)}
+        >
+          Exportar
+        </Button>
 
-        <Stack gap={2} direction={"row"}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={() => setOpenExportUsersModal(true)}
-          >
-            Exportar
-          </Button>
+        <Button
+          variant="contained"
+          startIcon={<PlusIcon />}
+          onClick={() => setOpenCreateUserModal(true)}
+        >
+          Adicionar Usuário
+        </Button>
+      </PageHeader>
 
-          <ExportUsersModal
-            open={openExportUsersModal}
-            onClose={() => setOpenExportUsersModal(false)}
-          />
+      <ExportUsersModal
+        open={openExportUsersModal}
+        onClose={() => setOpenExportUsersModal(false)}
+      />
 
-          <Button
-            variant="contained"
-            startIcon={<PlusIcon />}
-            onClick={() => setOpenCreateUserModal(true)}
-          >
-            Adicionar Usuário
-          </Button>
-          <NewUserModal
-            open={openCreateUserModal}
-            onClose={() => setOpenCreateUserModal(false)}
-          />
-
-        </Stack>
-      </Stack>
+      <NewUserModal
+        open={openCreateUserModal}
+        onClose={() => setOpenCreateUserModal(false)}
+      />
 
       <Card>
         <Stack gap={2} direction={"row"}>

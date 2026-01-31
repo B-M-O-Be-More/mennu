@@ -29,7 +29,8 @@ export function MealsPage() {
     <Stack gap={2}>
       <PageHeader
         title="Refeições"
-        subtitle="Gerencie os registros e configurações de refeições">
+        subtitle="Gerencie os registros e configurações de refeições"
+      >
         {activeTab === 0 && (
           <>
             <Button

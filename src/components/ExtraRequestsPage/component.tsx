@@ -17,6 +17,7 @@ import NewExtraRequestModal from "../Modals/NewExtraRequestModal";
 import ReviewExtraRequestModal from "../Modals/ReviewExtraRequestModal";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
 import { IUnit } from "@/Interfaces/Unit/unit";
+import PageHeader from "../PageHeader";
 
 const unitMock: IUnit = {
   nome: "Unidade 1",
@@ -149,37 +150,28 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
 
   return (
     <Stack gap={2}>
+      <PageHeader
+        title="Solicitações Extras"
+        subtitle="Gerencie pedidos extraordinários e exceções"
+      >
+        <Button
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          onClick={() => setOpenExportExtraRequestModal(true)}
+        >
+          Exportar
+        </Button>
 
-      <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
-        <Box component="span">
-          <Typography variant="h4" fontWeight={"600"} color="text.primary">
-            Solicitações Extras
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
-            Gerencie pedidos extraordinários e exceções
-          </Typography>
-        </Box>
+        <Button
+          variant="contained"
+          startIcon={<PlusIcon />}
+          onClick={() => setOpenNewExtraRequestModal(true)}
+        >
+          Nova Solicitação
+        </Button>
+      </PageHeader>
 
-        <Stack gap={2} direction={"row"}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={() => setOpenExportExtraRequestModal(true)}
-          >
-            Exportar
-          </Button>
-
-          <Button
-            variant="contained"
-            startIcon={<PlusIcon />}
-            onClick={() => setOpenNewExtraRequestModal(true)}
-          >
-            Nova Solicitação
-          </Button>
-        </Stack>
-
-        <NewExtraRequestModal open={openNewExtraRequestModal} onClose={() => setOpenNewExtraRequestModal(false)} />
-      </Stack>
+      <NewExtraRequestModal open={openNewExtraRequestModal} onClose={() => setOpenNewExtraRequestModal(false)} />
 
       <Stack gap={2} direction={"row"}>
         <Button

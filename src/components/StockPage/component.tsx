@@ -18,6 +18,7 @@ import NewMovementModal from "../Modals/NewMovementModal";
 import { useForm } from "react-hook-form";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { IMovement } from "@/Interfaces/Movement/movement";
+import PageHeader from "../PageHeader";
 
 export const stockMock: IStock[] = [
   {
@@ -93,34 +94,26 @@ export function StockPage({ }: StockPageProps) {
   return (
     <Stack gap={2}>
 
-      <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
-        <Box component="span">
-          <Typography variant="h4" fontWeight={"600"} color="text.primary">
-            Estoque
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
-            Gerencie insumos e movimentações
-          </Typography>
-        </Box>
+      <PageHeader
+        title="Estoque"
+        subtitle="Gerencie insumos e movimentações"
+      >
+        <Button
+          variant="outlined"
+          startIcon={<UpdateIcon />}
+          onClick={() => setOpenEditStockModal(true)}
+        >
+          Atualizar
+        </Button>
 
-        <Stack gap={2} direction={"row"}>
-          <Button
-            variant="outlined"
-            startIcon={<UpdateIcon />}
-            onClick={() => setOpenEditStockModal(true)}
-          >
-            Atualizar
-          </Button>
-
-          <Button
-            variant="contained"
-            startIcon={<DownloadIcon />}
-            onClick={() => setOpenExportStockModal(true)}
-          >
-            Exportar
-          </Button>
-        </Stack>
-      </Stack>
+        <Button
+          variant="contained"
+          startIcon={<DownloadIcon />}
+          onClick={() => setOpenExportStockModal(true)}
+        >
+          Exportar
+        </Button>
+      </PageHeader>
 
       <Stack gap={2} direction={"row"}>
         <Button
