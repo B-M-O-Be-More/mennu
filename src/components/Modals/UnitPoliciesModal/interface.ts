@@ -1,4 +1,4 @@
-import { IUnit } from "@/data/tableColumns";
+import { IUnit } from "@/Interfaces/Unit/unit";
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface UnitPoliciesModalProps {

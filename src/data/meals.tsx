@@ -1,12 +1,12 @@
 import {
   MealRuleResponse,
   MealTypeResponse,
+  MealRecordsResponse,
   Unit,
   ValidationProps,
 } from "@/Interfaces/Meals/MealTypes";
 import { Balance, CreditCard, ErrorOutline } from "@mui/icons-material";
 import { Chip } from "@mui/material";
-import { MealRecordsData } from "./tableColumns";
 import { CircledCheckIcon, ClockIcon } from "@/components/Icons";
 import { FiX } from "react-icons/fi";
 import { InfoCardProps } from "@/components/Cards/InfoCard";
@@ -152,7 +152,7 @@ export const mealInfoCards: InfoCardProps[] = [
   },
 ];
 
-export const mealRecordsMock: MealRecordsData[] = [
+export const mealRecordsMock: MealRecordsResponse[] = [
   {
     usuario: "João Silva",
     matricula: "12345",
@@ -160,7 +160,7 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 1",
     horario: "03/12/2025 12:30",
     terminal: "Terminal A",
-    status: <Chip label="Servida" color="success" size="small" />,
+    status: "Servida",
   },
   {
     isManual: true,
@@ -170,7 +170,7 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 2",
     horario: "03/12/2025 12:35",
     terminal: "Terminal B",
-    status: <Chip label="Pendente" color="warning" size="small" />,
+    status: "Pendente",
   },
   {
     usuario: "Maria Santos",
@@ -179,7 +179,7 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 2",
     horario: "03/12/2025 19:35",
     terminal: "Terminal B",
-    status: <Chip label="Pendente" color="warning" size="small" />,
+    status: "Pendente",
   },
   {
     usuario: "Maria Santos",
@@ -188,7 +188,7 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 2",
     horario: "03/12/2025 12:35",
     terminal: "Terminal C",
-    status: <Chip label="Cancelada" color="error" size="small" />,
+    status: "Cancelada",
   },
   {
     isManual: true,
@@ -198,7 +198,7 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 2",
     horario: "03/12/2025 12:35",
     terminal: "Terminal C",
-    status: <Chip label="Cancelada" color="error" size="small" />,
+    status: "Cancelada",
   },
   {
     usuario: "João Silva",
@@ -207,6 +207,6 @@ export const mealRecordsMock: MealRecordsData[] = [
     unidade: "Unidade 1",
     horario: "03/12/2025 18:30",
     terminal: "Terminal A",
-    status: <Chip label="Servida" color="success" size="small" />,
+    status: "Servida",
   },
 ];

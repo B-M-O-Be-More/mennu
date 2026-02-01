@@ -1,7 +1,8 @@
-const mockCategorias = [
+const mockTipoUsuario = [
   { label: "Selecione uma categoria", value: "1" },
-  { label: "Admin", value: "admin" },
-  { label: "Usuário", value: "user" },
+  { label: "Administrador", value: "administrador" },
+  { label: "Gestor", value: "gestor" },
+  { label: "Funcionário", value: "funcionario" },
 ];
 
 const mockUnidades = [
@@ -12,8 +13,8 @@ const mockUnidades = [
 
 const mockStatuses = [
   { label: "Selecione um status", value: "1" },
-  { label: "Ativo", value: "ativo" },
-  { label: "Inativo", value: "inativo" },
+  { label: "Ativo", value: "true" },
+  { label: "Inativo", value: "false" },
 ];
 
 const mockUnidadesMedida = [
@@ -28,10 +29,21 @@ const mockTiposTerminal = [
   { label: "Secundário", value: "secundario" },
 ];
 
-const mockUsuarios = [
+const mockUsers = [
   { label: "Selecione um usuário", value: "1" },
-  { label: "Maria Santos", value: "maria" },
-  { label: "João Silva", value: "joao" },
+  { label: "Victor Souza", value: "victor_souza" },
+  { label: "Maria Oliveira", value: "maria_oliveira" },
+  { label: "João Pereira", value: "joao_pereira" },
+  { label: "Ana Costa", value: "ana_costa" },
+  { label: "Carlos Mendes", value: "carlos_mendes" },
+];
+
+const mockExtraRequestTypes = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Tipo 1", value: "tipo1" },
+  { label: "Tipo 2", value: "tipo2" },
+  { label: "Tipo 3", value: "tipo3" },
+  { label: "Tipo 4", value: "tipo4" },
 ];
 
 const mockTiposRefeicao = [
@@ -42,11 +54,12 @@ const mockTiposRefeicao = [
 ];
 
 export {
-  mockCategorias,
+  mockTipoUsuario,
   mockUnidades,
   mockStatuses,
   mockUnidadesMedida,
   mockTiposTerminal,
-  mockUsuarios,
-  mockTiposRefeicao,
+  mockUsers,
+  mockExtraRequestTypes,
+  mockTiposRefeicao
 };

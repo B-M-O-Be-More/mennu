@@ -5,9 +5,8 @@ import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
-import { ITerminal } from "@/data/tableColumns";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { terminalSchema } from "@/schemas/terminalSchema";
+import { createTerminalSchema, CreateTerminalSchemaFormData } from "@/schemas/terminalSchema";
 import Card from "@/components/Cards/Card";
 import { AlertIcon } from "@/components/Icons";
 
@@ -16,8 +15,8 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<ITerminal>({
-    resolver: yupResolver(terminalSchema),
+  } = useForm<CreateTerminalSchemaFormData>({
+    resolver: yupResolver(createTerminalSchema),
     defaultValues: {
       id: "0",
       nome: "",
@@ -31,7 +30,7 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
     },
   });
 
-  const onSubmit = (data: ITerminal) => {
+  const onSubmit = (data: CreateTerminalSchemaFormData) => {
     console.log("Novo terminal:", data); onClose();
   };
 

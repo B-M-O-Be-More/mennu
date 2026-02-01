@@ -1,4 +1,4 @@
-import { IStock, IUser } from "@/data/tableColumns";
+import { IUser } from "@/Interfaces/User/user";
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface EditUserModalProps {

@@ -1,6 +1,5 @@
 import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
-import { AlertIcon, BuildingIcon, CircledCheckIcon, LockIcon, NoWifiIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
-import { CardapiosIcon, ConfiguracoesIcon, EstoqueIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, UsuariosIcon } from "../components/Sidebar/icons";
+import { AlertIcon, BuildingIcon, CardapiosIcon, CircledCheckIcon, CircledXIcon, ClockIcon, ConfiguracoesIcon, EstoqueIcon, LockIcon, NoWifiIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosIcon, UsuariosXIcon } from "../components/Icons";
 
 const cardsUsers = [
   {
@@ -142,5 +141,32 @@ const cardsTerminalsConfig = [
   },
 ];
 
+const cardsExtraRequests = [
+  {
+    title: "Pendentes",
+    value: 0,
+    icon: <ClockIcon color="#E17100" />,
+    bgColor: "#FFFBEB",
+  },
+  {
+    title: "Aprovados",
+    value: 0,
+    icon: <CircledCheckIcon color="#00A63E" />,
+    bgColor: "#F0FDF4",
+  },
+  {
+    title: "Negados",
+    value: 0,
+    icon: <CircledXIcon color="#E7000B" />,
+    bgColor: "#FEF2F2",
+  },
+  {
+    title: "Total",
+    value: 0,
+    icon: <TwistedArrowIcon color="#155DFC" />,
+    bgColor: "#EFF6FF",
+  },
+];
 
-export { cardsUsers, cardsModules, cardsStock, tabsSettings, cardsTerminalsConfig }
+
+export { cardsUsers, cardsModules, cardsStock, tabsSettings, cardsTerminalsConfig, cardsExtraRequests }

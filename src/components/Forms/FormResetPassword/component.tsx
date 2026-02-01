@@ -12,7 +12,7 @@ import { ArrowBack, MailOutline } from "@mui/icons-material";
 import { FormResetPasswordProps } from "./interface";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { resetSchema } from "@/schemas/resetSchema";
+import { resetPasswordSchema, ResetPasswordSchemaFormData } from "@/schemas/resetSchema";
 import IconBox from "@/components/Cards/IconBox";
 import Input from "@/components/FormControl/Input";
 
@@ -24,12 +24,12 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<{ email: string }>({
-    resolver: yupResolver(resetSchema),
+  } = useForm<ResetPasswordSchemaFormData>({
+    resolver: yupResolver(resetPasswordSchema),
     defaultValues: { email: "" },
   });
 
-  const handleFormSubmit = async (data: { email: string }) => {
+  const handleFormSubmit = async (data: ResetPasswordSchemaFormData) => {
     await onSubmit?.(data.email);
   };
 

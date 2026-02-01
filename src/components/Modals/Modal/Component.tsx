@@ -36,7 +36,7 @@ export default function Modal({
     >
       <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pr: 1 }}>
         <Box component="span">
-          <Typography variant="h5" fontWeight={"600"} color="text.primary">{title}</Typography>
+          <Typography variant="h6" fontWeight={"600"} color="text.primary">{title}</Typography>
           {subtitle && (
             <Typography variant="subtitle2" fontWeight={"400"} color="text.secondary" >
               {subtitle}
@@ -45,7 +45,7 @@ export default function Modal({
         </Box>
 
         <IconButton onClick={onClose}>
-          <CloseIcon />
+          <CloseIcon color="action" />
         </IconButton>
       </DialogTitle>
 

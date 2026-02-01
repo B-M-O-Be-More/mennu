@@ -1,16 +1,16 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
-import { mockCategorias, mockStatuses, mockUnidades } from "@/data/menuItems";
+import { Stack, Button, useTheme } from "@mui/material";
+import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { IUser } from "@/data/tableColumns";
 import { EditUserModalProps } from "./";
-import { CircledCheckIcon } from "@/components/Icons";
+import { UsuariosIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
-import { userSchema } from "@/schemas/userSchema";
+import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
-
+import { IUser } from "@/Interfaces/User/user";
+import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
 
 export default function EditUserModal({
   open,
@@ -18,26 +18,28 @@ export default function EditUserModal({
   user,
   onSave,
 }: EditUserModalProps) {
+  const theme = useTheme();
+
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { errors },
-  } = useForm<IUser>(
+  } = useForm<CreateUserSchemaFormData>(
     {
-      resolver: yupResolver(userSchema),
-      defaultValues: user,
+      resolver: yupResolver(createUserSchema),
+      defaultValues: { ...user, status: user.status ? "true" : "false" },
     });
 
-  const onSubmit = (data: IUser) => {
-    onSave(data);
+  const onSubmit = (data: CreateUserSchemaFormData) => {
+    onSave({ ...data, status: data.status === "true" ? true : false } as IUser);
     onClose();
   };
 
   React.useEffect(() => {
     if (open && user) {
-      reset(user)
+      reset({ ...user, status: user.status ? "true" : "false" });
     }
   }, [open, user, reset]);
 
@@ -58,8 +60,8 @@ export default function EditUserModal({
             placeholder="12345678900"
             optional={false}
             sx={{ flex: 1 }}
-            register={register("CPF")}
-            error={errors.CPF?.message}
+            register={register("cpf")}
+            error={errors.cpf?.message}
           />
 
           <Input
@@ -78,9 +80,9 @@ export default function EditUserModal({
             control={control}
             label="Categoria"
             optional={false}
-            options={mockCategorias}
-            register={register("categoria")}
-            error={errors.categoria?.message}
+            options={mockTipoUsuario}
+            register={register("tipo_usuario")}
+            error={errors.tipo_usuario?.message}
           />
 
           <Select
@@ -104,25 +106,14 @@ export default function EditUserModal({
           error={errors.status?.message}
         />
 
-        <Stack
-          direction="row"
-          border={"1px solid"}
-          borderColor={"info.light"}
-          borderRadius={3}
-          padding={2}
-          gap={2}
-          bgcolor={"info.main"}
-        >
-          <CircledCheckIcon color="#155DFC" />
-          <Box>
-            <Typography variant="body1" color="info.contrastText">Acesso aos Terminais</Typography>
-            <Typography
-              variant="body2"
-              color="info.light">
-              Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <UsuariosIcon color={theme.palette.info.contrastText} />
+          }
+          title="Acesso aos Terminais"
+          description="Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente."
+        />
 
         <Stack direction="row" gap={2}>
           <Button
@@ -150,6 +141,6 @@ export default function EditUserModal({
           </Button>
         </Stack>
       </Stack>
-    </Modal>
+    </Modal >
   );
 }

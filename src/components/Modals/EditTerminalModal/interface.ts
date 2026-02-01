@@ -1,4 +1,4 @@
-import { ITerminal } from "@/data/tableColumns";
+import { ITerminal } from "@/Interfaces/Terminal/terminal";
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface EditTerminalModalProps {

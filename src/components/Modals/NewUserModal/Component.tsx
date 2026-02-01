@@ -1,36 +1,42 @@
-import React from "react";
-import { Stack, Typography, Box, Button } from "@mui/material";
-import { UsuariosIcon } from "../../Sidebar/icons";
-import { mockCategorias, mockUnidades, mockStatuses } from "../../../data/menuItems";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
+import { mockTipoUsuario, mockUnidades, mockStatuses } from "../../../data/menuItems";
 import { NewUserModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
-import { IUser } from "@/data/tableColumns";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { userSchema } from "@/schemas/userSchema";
+import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
+import ClosableAlertBox from "@/components/ClosableAlertBox";
+import { UsuariosIcon } from "@/components/Icons";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
+  const theme = useTheme();
+
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<IUser>({
-    resolver: yupResolver(userSchema),
+  } = useForm<CreateUserSchemaFormData>({
+    resolver: yupResolver(createUserSchema),
     defaultValues: {
       nome: "",
-      CPF: "",
+      cpf: "",
       matricula: "",
-      categoria: mockCategorias[0].value,
+      tipo_usuario: "funcionario",
       unidade: mockUnidades[0].value,
-      status: mockStatuses[0].value,
-      numeroCartao: "",
+      status: "false",
+      numero_cartao: "",
     },
   });
 
-  const onSubmit = (data: IUser) => { console.log("Novo usuário:", data); onClose(); };
+  const onSubmit = (data: CreateUserSchemaFormData) => {
+    const newUser = { ...data, status: data.status === "true" ? true : false };
 
+    console.log(newUser);
+
+    onClose();
+  };
   return (
     <Modal open={open} onClose={onClose} title="Novo Usuário">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
@@ -49,8 +55,8 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
             placeholder="Ex. 000.000.000-00"
             optional={false}
             sx={{ flex: 1 }}
-            register={register("CPF")}
-            error={errors.CPF?.message}
+            register={register("cpf")}
+            error={errors.cpf?.message}
           />
 
           <Input
@@ -66,9 +72,9 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
         <Stack direction="row" spacing={2}>
           <Select
             label="Categoria"
-            options={mockCategorias}
-            register={register("categoria")}
-            error={errors.categoria?.message}
+            options={mockTipoUsuario}
+            register={register("tipo_usuario")}
+            error={errors.tipo_usuario?.message}
           />
 
           <Select
@@ -92,8 +98,8 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
             placeholder="Ex: 1250458-25"
             optional={false}
             sx={{ flex: 1 }}
-            register={register("numeroCartao")}
-            error={errors.numeroCartao?.message}
+            register={register("numero_cartao")}
+            error={errors.numero_cartao?.message}
           />
         </Stack>
 
@@ -101,17 +107,15 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           Usuários inativos não podem acessar o terminal de refeições
         </Typography>
 
-        <Stack direction={"row"} border={"1px solid #BEDBFF"} bgcolor={"#EFF6FF"} borderRadius={2} p={2} gap={1}>
-          <UsuariosIcon color="#155DFC" />
-          <Box>
-            <Typography variant="body1" fontWeight={"400"} color="#1C398E" mb={1}>
-              Acesso aos Terminais
-            </Typography>
-            <Typography variant="caption" color="#1447E6" fontWeight={400}>
-              Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <UsuariosIcon color={theme.palette.info.contrastText} />
+          }
+          title="Acesso aos Terminais"
+          description="Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente."
+        />
+
         <Stack direction="row" gap={2}>
           <Button
             variant="outlined"

@@ -3,13 +3,12 @@ import { mockStatuses } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { IUnit } from "@/data/tableColumns";
 import { EditUnitModalProps } from "./";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { unitSchema } from "@/schemas/unitSchema";
+import { createUnitSchema, CreateUnitSchemaFormData } from "@/schemas/unitSchema";
 import React from "react";
-
+import { IUnit } from "@/Interfaces/Unit/unit";
 
 export default function EditUnitModal({
   open,
@@ -24,9 +23,9 @@ export default function EditUnitModal({
     reset,
     control,
     formState: { errors },
-  } = useForm<IUnit>(
+  } = useForm<CreateUnitSchemaFormData>(
     {
-      resolver: yupResolver(unitSchema),
+      resolver: yupResolver(createUnitSchema),
       defaultValues:
         unitItem ||
         {

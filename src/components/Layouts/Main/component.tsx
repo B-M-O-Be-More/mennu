@@ -3,21 +3,8 @@
 import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname } from "next/navigation";
-import {
-  DashboardIcon,
-  CardapiosIcon,
-  EstoqueIcon,
-  RefeicoesIcon,
-  SolicitacoesExtrasIcon,
-  RelatoriosIcon,
-  UsuariosIcon,
-  TerminalIcon,
-  PerfisPermissoesIcon,
-  LogsAuditoriaIcon,
-  ConfiguracoesIcon,
-  SairIcon,
-} from "@/components/Sidebar/icons";
 import { useUser } from "@/context/AuthContext";
+import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 
 export default function MainLayout({
   children,
@@ -51,7 +38,7 @@ export default function MainLayout({
     avatarInitial: "A",
   };
 
-  return(
+  return (
     <Box
       sx={{
         display: "flex",
@@ -59,18 +46,18 @@ export default function MainLayout({
         height: "100vh",
         overflow: "hidden",
       }}
-    > 
-    { isAuthenticated && (
-      <SidebarComponent
-        menuItems={menuItems}
-        adminMenuItems={adminMenuItems}
-        user={user}
-        onLogout={() => console.log("logout")}
-        logoutIcon={<SairIcon />}
-        showAdminSection
-        activePath={pathname}
-      />
-    )}
+    >
+      {isAuthenticated && (
+        <SidebarComponent
+          menuItems={menuItems}
+          adminMenuItems={adminMenuItems}
+          user={user}
+          onLogout={() => console.log("logout")}
+          logoutIcon={<SairIcon />}
+          showAdminSection
+          activePath={pathname}
+        />
+      )}
       <Box
         component="main"
         sx={{
@@ -78,10 +65,18 @@ export default function MainLayout({
           overflowY: "auto",
           p: isAuthenticated ? 3 : 0,
           backgroundColor: (theme) => theme.palette.background.default,
+
+          "&::-webkit-scrollbar": {
+            width: 0,
+            height: 0,
+          },
+
+          scrollbarWidth: "none",
         }}
       >
         {children}
       </Box>
+
     </Box>
   );
 }

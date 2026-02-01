@@ -5,4 +5,4 @@ export const loginSchema = yup.object({
   password: yup.string().min(6).max(20).required(),
 });
 
-export type LoginSchemaType = yup.InferType<typeof loginSchema>;
+export type LoginSchemaFormData = yup.InferType<typeof loginSchema>;

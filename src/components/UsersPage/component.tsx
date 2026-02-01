@@ -1,9 +1,9 @@
 "use client";
 
 import { Stack, Typography, Box, Button, Avatar, } from "@mui/material";
-import { ExportUsersModal, UsersPageProps } from "./";
+import { UsersPageProps } from "./";
 import React from "react";
-import { DownloadIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
+import { CSVIcon, DownloadIcon, FileIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
 import { cardsUsers } from "../../data/infos";
 import NewUserModal from "../Modals/NewUserModal";
 import Card from "../Cards/Card";
@@ -11,46 +11,53 @@ import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import Select from "../FormControl/Select";
 import { mockStatuses, mockUnidades } from "@/data/menuItems";
-import { IUser, userColumns } from "@/data/tableColumns";
+import { userColumns } from "@/data/tableColumns";
 import Table from "../Tables/Table";
 import EditUserModal from "../Modals/EditUserModal";
 import { useForm } from "react-hook-form";
 import ActionCell from "../ActionCell";
+import { IUser } from "@/Interfaces/User/user";
+import PageHeader from "../PageHeader";
+import ExportModal from "../Modals/ExportModal";
 
 export const mockUsers: IUser[] = [
   {
+    id: 1,
     nome: "João Silva",
+    email: "joao.silva@example.com",
     matricula: "12345",
     unidade: "10",
-    status: "Ativo",
-    ultimaRefeicao: "05/01/2026 12:30",
-    categoria: "Administrador",
-    CPF: "123.456.789-00",
-    numeroCartao: "1234567890",
+    tipo_usuario: "administrador",
+    status: true,
+    ultima_refeicao: "05/01/2026 12:30",
+    status_acesso: true,
+    cpf: "123.456.789-00",
+    numero_cartao: "1234567890",
+    updated_at: "2026-01-05T12:35:00Z",
+    token_access: {
+      token: "abc123",
+      expirado_em: "2026-01-06T12:35:00Z",
+    },
   },
   {
+    id: 2,
     nome: "Maria Souza",
+    email: "maria.souza@example.com",
     matricula: "67890",
     unidade: "8",
-    status: "Inativo",
-    ultimaRefeicao: "04/01/2026 11:45",
-    categoria: "Usuário",
-    CPF: "987.654.321-00",
-    numeroCartao: "0987654321",
+    tipo_usuario: "funcionario",
+    status: false,
+    ultima_refeicao: "04/01/2026 11:45",
+    status_acesso: false,
+    cpf: "987.654.321-00",
+    numero_cartao: "0987654321",
+    updated_at: "2026-01-04T11:50:00Z",
+    token_access: {
+      token: "xyz789",
+      expirado_em: "2026-01-05T11:50:00Z",
+    },
   },
 ];
-
-
-const userMock =
-{
-  nome: "João Silva",
-  matricula: "12345",
-  unidade: "10",
-  status: "Ativo",
-  CPF: "123.456.789-00",
-  categoria: "Administrador",
-  numeroCartao: "1234567890",
-}
 
 export function UsersPage({ }: UsersPageProps) {
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
@@ -78,44 +85,57 @@ export function UsersPage({ }: UsersPageProps) {
 
   return (
     <Stack gap={2}>
-      <Stack gap={2} direction={"row"} justifyContent={"space-between"}>
-        <Box component="span">
-          <Typography variant="h4" fontWeight={"600"} color="text.primary">
-            Usuários
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={400}>
-            Gerencie os usuários do sistema
-          </Typography>
-        </Box>
+      <PageHeader
+        title="Usuários"
+        subtitle="Gerencie os usuários do sistema"
+      >
+        <Button
+          variant="outlined"
+          startIcon={<DownloadIcon />}
+          onClick={() => setOpenExportUsersModal(true)}
+        >
+          Exportar
+        </Button>
 
-        <Stack gap={2} direction={"row"}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={() => setOpenExportUsersModal(true)}
-          >
-            Exportar
-          </Button>
+        <Button
+          variant="contained"
+          startIcon={<PlusIcon />}
+          onClick={() => setOpenCreateUserModal(true)}
+        >
+          Adicionar Usuário
+        </Button>
+      </PageHeader>
 
-          <ExportUsersModal
-            open={openExportUsersModal}
-            onClose={() => setOpenExportUsersModal(false)}
-          />
+      <ExportModal
+        open={openExportUsersModal}
+        onClose={() => setOpenExportUsersModal(false)}
+        title="Exportar Usuários"
+        subtitle="Escolha o formato da exportação"
+        options={[
+          {
+            label: "PDF",
+            description: "Relatório completo com gráficos e métricas",
+            icon: <FileIcon color="#E5E7EB" />,
+            bgColor: "#FF3D00",
+            onPreview: () => { console.log("Preview CSV"); },
+            onDownload: () => { console.log("Download CSV"); },
 
-          <Button
-            variant="contained"
-            startIcon={<PlusIcon />}
-            onClick={() => setOpenCreateUserModal(true)}
-          >
-            Adicionar Usuário
-          </Button>
-          <NewUserModal
-            open={openCreateUserModal}
-            onClose={() => setOpenCreateUserModal(false)}
-          />
+          },
+          {
+            label: "CSV",
+            description: "Dados em formato de tabela separada por vírgulas",
+            icon: <CSVIcon color="#198754" />,
+            bgColor: "#B8EBAD",
+            onPreview: () => { console.log("Preview CSV"); },
+            onDownload: () => { console.log("Download CSV"); },
+          },
+        ]}
+      />
 
-        </Stack>
-      </Stack>
+      <NewUserModal
+        open={openCreateUserModal}
+        onClose={() => setOpenCreateUserModal(false)}
+      />
 
       <Card>
         <Stack gap={2} direction={"row"}>

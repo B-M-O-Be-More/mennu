@@ -1,13 +1,12 @@
 import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
+import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
 import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IStock } from "@/data/tableColumns";
-import { stockSchema } from "@/schemas/stockSchema";
+import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
 
 export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const {
@@ -16,11 +15,11 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     formState: { errors },
     setValue,
     watch,
-  } = useForm<IStock>({
-    resolver: yupResolver(stockSchema),
+  } = useForm<CreateStockSchemaFormData>({
+    resolver: yupResolver(createStockSchema),
     defaultValues: {
       item: "",
-      categoria: mockCategorias[0].value,
+      categoria: mockTipoUsuario[0].value,
       unidadeMedida: mockUnidadesMedida[0].value,
       saldo: "0",
       estoqueMinimo: "0",
@@ -29,7 +28,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     },
   });
 
-  const onSubmit = (data: IStock) => {
+  const onSubmit = (data: CreateStockSchemaFormData) => {
     console.log("Novo item de estoque:", data);
     onClose();
   };
@@ -51,7 +50,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             <Select
               label="Categoria"
               optional={false}
-              options={mockCategorias}
+              options={mockTipoUsuario}
               register={register("categoria")}
               error={errors.categoria?.message}
             />

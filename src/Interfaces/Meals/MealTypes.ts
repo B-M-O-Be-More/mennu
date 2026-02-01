@@ -35,3 +35,14 @@ export interface MealRuleResponse {
   minInterval: number;
   isTimeRestricted: boolean;
 }
+
+export interface MealRecordsResponse {
+  isManual?: boolean;
+  usuario: string;
+  matricula: string;
+  tipo: string;
+  unidade: string;
+  horario: string;
+  terminal: string;
+  status: "Servida" | "Pendente" | "Cancelada";
+}

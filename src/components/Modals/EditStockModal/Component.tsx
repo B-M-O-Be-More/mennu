@@ -1,15 +1,13 @@
 import React from "react";
 import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockCategorias, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { IStock } from "@/data/tableColumns";
 import { EditStockModalProps } from "./";
 import { useForm } from "react-hook-form";
-import { stockSchema } from "@/schemas/stockSchema";
+import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 
 export default function EditStockModal({
   open,
@@ -25,13 +23,13 @@ export default function EditStockModal({
     watch,
     reset,
     control,
-  } = useForm<IStock>({
-    resolver: yupResolver(stockSchema),
+  } = useForm<CreateStockSchemaFormData>({
+    resolver: yupResolver(createStockSchema),
     defaultValues:
       stockItem,
   });
 
-  const onSubmit = (data: IStock) => {
+  const onSubmit = (data: CreateStockSchemaFormData) => {
     onSave(data);
     onClose();
   };
@@ -60,7 +58,7 @@ export default function EditStockModal({
             control={control}
             label="Categoria"
             optional={false}
-            options={mockCategorias}
+            options={mockTipoUsuario}
             register={register("categoria")}
             error={errors.categoria?.message}
           />

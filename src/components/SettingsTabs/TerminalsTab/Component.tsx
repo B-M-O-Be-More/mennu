@@ -1,16 +1,14 @@
 import { Box, Button, Chip, Stack, Typography, useTheme } from "@mui/material";
 import { TerminalsTabProps } from "./interface";
-import { AlertIcon, ClockIcon, NoWifiIcon, PlusIcon, WifiIcon } from "@/components/Icons";
+import { AlertIcon, ClockIcon, NoWifiIcon, PlusIcon, TerminalIcon, WifiIcon } from "@/components/Icons";
 import React from "react";
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
 import { cardsTerminalsConfig } from "@/data/infos";
-import { TerminalIcon } from "@/components/Sidebar/icons";
 import ActionCell from "@/components/ActionCell";
-import { ITerminal } from "@/data/tableColumns";
 import NewTerminalModal from "@/components/Modals/NewTerminalModal";
 import EditTerminalModal from "@/components/Modals/EditTerminalModal/Component";
-
+import { ITerminal } from "@/Interfaces/Terminal/terminal";
 
 export const mockTerminals: ITerminal[] = [
   {

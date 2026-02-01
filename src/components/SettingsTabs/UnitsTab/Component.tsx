@@ -5,8 +5,92 @@ import IconBox from "@/components/Cards/IconBox";
 import React from "react";
 import NewUnitModal from "@/components/Modals/NewUnitModal";
 import EditUnitModal from "@/components/Modals/EditUnitModal";
-import { IUnit } from "@/data/tableColumns";
 import UnitPoliciesModal from "@/components/Modals/UnitPoliciesModal/Component";
+import { IUnit } from "@/Interfaces/Unit/unit";
+
+const mockUnits = [
+  {
+    nome: "Unidade 1",
+    status: "ativo",
+    endereco: "Endereço da Unidade 1",
+    responsavel: "João Silva",
+    politicas: {
+      horarios: {
+        cafeManha: {
+          inicio: "07:00",
+          fim: "09:00",
+        },
+        almoco: {
+          inicio: "12:00",
+          fim: "14:00",
+        },
+        jantar: {
+          inicio: "18:00",
+          fim: "20:00",
+        },
+      },
+      limites: {
+        diario: 80,
+        semanal: 400,
+        mensal: 1600,
+      },
+    }
+  },
+  {
+    nome: "Unidade 2",
+    status: "ativo",
+    endereco: "Endereço da Unidade 2",
+    responsavel: "Maria Oliveira",
+    politicas: {
+      horarios: {
+        cafeManha: {
+          inicio: "07:00",
+          fim: "09:00",
+        },
+        almoco: {
+          inicio: "12:00",
+          fim: "14:00",
+        },
+        jantar: {
+          inicio: "18:00",
+          fim: "20:00",
+        },
+      },
+      limites: {
+        diario: 100,
+        semanal: 500,
+        mensal: 2000,
+      },
+    }
+  },
+  {
+    nome: "Unidade 3",
+    status: "inativo",
+    endereco: "Endereço da Unidade 3",
+    responsavel: "Carlos Santos",
+    politicas: {
+      horarios: {
+        cafeManha: {
+          inicio: "08:00",
+          fim: "10:00",
+        },
+        almoco: {
+          inicio: "12:00",
+          fim: "14:00",
+        },
+        jantar: {
+          inicio: "18:00",
+          fim: "20:00",
+        },
+      },
+      limites: {
+        diario: 50,
+        semanal: 200,
+        mensal: 800,
+      },
+    }
+  },
+];
 
 export default function UnitsTab({ }: UnitsTabProps) {
   const [openNewUnitModal, setOpenNewUnitModal] = React.useState(false);
@@ -14,90 +98,6 @@ export default function UnitsTab({ }: UnitsTabProps) {
   const [openUnitPoliciesModal, setOpenUnitPoliciesModal] = React.useState(false);
 
   const [selectedUnit, setSelectedUnit] = React.useState<IUnit | null>(null);
-
-  const mockUnits = [
-    {
-      nome: "Unidade 1",
-      status: "ativo",
-      endereco: "Endereço da Unidade 1",
-      responsavel: "João Silva",
-      politicas: {
-        horarios: {
-          cafeManha: {
-            inicio: "07:00",
-            fim: "09:00",
-          },
-          almoco: {
-            inicio: "12:00",
-            fim: "14:00",
-          },
-          jantar: {
-            inicio: "18:00",
-            fim: "20:00",
-          },
-        },
-        limites: {
-          diario: 80,
-          semanal: 400,
-          mensal: 1600,
-        },
-      }
-    },
-    {
-      nome: "Unidade 2",
-      status: "ativo",
-      endereco: "Endereço da Unidade 2",
-      responsavel: "Maria Oliveira",
-      politicas: {
-        horarios: {
-          cafeManha: {
-            inicio: "07:00",
-            fim: "09:00",
-          },
-          almoco: {
-            inicio: "12:00",
-            fim: "14:00",
-          },
-          jantar: {
-            inicio: "18:00",
-            fim: "20:00",
-          },
-        },
-        limites: {
-          diario: 100,
-          semanal: 500,
-          mensal: 2000,
-        },
-      }
-    },
-    {
-      nome: "Unidade 3",
-      status: "inativo",
-      endereco: "Endereço da Unidade 3",
-      responsavel: "Carlos Santos",
-      politicas: {
-        horarios: {
-          cafeManha: {
-            inicio: "08:00",
-            fim: "10:00",
-          },
-          almoco: {
-            inicio: "12:00",
-            fim: "14:00",
-          },
-          jantar: {
-            inicio: "18:00",
-            fim: "20:00",
-          },
-        },
-        limites: {
-          diario: 50,
-          semanal: 200,
-          mensal: 800,
-        },
-      }
-    },
-  ];
 
   return (
     <>

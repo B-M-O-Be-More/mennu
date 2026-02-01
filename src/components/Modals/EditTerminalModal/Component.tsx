@@ -3,12 +3,11 @@ import { mockTiposTerminal, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { ITerminal } from "@/data/tableColumns";
 import { EditTerminalModalProps } from "./";
 import { AlertIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup";
-import { terminalSchema } from "@/schemas/terminalSchema";
+import { createTerminalSchema, CreateTerminalSchemaFormData } from "@/schemas/terminalSchema";
 import Card from "@/components/Cards/Card";
 import React from "react";
 
@@ -24,15 +23,14 @@ export default function EditTerminalModal({
     handleSubmit,
     control,
     reset,
-    watch,
     formState: { errors },
-  } = useForm<ITerminal>(
+  } = useForm<CreateTerminalSchemaFormData>(
     {
-      resolver: yupResolver(terminalSchema),
+      resolver: yupResolver(createTerminalSchema),
       defaultValues: terminal,
     });
 
-  const onSubmit = (data: ITerminal) => {
+  const onSubmit = (data: CreateTerminalSchemaFormData) => {
     onSave(data);
     onClose();
   };

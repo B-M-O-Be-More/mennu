@@ -1,11 +1,12 @@
-import { Stack, Typography, Button } from "@mui/material";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
-import { IPolicy } from "@/data/tableColumns";
 import { UnitPoliciesModalProps } from "./";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { policySchema } from "@/schemas/unitSchema";
+import { createPolicySchema, CreatePolicySchemaFormData } from "@/schemas/unitSchema";
+import ClosableAlertBox from "@/components/ClosableAlertBox";
+import { CircledCheckIcon } from "@/components/Icons";
 
 export default function UnitPoliciesModal({
   open,
@@ -13,14 +14,15 @@ export default function UnitPoliciesModal({
   unitItem,
   onSave,
 }: UnitPoliciesModalProps) {
+  const theme = useTheme();
 
   const { register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IPolicy>(
+  } = useForm<CreatePolicySchemaFormData>(
     {
       resolver:
-        yupResolver(policySchema),
+        yupResolver(createPolicySchema),
       defaultValues: unitItem?.politicas ||
       {
         horarios:
@@ -33,7 +35,7 @@ export default function UnitPoliciesModal({
       },
     });
 
-  const onSubmit = (data: IPolicy) => {
+  const onSubmit = (data: CreatePolicySchemaFormData) => {
     console.log("Políticas atualizadas:", data);
     const updatedUnit = { ...unitItem, politicas: data };
 
@@ -160,6 +162,15 @@ export default function UnitPoliciesModal({
             />
           </Stack>
         </Stack>
+
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <CircledCheckIcon color={theme.palette.info.contrastText} />
+          }
+          title="Propagação Automática"
+          description="Todas as políticas definidas aqui serão automaticamente aplicadas aos terminais vinculados a esta unidade. Os terminais receberão as atualizações na próxima sincronização."
+        />
 
         <Stack direction="row" gap={2}>
           <Button

@@ -4,18 +4,17 @@ import { NewUnitModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { IUnit } from "@/data/tableColumns";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { unitSchema } from "@/schemas/unitSchema";
+import { createUnitSchema, CreateUnitSchemaFormData } from "@/schemas/unitSchema";
 
 export default function NewUnitModal({ open, onClose }: NewUnitModalProps) {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<IUnit>({
-    resolver: yupResolver(unitSchema),
+  } = useForm<CreateUnitSchemaFormData>({
+    resolver: yupResolver(createUnitSchema),
     defaultValues: {
       nome: "",
       endereco: "",
@@ -36,7 +35,7 @@ export default function NewUnitModal({ open, onClose }: NewUnitModalProps) {
     }
   });
 
-  const onSubmit = (data: IUnit) => {
+  const onSubmit = (data: CreateUnitSchemaFormData) => {
     console.log("Nova unidade:", data);
     onClose();
   };

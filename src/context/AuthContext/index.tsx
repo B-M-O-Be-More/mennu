@@ -4,27 +4,27 @@ import React from "react";
 import { destroyCookie, setCookie } from "nookies";
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
-import { LoginSchemaType } from "@/schemas/loginSchema";
+import { LoginSchemaFormData } from "@/schemas/loginSchema";
 import { useRouter } from "next/navigation";
 import { initialUser } from "@/data/initialUser";
-import { User } from "@/Interfaces/User/user";
+import { IUser } from "@/Interfaces/User/user";
 
 const UserContext = React.createContext<UserContextProps>({
   isAuthenticated: false,
   isLoadingLogin: true,
   isLoadingPages: true,
   isLoadingValidateToken: true,
-  login: async () => ({}) as User,
-  logout: async () => {},
-  handleValidateToken: async () => {},
-  user: {} as User
+  login: async () => ({}) as IUser,
+  logout: async () => { },
+  handleValidateToken: async () => { },
+  user: {} as IUser
 });
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [requestLogin, isLoadingLogin] = useFetch<User>();
-  const [requestValidateToken, isLoadingValidateToken] = useFetch<User>();
+  const [requestLogin, isLoadingLogin] = useFetch<IUser>();
+  const [requestValidateToken, isLoadingValidateToken] = useFetch<IUser>();
   const [isLoadingPages, setLoadingPages] = React.useState<boolean>(true);
-  const [user, setUser] = React.useState<User>(initialUser());
+  const [user, setUser] = React.useState<IUser>(initialUser());
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
   const router = useRouter();
 
@@ -32,24 +32,24 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setCookie(undefined, "token", token, { path: "/" });
   };
 
-  const handleUserState = (data: User) => {
+  const handleUserState = (data: IUser) => {
     setUser(data);
     handleSetCookies(data.token_access.token);
   };
 
-  const login = async (formData: LoginSchemaType) => {
+  const login = async (formData: LoginSchemaFormData) => {
     const resp = await requestLogin("/api/auth/login", {
       method: "POST",
       body: formData,
     }).catch((error) => {
-        console.error(error);
+      console.error(error);
     });
 
     if (resp && resp.data) {
       handleUserState(resp.data);
       setIsAuthenticated(true);
     }
-    return resp?.data as User;
+    return resp?.data as IUser;
   };
 
   const handleValidateToken = async () => {
