@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { ReviewExtraRequestFormData, reviewExtraRequestSchema } from "@/schemas/extraRequestSchema";
 import { AlertIcon, CircledCheckIcon } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
+import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
 
 export default function ReviewExtraRequestModal({
   open,
@@ -81,31 +82,22 @@ export default function ReviewExtraRequestModal({
           multiline
         />
 
-        <Stack
-          direction="row"
-          border={"1px solid"}
-          borderColor={isApprove ? "success.light" : "error.light"}
-          borderRadius={3}
-          padding={2}
-          gap={2}
-          bgcolor={isApprove ? "success.main" : "error.main"}
-        >
-          {isApprove ? (
-            <CircledCheckIcon color={theme.palette.success.contrastText} />
-          ) : (
-            <AlertIcon color={theme.palette.error.contrastText} />
-          )}
-          <Box>
-            <Typography variant="body1" color={isApprove ? "success.dark" : "error.dark"}>
-              {isApprove ? "Acesso aos Terminais" : "Acesso Negado aos Terminais"}
-            </Typography>
-            <Typography variant="body2" color={isApprove ? "success.contrastText" : "error.contrastText"}>
-              {isApprove
-                ? "Ao aprovar, a solicitação será registrada e o usuário poderá utilizar o benefício."
-                : "Ao reprovar, a solicitação será registrada e o usuário não poderá utilizar o benefício."}
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity={isApprove ? "success" : "error"}
+          icon={
+            isApprove ? (
+              <CircledCheckIcon color={theme.palette.success.contrastText} />
+            ) : (
+              <AlertIcon color={theme.palette.error.contrastText} />
+            )
+          }
+          title={isApprove ? "Acesso aos Terminais" : "Acesso Negado aos Terminais"}
+          description={
+            isApprove
+              ? "Ao aprovar, a solicitação será registrada e o usuário poderá utilizar o benefício."
+              : "Ao reprovar, a solicitação será registrada e o usuário não poderá utilizar o benefício."
+          }
+        />
 
         <Stack direction="row" gap={2}>
           <Button

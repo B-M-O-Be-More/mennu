@@ -1,4 +1,4 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Stack, Button, useTheme } from "@mui/material";
 import { mockExtraRequestTypes, mockUsers } from "../../../data/menuItems";
 import { NewExtraRequestModalProps } from ".";
 import Modal from "../Modal";
@@ -8,8 +8,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { EyeIcon } from "@/components/Icons";
 import { createExtraRequestSchema, CreateExtraRequestFormData } from "@/schemas/extraRequestSchema";
+import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
 
 export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestModalProps) {
+  const theme = useTheme();
+
   const {
     handleSubmit,
     register,
@@ -58,17 +61,15 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
           multiline
         />
 
-        <Stack direction={"row"} border={"1px solid"} borderColor={"info.light"} bgcolor={"info.main"} borderRadius={2} p={2} gap={1}>
-          <EyeIcon color="info.contrastText" />
-          <Box>
-            <Typography variant="body1" fontWeight={"400"} color="info.dark" mb={1}>
-              Workflow de Aprovação
-            </Typography>
-            <Typography variant="caption" color="info.contrastText" fontWeight={400}>
-              A solicitação será criada com status "Pendente" e encaminhada para análise do gestor responsável. Todas as solicitações são registradas em log de auditoria.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <EyeIcon color={theme.palette.info.contrastText} />
+          }
+          title="Workflow de Aprovação"
+          description='A solicitação será criada com status "Pendente" e encaminhada para análise do gestor responsável. Todas as solicitações são registradas em log de auditoria.'
+        />
+
         <Stack direction="row" gap={2}>
           <Button
             variant="outlined"

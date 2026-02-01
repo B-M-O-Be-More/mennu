@@ -212,6 +212,14 @@ const EyeIcon = ({ color = "currentColor", width = 24, height = 24, className, s
   </svg>
 );
 
+const ErrorOutlineIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    <path d="M15.9998 29.3327C23.3636 29.3327 29.3332 23.3631 29.3332 15.9993C29.3332 8.63555 23.3636 2.66602 15.9998 2.66602C8.63604 2.66602 2.6665 8.63555 2.6665 15.9993C2.6665 23.3631 8.63604 29.3327 15.9998 29.3327Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 10.666V15.9993" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 21.334H16.0133" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export {
   LuUserPlus,
   LuLogIn,
@@ -244,4 +252,5 @@ export {
   WifiIcon,
   ClockIcon,
   EyeIcon,
+  ErrorOutlineIcon,
 };

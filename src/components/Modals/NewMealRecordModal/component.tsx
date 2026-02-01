@@ -1,9 +1,8 @@
 "use client";
 
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, useTheme } from "@mui/material";
 import Modal from "../Modal";
 import { NewMealRecordModalProps } from "./interface";
-import { ErrorOutline } from "@mui/icons-material";
 import Select from "@/components/FormControl/Select";
 import Input from "@/components/FormControl/Input";
 import TextArea from "@/components/FormControl/TextArea";
@@ -15,11 +14,15 @@ import {
 } from "@/schemas/mealRecordSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import ClosableAlertBox from "@/components/ClosableAlertBox";
+import { ErrorOutlineIcon } from "@/components/Icons";
 
 export function NewMealRecordModal({
   isOpen,
   onClose,
 }: NewMealRecordModalProps) {
+  const theme = useTheme();
+
   const {
     register,
     handleSubmit,
@@ -54,25 +57,15 @@ export function NewMealRecordModal({
       open={isOpen}
       onClose={onClose}>
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        <Stack
-          direction="row"
-          border={"1px solid"}
-          borderColor={"warning.light"}
-          borderRadius={3}
-          padding={2}
-          gap={2}
-          bgcolor={"warning.main"}>
-          <ErrorOutline sx={{ color: "warning.contrastText" }} />
-          <Box>
-            <Typography variant="body1" color="warning.dark" mb={1}>
-              Registro Excepcional
-            </Typography>
-            <Typography variant="body2" color="warning.contrastText">
-              Use este recurso apenas em casos excepcionais, como falha no
-              terminal. O registro será marcado como "Manual" e auditado.
-            </Typography>
-          </Box>
-        </Stack>
+
+        <ClosableAlertBox
+          severity="warning"
+          icon={
+            <ErrorOutlineIcon color={theme.palette.warning.contrastText} />
+          }
+          title="Registro Excepcional"
+          description='Use este recurso apenas em casos excepcionais, como falha no terminal. O registro será marcado como "Manual" e auditado.'
+        />
 
         <Select
           label={"Usuário"}

@@ -1,4 +1,4 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
 import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -10,6 +10,8 @@ import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { IUser } from "@/Interfaces/User/user";
+import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
+import { UsuariosIcon } from "@/components/Sidebar/icons";
 
 export default function EditUserModal({
   open,
@@ -17,6 +19,8 @@ export default function EditUserModal({
   user,
   onSave,
 }: EditUserModalProps) {
+  const theme = useTheme();
+
   const {
     register,
     handleSubmit,
@@ -103,25 +107,14 @@ export default function EditUserModal({
           error={errors.status?.message}
         />
 
-        <Stack
-          direction="row"
-          border={"1px solid"}
-          borderColor={"info.light"}
-          borderRadius={3}
-          padding={2}
-          gap={2}
-          bgcolor={"info.main"}
-        >
-          <CircledCheckIcon color="#155DFC" />
-          <Box>
-            <Typography variant="body1" color="info.contrastText">Acesso aos Terminais</Typography>
-            <Typography
-              variant="body2"
-              color="info.light">
-              Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <UsuariosIcon color={theme.palette.info.contrastText} />
+          }
+          title="Acesso aos Terminais"
+          description="Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente."
+        />
 
         <Stack direction="row" gap={2}>
           <Button
@@ -149,6 +142,6 @@ export default function EditUserModal({
           </Button>
         </Stack>
       </Stack>
-    </Modal>
+    </Modal >
   );
 }

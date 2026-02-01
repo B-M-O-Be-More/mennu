@@ -1,4 +1,4 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
 import { mockTipoUsuario } from "../../../data/menuItems";
 import { NewMovementModalProps } from ".";
 import Modal from "../Modal";
@@ -9,6 +9,7 @@ import { Card } from "@/components/Cards/Card/Component";
 import { useForm } from "react-hook-form";
 import { createMovementSchema, CreateMovementSchemaFormData } from "@/schemas/movementSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
 
 const movementTypeItems = [
   { id: 0, label: "Entrada", icon: <ArrowIcon style={{ transform: "rotate(90deg)" }} width={16} height={16} color="#00A63E" /> },
@@ -18,6 +19,8 @@ const movementTypeItems = [
 ];
 
 export default function NewMovementModal({ open, onClose }: NewMovementModalProps) {
+  const theme = useTheme();
+
   const {
     register,
     handleSubmit,
@@ -128,17 +131,14 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
           </Typography>
         </Box>
 
-        <Stack direction="row" alignItems="center" border={"1px solid #BEDBFF"} borderRadius={3} padding={2} gap={2} sx={{ backgroundColor: "#EFF6FF" }} >
-          <CircledCheckIcon color="#155DFC" />
-          <Box>
-            <Typography variant="body1" color="#1C398E">
-              Atualização Automática de Saldo
-            </Typography>
-            <Typography variant="body2" color="#1447E6">
-              O saldo será atualizado automaticamente.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <CircledCheckIcon color={theme.palette.info.contrastText} />
+          }
+          title="Atualização Automática de Saldo"
+          description=' O saldo será atualizado automaticamente.'
+        />
 
         <Stack direction="row" gap={2}>
           <Button

@@ -24,8 +24,8 @@ const palette = {
   },
   warning: {
     main: "#FFFBEB",
-    light: "#E17100",
-    dark: "#B45309",
+    light: "#FEE685",
+    dark: "#7B3306",
     contrastText: "#BB4D00",
   },
   info: {

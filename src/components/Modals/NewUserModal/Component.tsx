@@ -1,4 +1,4 @@
-import { Stack, Typography, Box, Button } from "@mui/material";
+import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
 import { UsuariosIcon } from "../../Sidebar/icons";
 import { mockTipoUsuario, mockUnidades, mockStatuses } from "../../../data/menuItems";
 import { NewUserModalProps } from ".";
@@ -8,8 +8,11 @@ import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
+import ClosableAlertBox from "@/components/ClosableAlertBox";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
+  const theme = useTheme();
+
   const {
     handleSubmit,
     register,
@@ -104,17 +107,15 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           Usuários inativos não podem acessar o terminal de refeições
         </Typography>
 
-        <Stack direction={"row"} border={"1px solid #BEDBFF"} bgcolor={"#EFF6FF"} borderRadius={2} p={2} gap={1}>
-          <UsuariosIcon color="" />
-          <Box>
-            <Typography variant="body1" fontWeight={"400"} color="#1C398E" mb={1}>
-              Acesso aos Terminais
-            </Typography>
-            <Typography variant="caption" color="#1447E6" fontWeight={400}>
-              Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente.
-            </Typography>
-          </Box>
-        </Stack>
+        <ClosableAlertBox
+          severity="info"
+          icon={
+            <UsuariosIcon color={theme.palette.info.contrastText} />
+          }
+          title="Acesso aos Terminais"
+          description="Este usuário poderá acessar os terminais de refeição da unidade selecionada. As políticas da unidade (horários e limites) serão aplicadas automaticamente."
+        />
+
         <Stack direction="row" gap={2}>
           <Button
             variant="outlined"
