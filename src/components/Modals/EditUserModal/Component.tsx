@@ -4,7 +4,7 @@ import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { EditUserModalProps } from "./";
-import { CircledCheckIcon, UsuariosIcon } from "@/components/Icons";
+import { UsuariosIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
 import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
