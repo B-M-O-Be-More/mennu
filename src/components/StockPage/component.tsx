@@ -2,7 +2,7 @@
 
 import { Stack, Typography, Box, Button } from "@mui/material";
 import React from "react";
-import { DownloadIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Icons";
+import { DownloadIcon, EstoqueIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Icons";
 import { StockPageProps } from "./";
 import Card from "../Cards/Card";
 import Table from "../Tables/Table";
@@ -10,7 +10,6 @@ import { movementColumns, stockColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import { cardsStock } from "@/data/infos";
-import { EstoqueIcon } from "../Sidebar/icons";
 import NewStockModal from "../Modals/NewStockModal";
 import ActionCell from "../ActionCell";
 import EditStockModal from "../Modals/EditStockModal";

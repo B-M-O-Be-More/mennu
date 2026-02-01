@@ -4,7 +4,7 @@ import { Box, Button, Checkbox, Link, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
 import { FormLoginProps } from "./interface";
 import Input from "@/components/FormControl/Input";
-import { MdOutlineEmail, FiLock } from "@/components/Icons";
+import { MailIcon } from "@/components/Icons";
 import Card from "@/components/Cards/Card";
 import { useForm } from "react-hook-form";
 import { loginSchema, LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -64,14 +64,15 @@ export function FormLogin({ }: FormLoginProps) {
           </Typography>
         </Stack>
 
-        <Input icon={<MdOutlineEmail size={18} />}
+        <Input
+          icon={<MailIcon width={18} height={18} />}
           label="E-mail"
           placeholder="seu@email.com"
           register={register("email")}
           error={errors.email?.message}
         />
 
-        <Input icon={<FiLock size={18} />}
+        <Input
           label="Senha"
           type="password"
           placeholder="••••••••"

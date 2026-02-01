@@ -1,6 +1,5 @@
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
-import { ConfiguracoesIcon } from "@/components/Sidebar/icons";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { MealRulesCardProps } from "./interface";
 import { useTheme } from "@mui/material/styles";
@@ -8,6 +7,7 @@ import { ErrorOutline } from "@mui/icons-material";
 import MealRuleItem from "../../MealsPage/MealRuleItem";
 import React from "react";
 import EditMealRulesModal from "@/components/Modals/EditMealRulesModal";
+import { ConfiguracoesIcon } from "@/components/Icons";
 
 export function MealRulesCard({ rule }: MealRulesCardProps) {
   const [openEditModal, setOpenEditModal] = React.useState(false);

@@ -1,17 +1,16 @@
-import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
+import { Stack, Button, useTheme } from "@mui/material";
 import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { EditUserModalProps } from "./";
-import { CircledCheckIcon } from "@/components/Icons";
+import { CircledCheckIcon, UsuariosIcon } from "@/components/Icons";
 import { useForm } from "react-hook-form";
 import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { IUser } from "@/Interfaces/User/user";
 import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
-import { UsuariosIcon } from "@/components/Sidebar/icons";
 
 export default function EditUserModal({
   open,

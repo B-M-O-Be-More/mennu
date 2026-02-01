@@ -6,8 +6,8 @@ import {
   TextField,
 } from "@mui/material";
 import React from "react";
-import { FiEye } from "react-icons/fi";
 import { InputProps } from "./";
+import { EyeIcon, LockIcon } from "@/components/Icons";
 
 export default function Input({
   label,
@@ -58,8 +58,9 @@ export default function Input({
                     onClick={() => setShowPassword((prev) => !prev)}
                     edge="start"
                     size="small"
+                    sx={{ color: "text.secondary" }}
                   >
-                    {showPassword ? <FiEye /> : icon}
+                    {showPassword ? <EyeIcon /> : <LockIcon width={18} height={18} />}
                   </IconButton>
                 ) : (
                   icon

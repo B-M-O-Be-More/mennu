@@ -1,6 +1,5 @@
 import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
-import { AlertIcon, BuildingIcon, CircledCheckIcon, CircledXIcon, ClockIcon, LockIcon, NoWifiIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosXIcon } from "../components/Icons";
-import { CardapiosIcon, ConfiguracoesIcon, EstoqueIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, UsuariosIcon } from "../components/Sidebar/icons";
+import { AlertIcon, BuildingIcon, CardapiosIcon, CircledCheckIcon, CircledXIcon, ClockIcon, ConfiguracoesIcon, EstoqueIcon, LockIcon, NoWifiIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosIcon, UsuariosXIcon } from "../components/Icons";
 
 const cardsUsers = [
   {

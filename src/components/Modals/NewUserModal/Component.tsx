@@ -1,5 +1,4 @@
-import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
-import { UsuariosIcon } from "../../Sidebar/icons";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
 import { mockTipoUsuario, mockUnidades, mockStatuses } from "../../../data/menuItems";
 import { NewUserModalProps } from ".";
 import Modal from "../Modal";
@@ -9,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
+import { UsuariosIcon } from "@/components/Icons";
 
 export default function NewUserModal({ open, onClose }: NewUserModalProps) {
   const theme = useTheme();

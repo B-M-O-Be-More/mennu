@@ -2,8 +2,7 @@
 
 import { Button, Stack, Typography, Grid, Box } from "@mui/material";
 import { DashBoardPageProps } from "./index";
-import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon } from "../Icons";
-import { RefeicoesIcon } from "../Sidebar/icons";
+import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon, RefeicoesIcon } from "../Icons";
 import React from "react";
 import { cardsModules } from "@/data/infos";
 import ModuleCard from "../ModuleCard";

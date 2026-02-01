@@ -2,8 +2,7 @@
 
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
-import { ClockIcon, EditIcon } from "@/components/Icons";
-import { RefeicoesIcon } from "@/components/Sidebar/icons";
+import { ClockIcon, EditIcon, RefeicoesIcon } from "@/components/Icons";
 import { Box, Chip, IconButton, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { MealTypeCardProps } from "./interface";

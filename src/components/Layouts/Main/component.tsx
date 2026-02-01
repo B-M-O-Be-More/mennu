@@ -3,21 +3,8 @@
 import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname } from "next/navigation";
-import {
-  DashboardIcon,
-  CardapiosIcon,
-  EstoqueIcon,
-  RefeicoesIcon,
-  SolicitacoesExtrasIcon,
-  RelatoriosIcon,
-  UsuariosIcon,
-  TerminalIcon,
-  PerfisPermissoesIcon,
-  LogsAuditoriaIcon,
-  ConfiguracoesIcon,
-  SairIcon,
-} from "@/components/Sidebar/icons";
 import { useUser } from "@/context/AuthContext";
+import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 
 export default function MainLayout({
   children,

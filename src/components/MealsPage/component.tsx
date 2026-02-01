@@ -4,8 +4,7 @@ import { Button, Stack } from "@mui/material";
 import React from "react";
 
 import PageHeader from "../PageHeader";
-import { DownloadIcon, PaperIcon, PlusIcon } from "../Icons";
-import { ConfiguracoesIcon, RefeicoesIcon } from "../Sidebar/icons";
+import { ConfiguracoesIcon, DownloadIcon, PaperIcon, PlusIcon, RefeicoesIcon } from "../Icons";
 import TabButton from "../TabButton";
 import NewMealTypeModal from "../Modals/NewMealTypeModal";
 import MealTypesTab from "./Tabs/MealTypesTab";
