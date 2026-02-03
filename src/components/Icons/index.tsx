@@ -316,6 +316,37 @@ const SairIcon = ({ color = "currentColor", width = 24, height = 24, className }
   </svg>
 );
 
+const PhoneIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M67.9983 8H27.9993C23.5811 8 19.9995 11.5816 19.9995 15.9998V79.9981C19.9995 84.4163 23.5811 87.9979 27.9993 87.9979H67.9983C72.4164 87.9979 75.998 84.4163 75.998 79.9981V15.9998C75.998 11.5816 72.4164 8 67.9983 8Z" stroke={color} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M48 72H48.04" stroke={color} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const QRCodeIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M14 6H8C6.89543 6 6 6.89543 6 8V14C6 15.1046 6.89543 16 8 16H14C15.1046 16 16 15.1046 16 14V8C16 6.89543 15.1046 6 14 6Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M40 6H34C32.8954 6 32 6.89543 32 8V14C32 15.1046 32.8954 16 34 16H40C41.1046 16 42 15.1046 42 14V8C42 6.89543 41.1046 6 40 6Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14 32H8C6.89543 32 6 32.8954 6 34V40C6 41.1046 6.89543 42 8 42H14C15.1046 42 16 41.1046 16 40V34C16 32.8954 15.1046 32 14 32Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M42 32H36C34.9391 32 33.9217 32.4214 33.1716 33.1716C32.4214 33.9217 32 34.9391 32 36V42" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M42 42V42.02" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 14V20C24 21.0609 23.5786 22.0783 22.8284 22.8284C22.0783 23.5786 21.0609 24 20 24H14" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6 24H6.02" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 6H24.02" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 32V32.02" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M32 24H34" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M42 24V24.02" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 42V40" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CardIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M40 10H8C5.79086 10 4 11.7909 4 14V34C4 36.2091 5.79086 38 8 38H40C42.2091 38 44 36.2091 44 34V14C44 11.7909 42.2091 10 40 10Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M4 20H44" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export {
   MailIcon,
   DownloadIcon,
@@ -354,4 +385,7 @@ export {
   LogsAuditoriaIcon,
   ConfiguracoesIcon,
   SairIcon,
+  PhoneIcon,
+  QRCodeIcon,
+  CardIcon,
 };

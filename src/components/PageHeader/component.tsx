@@ -13,14 +13,17 @@ export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
         >
           {title}
         </Typography>
-        <Typography
-          variant="subtitle2"
-          component={"h2"}
-          fontWeight={400}
-          color="text.secondary"
-        >
-          {subtitle}
-        </Typography>
+
+        {subtitle && (
+          <Typography
+            variant="subtitle2"
+            component={"h2"}
+            fontWeight={400}
+            color="text.secondary"
+          >
+            {subtitle}
+          </Typography>
+        )}
       </Box>
 
       <Stack gap={2} direction={"row"} alignItems={"center"}>
