@@ -2,7 +2,7 @@
 
 import LiveTerminalsComponent from "@/components/LiveTerminalsPage";
 
-export default function TerminalsPage() {
+export default function LiveTerminalPage() {
   return (
     <LiveTerminalsComponent />
   )

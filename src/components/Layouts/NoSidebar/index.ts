@@ -1,5 +1,5 @@
-import MainLayout  from "./component";
-import { MainLayoutProps } from "./interface";
+import NoSidebarLayout  from "./component";
+import { NoSidebarLayoutProps } from "./interface";
 
-export default MainLayout;
-export type { MainLayoutProps };
+export default NoSidebarLayout;
+export type { NoSidebarLayoutProps };

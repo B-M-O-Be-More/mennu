@@ -4,7 +4,6 @@ import { Stack, Typography, useTheme, Box } from "@mui/material";
 import { TerminalsPageProps } from "./";
 import PageHeader from "../PageHeader";
 import { ClockIcon, TerminalIcon } from "../Icons";
-import { useClock } from "@/hooks/useClock/hook";
 import { formatDate } from "@/utils/formatDate";
 import React from "react";
 import IconBox from "../Cards/IconBox";
@@ -118,8 +117,14 @@ export const mockSedes: { id: string, nome: string, terminals: ITerminal[] }[] =
 
 export function TerminalsPage({ }: TerminalsPageProps) {
   const theme = useTheme();
-  const startDate = React.useMemo(() => new Date(), []);
-  const now = useClock(startDate);
+
+  const [time, setTime] = React.useState<Date | null>(null);
+
+  React.useEffect(() => {
+    setTime(new Date());
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Stack gap={2} height="100%" maxHeight="100%">
@@ -127,7 +132,7 @@ export function TerminalsPage({ }: TerminalsPageProps) {
         <Stack direction="row" alignItems="center" gap={1.5}>
           <ClockIcon height={26} width={26} color={theme.palette.text.label} />
           <Typography variant="h5" color="text.label">
-            {formatDate(now, "hh:mm:ss")}
+            {time ? formatDate(time, "hh:mm:ss") : "--:--:--"}
           </Typography>
         </Stack>
       </PageHeader>

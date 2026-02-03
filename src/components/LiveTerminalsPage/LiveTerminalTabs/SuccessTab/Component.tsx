@@ -4,6 +4,7 @@ import IconBox from "@/components/Cards/IconBox/Component";
 import { CircledCheckIcon } from "@/components/Icons";
 import React from "react";
 import { IUser } from "@/Interfaces/User/user";
+import { formatDate } from "@/utils/formatDate";
 
 const mockUser: IUser = {
   id: 6905,
@@ -105,18 +106,18 @@ export default function SuccessTab({ setTab }: SuccessTabProps) {
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack bgcolor="background.default" borderRadius={3} py={1} px={2}>
               <Typography variant="caption" color="default.contrastText">
-                ID
+                Método
               </Typography>
-              <Typography>{mockUser.matricula}</Typography>
+              <Typography>NFC</Typography>
             </Stack>
           </Grid>
 
           <Grid size={12}>
             <Stack bgcolor="background.default" borderRadius={3} py={1} px={2}>
               <Typography variant="caption" color="default.contrastText">
-                ID
+                Data/Hora
               </Typography>
-              <Typography>{mockUser.matricula}</Typography>
+              <Typography>{formatDate(new Date(mockUser.updated_at), "dd/MM/yyyy, hh:mm:ss")}</Typography>
             </Stack>
           </Grid>
         </Grid>

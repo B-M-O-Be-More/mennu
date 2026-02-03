@@ -1,13 +1,8 @@
 "use client";
 
-import NoSidebarLayout from "@/components/Layouts/NoSidebar/component";
-import React from "react";
+import NoSidebarLayout from "@/components/Layouts/NoSidebar/";
 
-interface TerminalLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function TerminalLayout({ children }: TerminalLayoutProps) {
+export default function LiveTerminalLayout({ children }: { children: React.ReactNode }) {
   return (
     <NoSidebarLayout >
       {children}

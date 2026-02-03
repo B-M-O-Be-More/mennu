@@ -1,9 +1,9 @@
 "use client";
 
 import { Box } from "@mui/material";
-import React from "react";
+import { NoSidebarLayoutProps } from "./";
 
-export default function NoSidebarLayout({ children, }: { children: React.ReactNode; }) {
+export default function NoSidebarLayout({ children, }: NoSidebarLayoutProps) {
   return (
     <Box
       component="main"

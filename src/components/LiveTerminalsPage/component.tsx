@@ -1,9 +1,8 @@
 "use client";
 
-import { Stack, Typography, useTheme, Box } from "@mui/material";
+import { Stack, Typography, useTheme, Box, Button } from "@mui/material";
 import { LiveTerminalsPageProps } from "./";
 import { ClockIcon, WifiIcon } from "../Icons";
-import { useClock } from "@/hooks/useClock/hook";
 import { formatDate } from "@/utils/formatDate";
 import { ErrorTab, MainTab, SuccessTab } from "./LiveTerminalTabs/";
 import NextLink from "next/link";
@@ -25,10 +24,15 @@ const mockTerminal = {
 
 export function LiveTerminalsPage({ }: LiveTerminalsPageProps) {
   const theme = useTheme();
-  const startDate = React.useMemo(() => new Date(), []);
-  const now = useClock(startDate);
 
   const [tab, setTab] = React.useState(0);
+  const [time, setTime] = React.useState<Date | null>(null);
+
+  React.useEffect(() => {
+    setTime(new Date());
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Stack minHeight="100vh" gap={2}>
@@ -45,27 +49,20 @@ export function LiveTerminalsPage({ }: LiveTerminalsPageProps) {
         alignItems={{ xs: "flex-start", md: "center" }}
       >
         <Stack direction="row" gap={3} alignItems="center">
-          <Box
-            sx={{
-              bgcolor: "background.auth",
-              borderRadius: 4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              px: { xs: 2, md: 4 },
-              py: 1,
-
-              cursor: "pointer",
-              textDecoration: "none",
-              transition: "all 0.2s ease-in-out",
-            }}
+          <Button
+            variant="contained"
             component={NextLink}
             href={"/terminal"}
+            sx={{
+              borderRadius: 4,
+              px: { xs: 2, md: 4 },
+              py: 1,
+            }}
           >
             <Typography variant="h6" color="primary.contrastText">
               Mennu
             </Typography>
-          </Box>
+          </Button>
           <Box>
             <Typography variant="h5" color="text.primary" fontWeight={"400"}>
               Terminal de Refeições
@@ -78,7 +75,7 @@ export function LiveTerminalsPage({ }: LiveTerminalsPageProps) {
         <Stack direction="row" alignItems="center" gap={1.5}>
           <ClockIcon height={26} width={26} color={theme.palette.text.label} />
           <Typography variant="h5" color="text.label">
-            {formatDate(now, "hh:mm:ss")}
+            {time ? formatDate(time, "hh:mm:ss") : "--:--:--"}
           </Typography>
         </Stack>
       </Stack>
