@@ -1,6 +1,6 @@
 "use client";
 
-import { createTheme, responsiveFontSizes, alpha } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
 const palette = {
   mode: "light" as const,
@@ -36,9 +36,9 @@ const palette = {
   },
   success: {
     main: "#F0FDF4",
-    light: "#00A63E",
-    dark: "#0D542B",
-    contrastText: "#008236",
+    light: "#86EFAC",
+    dark: "#166534",
+    contrastText: "#00A63E",
   },
   default: {
     main: "#E9E9E9",
@@ -284,6 +284,47 @@ export const theme = createTheme(baseTheme, {
       },
       defaultProps: {
         size: "small",
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          fontWeight: 500,
+          fontFamily: typography.fontFamily,
+        },
+        outlinedSuccess: {
+          backgroundColor: palette.success.main,
+          color: palette.success.contrastText,
+          borderColor: palette.success.dark,
+          "& .MuiAlert-icon": {
+            color: palette.success.contrastText,
+          },
+        },
+        outlinedError: {
+          backgroundColor: palette.error.main,
+          color: palette.error.contrastText,
+          borderColor: palette.error.dark,
+          "& .MuiAlert-icon": {
+            color: palette.error.contrastText,
+          },
+        },
+        outlinedWarning: {
+          backgroundColor: palette.warning.main,
+          color: palette.warning.contrastText,
+          borderColor: palette.warning.dark,
+          "& .MuiAlert-icon": {
+            color: palette.warning.contrastText,
+          },
+        },
+        outlinedInfo: {
+          backgroundColor: palette.info.main,
+          color: palette.info.contrastText,
+          borderColor: palette.info.dark,
+          "& .MuiAlert-icon": {
+            color: palette.info.contrastText,
+          },
+        },
       },
     },
   },

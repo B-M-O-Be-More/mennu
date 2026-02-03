@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Stack, Typography, Box } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { SettingsPageProps } from "./index";
 import React from "react";
 import Card from "../Cards/Card";
