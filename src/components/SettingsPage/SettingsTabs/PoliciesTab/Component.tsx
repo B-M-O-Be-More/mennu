@@ -20,9 +20,7 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
   const { register,
     handleSubmit,
     formState: { errors },
-    setValue,
     watch,
-    reset,
     control,
   } = useForm<EditIAccessPolicySchemaFormData>({
     resolver: yupResolver(editIAccessPolicySchema),
@@ -42,7 +40,7 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
     <>
       <Typography variant="h6" fontWeight={'400'}>Políticas de Acesso</Typography>
       <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={2} padding={1}>
+        <Stack gap={2} px={1}>
           <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} >
             <Box>
               <Typography fontWeight={'400'}>Permitir múltiplas refeições por dia</Typography>
@@ -164,11 +162,9 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
             />
           </Stack>
 
-          <Divider sx={{ borderColor: "grey.100" }} />
-
         </Stack>
-        <Button variant="contained" sx={{ width: "fit-content", borderRadius: 3 }} type="submit">Salvar Políticas</Button>
-      </Box>
+        <Button variant="contained" sx={{ width: "fit-content", borderRadius: 3, mt: 2 }} type="submit">Salvar Políticas</Button>
+      </Box >
     </>
   );
 }
