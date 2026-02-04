@@ -19,3 +19,13 @@ export interface IPolicy {
     mensal: number;
   };
 }
+
+export interface IAccessPolicy {
+  permitirMultiplasRefeicoes: boolean;
+  horarioFlexivel: {
+    permitido: boolean;
+    horarioInicio: string;
+    horarioFim: string;
+  };
+  reservaObrigatoria: boolean;
+}

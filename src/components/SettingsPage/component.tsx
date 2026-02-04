@@ -43,7 +43,7 @@ export function SettingsPage({ }: SettingsPageProps) {
             );
           })}
         </Card>
-        <Card sx={{ flex: 1, height: "fit-content" }}>
+        <Card sx={{ flex: 1, height: "fit-content", padding: 2 }} >
           {tabsSettings[tab].tabComponent}
         </Card>
       </Stack>
