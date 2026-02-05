@@ -113,10 +113,29 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Input
                     label="Horário de Início"
+                    type="time"
                     placeholder="07:00"
                     optional={false}
                     register={register("horarioFlexivel.horarioInicio")}
                     error={errors.horarioFlexivel?.horarioInicio?.message}
+                    sx={{
+                      bgcolor: "background.paper",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 3,
+                        fontSize: 14,
+                        "& fieldset": {
+                          borderColor: "info.light",
+                          transition: "border-color 0.2s ease",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "info.contrastText",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "info.dark",
+                        },
+                      }
+                    }}
+                    labelSx={{ color: "info.contrastText" }}
                   />
                 </Grid>
 
@@ -127,6 +146,24 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
                     optional={false}
                     register={register("horarioFlexivel.horarioFim")}
                     error={errors.horarioFlexivel?.horarioFim?.message}
+                    sx={{
+                      bgcolor: "background.paper",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 3,
+                        fontSize: 14,
+                        "& fieldset": {
+                          borderColor: "info.light",
+                          transition: "border-color 0.2s ease",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "info.contrastText",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "info.dark",
+                        },
+                      }
+                    }}
+                    labelSx={{ color: "info.contrastText" }}
                   />
                 </Grid>
               </Grid>

@@ -14,14 +14,14 @@ export default function Input({
   optional = true,
   placeholder = "Buscar...",
   sx,
+  labelSx,
   icon,
   type = "text",
   error,
-  helperText,
   register,
   multiline = false,
   minRows = 3,
-}: InputProps & { multiline?: boolean; minRows?: number }) {
+}: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
@@ -30,7 +30,12 @@ export default function Input({
   return (
     <FormControl fullWidth>
       {label && (
-        <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
+        <Typography
+          variant="body2"
+          mb={1}
+          color="text.label" fontWeight={400}
+          sx={labelSx}
+        >
           {label}{" "}
           <Typography
             variant="body2"

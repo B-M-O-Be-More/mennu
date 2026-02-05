@@ -6,9 +6,12 @@ export interface InputProps {
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;
+  labelSx?: SxProps<Theme>;
   icon?: React.ReactNode;
   type?: React.HTMLInputTypeAttribute;
   error?: string;
   register?: UseFormRegisterReturn;
   helperText?: string;
+  multiline?: boolean;
+  minRows?: number;
 }

@@ -4,4 +4,5 @@ export interface ClosableAlertBoxProps {
   severity: "success" | "error" | "warning" | "info" | "default" | "purple";
   title: string;
   description: string;
+  isCloseable?: boolean;
 }

@@ -3,7 +3,7 @@ import { SecurityTabProps } from "./interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Divider, Stack, Switch, Typography } from "@mui/material";
 import Input from "@/components/FormControl/Input/component";
-import { SafetySettingsFormData, safetySettingsSchema } from "@/schemas/editSafetySettings";
+import { SafetySettingsFormData, safetySettingsSchema } from "@/schemas/safetySettings";
 
 const safetySettingsMock = {
   SessionTime: 30,
