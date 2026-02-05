@@ -10,12 +10,12 @@ import { mockStatuses, mockUnidades } from "@/data/menuItems";
 import { mealRecordsColumns } from "@/data/tableColumns";
 import { Box, Button, Stack } from "@mui/material";
 import { mealInfoCards, mealRecordsMock } from "@/data/meals";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import React from "react";
 import { SearchFields } from "./interface";
 
 export function MealRecordsTab() {
-  const { register, watch } = useForm<SearchFields>({
+  const { register, control } = useForm<SearchFields>({
     defaultValues: {
       userSearch: "",
       status: mockStatuses[0].value,
@@ -23,7 +23,7 @@ export function MealRecordsTab() {
     },
   });
 
-  const filters = watch();
+  const filters = useWatch({ control });
 
   React.useEffect(() => {
     console.log(filters);

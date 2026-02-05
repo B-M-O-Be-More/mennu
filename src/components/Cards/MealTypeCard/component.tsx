@@ -39,8 +39,8 @@ export function MealTypeCard({ type }: MealTypeCardProps) {
             <Stack direction={"row"} gap={1}>
               <Typography>{typeName}</Typography>
               <Chip
-                color={status === "ativo" ? "success" : "default"}
-                label={status}
+                color={status ? "success" : "default"}
+                label={status ? "Ativo" : "Inativo"}
                 size="small"
                 sx={{ minWidth: "fit-content" }}
               />

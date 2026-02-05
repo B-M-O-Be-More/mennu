@@ -3,7 +3,7 @@ import Modal from "../Modal";
 import { EditMealRulesModalProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { CircledCheckIcon, ErrorOutlineIcon } from "@/components/Icons";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { MealRuleInput, mealRuleSchema } from "@/schemas/mealRulesSchema";
 import React from "react";
@@ -13,7 +13,6 @@ export function EditMealRulesModal({
   isOpen,
   onClose,
   initialData,
-  id,
 }: EditMealRulesModalProps) {
   const theme = useTheme();
 
@@ -22,8 +21,8 @@ export function EditMealRulesModal({
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     setValue,
+    control,
   } = useForm({
     resolver: yupResolver(mealRuleSchema),
     defaultValues: initialData,
@@ -37,9 +36,14 @@ export function EditMealRulesModal({
 
   function handleEdit(data: MealRuleInput) {
     reset();
-    console.log(id, data);
+    console.log(data);
     onClose();
   }
+
+  const isTimeRestricted = useWatch({
+    control: control,
+    name: "isTimeRestricted",
+  });
 
   return (
     <Modal
@@ -141,7 +145,7 @@ export function EditMealRulesModal({
             </Box>
           </Stack>
           <Switch
-            checked={watch("isTimeRestricted")}
+            checked={!!isTimeRestricted}
             onChange={(e) => setValue("isTimeRestricted", e.target.checked)}
           />
         </Stack>

@@ -4,16 +4,15 @@ import { Dayjs } from "dayjs";
 export const MealTypeSchema = yup.object({
   typeName: yup.string().required("O nome da refeição é obrigatório"),
   description: yup.string().required("A descrição é obrigatória"),
-  startTime: yup
-    .mixed<Dayjs>()
-    .nullable(),
-  endTime: yup
-    .mixed<Dayjs>()
-    .nullable(),
+  startTime: yup.mixed<Dayjs>().nullable(),
+  endTime: yup.mixed<Dayjs>().nullable(),
   status: yup
-    .string()
+    .boolean()
     .optional()
-    .notOneOf(["1"], "Selecione um status válido"),
+    .transform((value, originalValue) => {
+      if (originalValue === "1") return undefined;
+      return value;
+    }),
   units: yup
     .array()
     .of(yup.string().required())

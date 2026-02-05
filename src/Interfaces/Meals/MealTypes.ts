@@ -21,7 +21,7 @@ export interface MealTypeResponse {
   description: string;
   startTime?: string;
   endTime?: string;
-  status?: string | undefined;
+  status?: boolean;
   validations?: ValidationProps[];
   units: Unit[];
 }
@@ -31,7 +31,7 @@ export interface CreateMealTypePayload {
   description: string;
   startTime?: string | null;
   endTime?: string | null;
-  status?: string;
+  status?: boolean;
   validations?: string[];
   units: string[];
 }
