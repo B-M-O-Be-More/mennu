@@ -8,6 +8,7 @@ import { useTheme } from "@mui/material/styles";
 import { MealTypeCardProps } from "./interface";
 import React from "react";
 import EditMealTypeModal from "@/components/Modals/EditMealTypeModal";
+import { formatTime } from "@/utils/formatDateTime";
 
 export function MealTypeCard({ type }: MealTypeCardProps) {
   const {
@@ -87,7 +88,7 @@ export function MealTypeCard({ type }: MealTypeCardProps) {
             </Stack>
 
             <Typography>
-              {startTime} – {endTime}
+              {formatTime(startTime)} – {formatTime(endTime)}
             </Typography>
           </Stack>
         </Box>
