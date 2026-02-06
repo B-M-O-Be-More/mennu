@@ -1,6 +1,14 @@
-import { Button, Stack } from "@mui/material";
+import React from "react";
+import { Button, Stack, Typography } from "@mui/material";
 import PageHeader from "../PageHeader";
-import { DownloadIcon, EyeIcon, UpdateIcon } from "../Icons";
+import {
+  DownloadIcon,
+  EyeIcon,
+  PaperIcon,
+  RelatoriosIcon,
+  UpdateIcon,
+} from "../Icons";
+import TabButton from "../TabButton";
 
 const headerButtons = [
   {
@@ -24,6 +32,8 @@ const headerButtons = [
 ];
 
 export function ReportsPage() {
+  const [activeTab, setActiveTab] = React.useState(0);
+
   return (
     <Stack gap={2}>
       <PageHeader
@@ -39,6 +49,27 @@ export function ReportsPage() {
           </Button>
         ))}
       </PageHeader>
+
+      <Stack direction={"row"} gap={2}>
+        <TabButton
+          label={"Histórico de Consumo"}
+          icon={<PaperIcon height={24} />}
+          tabIndex={0}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+        />
+
+        <TabButton
+          label={"Dashboard"}
+          icon={<RelatoriosIcon height={24} />}
+          tabIndex={1}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+        />
+      </Stack>
+
+      {activeTab === 0 && "Histórico de Consumo"}
+      {activeTab === 1 && "Dashboard"}
     </Stack>
   );
 }
