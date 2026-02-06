@@ -2,7 +2,6 @@
 
 import { Stack, Typography, useTheme, Box } from "@mui/material";
 import { TerminalsPageProps } from "./";
-import PageHeader from "../PageHeader";
 import { ClockIcon, TerminalIcon } from "../Icons";
 import { formatDate } from "@/utils/formatDate";
 import React from "react";
@@ -94,28 +93,29 @@ export const mockTerminals: ITerminal[] = [
     refeicoesPermitidas: ["Café da Manhã", "Almoço", "Jantar"],
     categoriasPermitidas: ["Funcionários"],
     ativo: false,
-  }
+  },
 ];
 
-export const mockSedes: { id: string, nome: string, terminals: ITerminal[] }[] = [
-  {
-    id: "1",
-    nome: "Sede São Paulo",
-    terminals: mockTerminals
-  },
-  {
-    id: "2",
-    nome: "Sede Rio de Janeiro",
-    terminals: [mockTerminals[3], mockTerminals[4]]
-  },
-  {
-    id: "3",
-    nome: "Sede Belo Horizonte",
-    terminals: [mockTerminals[5], mockTerminals[6]]
-  }
-];
+export const mockSedes: { id: string; nome: string; terminals: ITerminal[] }[] =
+  [
+    {
+      id: "1",
+      nome: "Sede São Paulo",
+      terminals: mockTerminals,
+    },
+    {
+      id: "2",
+      nome: "Sede Rio de Janeiro",
+      terminals: [mockTerminals[3], mockTerminals[4]],
+    },
+    {
+      id: "3",
+      nome: "Sede Belo Horizonte",
+      terminals: [mockTerminals[5], mockTerminals[6]],
+    },
+  ];
 
-export function TerminalsPage({ }: TerminalsPageProps) {
+export function TerminalsPage({}: TerminalsPageProps) {
   const theme = useTheme();
 
   const [time, setTime] = React.useState<Date | null>(null);
@@ -128,22 +128,34 @@ export function TerminalsPage({ }: TerminalsPageProps) {
 
   return (
     <Stack gap={2} height="100%" maxHeight="100%">
-      <PageHeader title="Terminal de Refeições">
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        gap={2}>
+        <Typography variant="h4" component="h1" fontWeight={600}>
+          Terminal de Refeições
+        </Typography>
         <Stack direction="row" alignItems="center" gap={1.5}>
           <ClockIcon height={26} width={26} color={theme.palette.text.label} />
           <Typography variant="h5" color="text.label">
             {time ? formatDate(time, "hh:mm:ss") : "--:--:--"}
           </Typography>
         </Stack>
-      </PageHeader>
+      </Stack>
 
       <Stack alignItems="center" width="100%" gap={2.6}>
         <IconBox
-          icon={<TerminalIcon height={80} width={80} color={theme.palette.info.contrastText} />}
+          icon={
+            <TerminalIcon
+              height={80}
+              width={80}
+              color={theme.palette.info.contrastText}
+            />
+          }
           bgColor="info.main"
           borderRadius="100%"
           sx={{
-            padding: { xs: 3, md: 5 }
+            padding: { xs: 3, md: 5 },
           }}
         />
         <Typography variant="h5" fontWeight="600" textAlign="center">
@@ -164,8 +176,7 @@ export function TerminalsPage({ }: TerminalsPageProps) {
               direction="row"
               gap={2}
               flexWrap="wrap"
-              justifyContent={{ xs: "center", sm: "flex-start" }}
-            >
+              justifyContent={{ xs: "center", sm: "flex-start" }}>
               {sede.terminals.map((terminal) => (
                 <TerminalCard key={terminal.id} terminal={terminal} />
               ))}
