@@ -5,11 +5,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Input from "@/components/FormControl/Input";
 import { GeneralSettingsFormData, generalSettingsSchema } from "@/schemas/generalSettingsSchema";
 import { IGeneralSettings } from "@/Interfaces/GeneralSettings/generalSettings";
-import { DownloadIcon, ImageIcon } from "@/components/Icons";
+import { ImageIcon, UploadIcon } from "@/components/Icons";
 import { theme } from "@/theme/theme";
 import React from "react";
 import UploadImageModal from "@/components/Modals/UploadImageModal";
-import { fileToFileList, urlToFile } from "@/utils/fileUtil";
+import { fileToFileList, urlToFile } from "@/utils/fileUtils";
 
 const generalSettingsMock: IGeneralSettings = {
   //logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
@@ -33,13 +33,30 @@ export default function GeneralTab({ }: GeneralTabProps) {
     });
 
   const imageFile = watch("image")?.[0] ?? null;
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!imageFile) {
+      setPreviewUrl(null);
+      return;
+
+    }
+    const objectUrl = URL.createObjectURL(imageFile);
+    setPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [imageFile]);
 
 
   React.useEffect(() => {
     const initializeForm = async () => {
-      if (!generalSettingsMock.logo) return;
+      if (generalSettingsMock.logo === null) return;
 
       const file = await urlToFile(generalSettingsMock.logo, "logo.png");
+      if (!file) return;
+
       const fileList = fileToFileList(file);
       reset({ ...generalSettingsMock, image: fileList });
     };
@@ -58,10 +75,10 @@ export default function GeneralTab({ }: GeneralTabProps) {
           <Box>
             <Typography fontWeight={400} mb={1}>Logo do Sistema</Typography>
             <Stack direction={"row"} alignItems={"center"} gap={2}>
-              {imageFile ? (
+              {previewUrl ? (
                 <CardMedia
                   component="img"
-                  image={URL.createObjectURL(imageFile)}
+                  image={previewUrl}
                   alt="Logo do Sistema"
                   sx={{
                     height: 100,
@@ -86,7 +103,7 @@ export default function GeneralTab({ }: GeneralTabProps) {
               <Box width={"100%"}>
                 <Button
                   variant="outlined"
-                  startIcon={<DownloadIcon color={theme.palette.primary.main} height={20} width={20} />}
+                  startIcon={<UploadIcon color={theme.palette.primary.main} height={20} width={20} />}
                   sx={{
                     borderRadius: 3,
                     color: theme.palette.primary.main,

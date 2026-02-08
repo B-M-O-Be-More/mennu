@@ -18,6 +18,23 @@ export default function UploadImageModal({
 
   const [tempImage, setTempImage] = React.useState<File | null>(image);
 
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!tempImage) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(tempImage);
+    setPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [tempImage]);
+
+
   React.useEffect(() => {
     if (open) setTempImage(image);
   }, [open, image]);
@@ -62,7 +79,21 @@ export default function UploadImageModal({
                 type="file"
                 hidden
                 accept="image/*"
-                onChange={(e) => setTempImage(e.target.files?.[0] ?? null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  const maxSizeMB = 2;
+                  const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+                  if (file.size > maxSizeBytes) {
+                    alert(`Arquivo muito grande! O limite é ${maxSizeMB}MB.`);
+                    e.target.value = "";
+                    return;
+                  }
+
+                  setTempImage(file);
+                }}
               />
             </Button>
             <Typography variant="body2" alignSelf="center">
@@ -74,8 +105,8 @@ export default function UploadImageModal({
           </Typography>
         </Stack>
 
-        <Collapse in={!!tempImage}>
-          {tempImage && (
+        <Collapse in={!!previewUrl}>
+          {previewUrl && (
             <Stack
               border={"1px solid"}
               borderColor={"divider"}
@@ -87,7 +118,7 @@ export default function UploadImageModal({
                 Preview da Imagem
               </Typography>
               <img
-                src={URL.createObjectURL(tempImage)}
+                src={previewUrl ?? ""}
                 alt="Preview da Imagem"
                 style={{
                   maxWidth: "100%",

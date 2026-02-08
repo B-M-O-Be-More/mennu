@@ -3,7 +3,7 @@ import { PoliciesTabProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { editIAccessPolicySchema, EditIAccessPolicySchemaFormData } from "@/schemas/policySchema";
+import { editAccessPolicySchema, EditAccessPolicySchemaFormData } from "@/schemas/policySchema";
 
 const policyMock = {
   permitirMultiplasRefeicoes: true,
@@ -22,8 +22,8 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
     formState: { errors },
     watch,
     control,
-  } = useForm<EditIAccessPolicySchemaFormData>({
-    resolver: yupResolver(editIAccessPolicySchema),
+  } = useForm<EditAccessPolicySchemaFormData>({
+    resolver: yupResolver(editAccessPolicySchema),
     defaultValues:
       policyMock,
   });
@@ -32,7 +32,7 @@ export default function PoliciesTab({ }: PoliciesTabProps) {
   const horarioInicio = watch("horarioFlexivel.horarioInicio");
   const horarioFim = watch("horarioFlexivel.horarioFim");
 
-  const onSubmit = (data: EditIAccessPolicySchemaFormData) => {
+  const onSubmit = (data: EditAccessPolicySchemaFormData) => {
     console.log("Edit:", data);
   };
 
