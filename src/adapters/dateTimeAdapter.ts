@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 
-export function mealRecordFormToApi(data: {
+export function dateTimeFormToApi(data: {
   date?: Dayjs | null;
   time?: Dayjs | null;
 }) {
@@ -14,7 +14,7 @@ export function mealRecordFormToApi(data: {
     .toISOString();
 }
 
-export function mealRecordApiToForm(iso?: string) {
+export function dateTimeApiToForm(iso?: string) {
   if (!iso) {
     return {
       date: null,
@@ -24,7 +24,7 @@ export function mealRecordApiToForm(iso?: string) {
 
   const parsed = dayjs(iso);
 
-    return {
+  return {
     date: parsed.startOf("day"),
     time: parsed,
   };

@@ -6,17 +6,14 @@ import { NewMealRecordModalProps } from "./interface";
 import Select from "@/components/FormControl/Select";
 import TextArea from "@/components/FormControl/TextArea";
 import { mockTiposRefeicao, mockUsers } from "@/data/menuItems";
-import {
-  MealRecordInput,
-  mealRecordSchema,
-} from "@/schemas/mealRecordSchema";
+import { MealRecordInput, mealRecordSchema } from "@/schemas/mealRecordSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { ErrorOutlineIcon } from "@/components/Icons";
 import DatePicker from "@/components/FormControl/DatePicker";
 import TimePicker from "@/components/FormControl/TimePicker";
-import { mealRecordFormToApi } from "@/adapters/mealRecordAdapter";
+import { dateTimeFormToApi } from "@/adapters/dateTimeAdapter";
 import { ManualMealRecordPayload } from "@/Interfaces/Meals/MealTypes";
 
 export function NewMealRecordModal({
@@ -43,7 +40,7 @@ export function NewMealRecordModal({
   });
 
   function onSubmit(data: MealRecordInput) {
-    const dateTimeISO = mealRecordFormToApi(data) 
+    const dateTimeISO = dateTimeFormToApi(data);
 
     const payload: ManualMealRecordPayload = {
       user: data.user,
