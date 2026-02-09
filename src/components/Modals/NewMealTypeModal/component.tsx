@@ -14,7 +14,7 @@ import { MealTypeInput, MealTypeSchema } from "@/schemas/mealTypeSchema";
 import { useForm } from "react-hook-form";
 import { mealValidations, unitsMock } from "@/data/meals";
 import TimePicker from "@/components/FormControl/TimePicker";
-import { mealTypeFormToApi } from "@/adapters/mealTypeAdapter";
+import { timeRangeFormToApi } from "@/adapters/timeRangeAdapter";
 import { CreateMealTypePayload } from "@/Interfaces/Meals/MealTypes";
 
 export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
@@ -31,14 +31,14 @@ export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
       description: "",
       startTime: null,
       endTime: null,
-      status: mockStatuses[0].value,
+      status: false,
       units: [],
       validations: [],
     },
   });
 
   function onSubmit(data: MealTypeInput) {
-    const timeISO = mealTypeFormToApi(data);
+    const timeISO = timeRangeFormToApi(data);
 
     const payload: CreateMealTypePayload = {
       ...data,

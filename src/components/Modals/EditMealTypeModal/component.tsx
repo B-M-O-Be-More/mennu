@@ -14,9 +14,9 @@ import React from "react";
 import { mealValidations, unitsMock } from "@/data/meals";
 import TimePicker from "@/components/FormControl/TimePicker";
 import {
-  mealTypeApiToForm,
-  mealTypeFormToApi,
-} from "@/adapters/mealTypeAdapter";
+  timeRangeFormToApi,
+  timeRangeApiToForm,
+} from "@/adapters/timeRangeAdapter";
 import { UpdateMealTypePayload } from "@/Interfaces/Meals/MealTypes";
 
 export function EditMealTypeModal({
@@ -42,7 +42,7 @@ export function EditMealTypeModal({
 
   React.useEffect(() => {
     if (open && initialData) {
-      const timeISO = mealTypeApiToForm(initialData);
+      const timeISO = timeRangeApiToForm(initialData);
 
       reset({
         ...initialData,
@@ -54,7 +54,7 @@ export function EditMealTypeModal({
   }, [open, initialData, reset]);
 
   const onEdit = (data: MealTypeInput) => {
-    const timeISO = mealTypeFormToApi(data);
+    const timeISO = timeRangeFormToApi(data);
 
     const payload: UpdateMealTypePayload = {
       ...data,

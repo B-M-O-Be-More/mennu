@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
 
-export function mealTypeFormToApi(data: {
+export function timeRangeFormToApi(data: {
   startTime?: Dayjs | null;
   endTime?: Dayjs | null;
 }) {
@@ -14,7 +14,7 @@ export function mealTypeFormToApi(data: {
   };
 }
 
-export function mealTypeApiToForm(data: {
+export function timeRangeApiToForm(data: {
   startTime?: string | null;
   endTime?: string | null;
 }) {
