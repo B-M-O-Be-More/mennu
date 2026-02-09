@@ -19,12 +19,11 @@ export function CheckboxGroup({
   error,
   name,
   control,
-  sx,
 }: CheckboxGroupProps) {
   return (
     <FormGroup>
       {label && (
-        <Stack direction={"row"} gap={1}>
+        <Stack direction={"row"} flexWrap={"wrap"}>
           <Typography
             variant="body2"
             mb={1}
@@ -41,6 +40,7 @@ export function CheckboxGroup({
             <Typography
               variant="subtitle2"
               fontWeight={400}
+              marginLeft={0.5}
               color="text.secondary">
               {sublabel}
             </Typography>
@@ -59,7 +59,10 @@ export function CheckboxGroup({
               {options.map((option) => {
                 const checked = values.includes(option.id);
                 return (
-                  <Card variant="compact" key={option.id}>
+                  <Card
+                    variant="compact"
+                    sx={{ minWidth: { xs: "100%", sm: "auto" } }}
+                    key={option.id}>
                     <FormControlLabel
                       control={
                         <Checkbox

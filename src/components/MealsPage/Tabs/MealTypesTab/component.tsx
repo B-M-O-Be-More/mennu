@@ -11,7 +11,7 @@ export function MealTypesTab() {
       <Typography>Tipos de Refeição Cadastrados</Typography>
       <Stack direction={"row"} flexWrap="wrap" gap={1}>
         {mealTypesMock.map((type) => (
-          <MealTypeCard key={type.id} type={type}/>
+          <MealTypeCard key={type.id} type={type} />
         ))}
       </Stack>
     </Card>

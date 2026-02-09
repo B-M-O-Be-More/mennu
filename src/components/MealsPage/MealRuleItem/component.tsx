@@ -3,7 +3,6 @@ import { MealRuleItemProps } from "./interface";
 import { Typography } from "@mui/material";
 
 export function MealRuleItem({ label, description, value }: MealRuleItemProps) {
-
   return (
     <Card
       variant={"compact"}

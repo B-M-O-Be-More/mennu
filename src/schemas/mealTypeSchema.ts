@@ -1,24 +1,18 @@
-import { mockStatuses } from "@/data/menuItems";
 import * as yup from "yup";
-import { normalizeTime, timeRegex } from "@/utils/normalizeTime";
+import { Dayjs } from "dayjs";
 
 export const MealTypeSchema = yup.object({
   typeName: yup.string().required("O nome da refeição é obrigatório"),
   description: yup.string().required("A descrição é obrigatória"),
-  startTime: yup
-    .string()
-    .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Formato inválido")
-    .optional(),
-  endTime: yup
-    .string()
-    .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Formato inválido")
-    .optional(),
+  startTime: yup.mixed<Dayjs>().nullable(),
+  endTime: yup.mixed<Dayjs>().nullable(),
   status: yup
-    .string()
-    .oneOf(mockStatuses.map((status) => status.value))
-    .optional(),
+    .boolean()
+    .optional()
+    .transform((value, originalValue) => {
+      if (originalValue === "1") return undefined;
+      return value;
+    }),
   units: yup
     .array()
     .of(yup.string().required())

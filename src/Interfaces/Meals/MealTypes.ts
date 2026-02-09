@@ -19,12 +19,23 @@ export interface MealTypeResponse {
   id: string;
   typeName: string;
   description: string;
-  startTime?: string | undefined;
-  endTime?: string | undefined;
-  status?: string | undefined;
+  startTime?: string;
+  endTime?: string;
+  status?: boolean;
   validations?: ValidationProps[];
   units: Unit[];
 }
+
+export interface CreateMealTypePayload {
+  typeName: string;
+  description: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  status?: boolean;
+  validations?: string[];
+  units: string[];
+}
+export type UpdateMealTypePayload = CreateMealTypePayload & { typeId: string };
 
 export interface MealRuleResponse {
   id: string;
@@ -45,4 +56,11 @@ export interface MealRecordsResponse {
   horario: string;
   terminal: string;
   status: "Servida" | "Pendente" | "Cancelada";
+}
+export interface ManualMealRecordPayload {
+  isManual: true;
+  user: string;
+  mealType: string;
+  dateTime?: string | null;
+  reason: string;
 }
