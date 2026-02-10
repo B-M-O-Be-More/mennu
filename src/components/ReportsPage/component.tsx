@@ -9,6 +9,7 @@ import {
   UpdateIcon,
 } from "../Icons";
 import TabButton from "../TabButton";
+import ConsumptionHistoryTab from "./Tabs/ConsumptionHistoryTab";
 
 const headerButtons = [
   {
@@ -68,7 +69,7 @@ export function ReportsPage() {
         />
       </Stack>
 
-      {activeTab === 0 && "Histórico de Consumo"}
+      {activeTab === 0 && <ConsumptionHistoryTab />}
       {activeTab === 1 && "Dashboard"}
     </Stack>
   );

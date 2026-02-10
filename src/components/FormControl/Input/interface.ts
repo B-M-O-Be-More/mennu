@@ -3,6 +3,7 @@ import { SxProps, Theme } from "@mui/material";
 
 export interface InputProps {
   label?: string;
+  labelIcon?: React.ReactNode;
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;
