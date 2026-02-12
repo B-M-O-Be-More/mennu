@@ -10,6 +10,7 @@ import {
 } from "../Icons";
 import TabButton from "../TabButton";
 import ConsumptionHistoryTab from "./Tabs/ConsumptionHistoryTab";
+import DashboardTab from "./Tabs/DashboardTab";
 
 const headerButtons = [
   {
@@ -70,7 +71,7 @@ export function ReportsPage() {
       </Stack>
 
       {activeTab === 0 && <ConsumptionHistoryTab />}
-      {activeTab === 1 && "Dashboard"}
+      {activeTab === 1 && <DashboardTab />}
     </Stack>
   );
 }
