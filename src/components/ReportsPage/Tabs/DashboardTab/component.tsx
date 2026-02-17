@@ -57,6 +57,14 @@ export function DashboardTab({}: DashboardTabProps) {
           xs: "1fr",
           sm: "repeat(2, 1fr)",
           md: "repeat(3, 1fr)",
+        }}
+        sx={{
+          "& > :last-of-type:nth-of-type(odd)": {
+            gridColumn: {
+              sm: "1 / -1",
+              md: "auto",
+            },
+          },
         }}>
         {isLoading
           ? Array.from({ length: 3 }).map((_, index) => (

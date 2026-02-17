@@ -21,7 +21,7 @@ export function KPICard({
         : "text.primary"
     : undefined;
   return (
-    <Card sx={{ padding: 2 }}>
+    <Card sx={{ padding: 2 }} justifyContent={"space-between"}>
       <Stack
         direction={"row"}
         gap={2}
