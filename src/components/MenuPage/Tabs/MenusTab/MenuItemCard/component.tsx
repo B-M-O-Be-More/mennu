@@ -12,12 +12,14 @@ import { CalendarIcon, ClockIcon, EyeIcon, EditIcon } from "@/components/Icons";
 import IconBox from "@/components/Cards/IconBox";
 import { MenuItemCardProps } from "./";
 import React from "react";
+import ViewMenuModal from "@/components/Modals/ViewMenuModal";
+import EditMenuModal from "@/components/Modals/EditMenuModal";
 
 const MenuItemCard = ({ item }: MenuItemCardProps) => {
   const theme = useTheme();
 
-  const [openEditItemModal, setOpenEditItemModal] = React.useState(false);
-  const [openViewItemModal, setOpenViewItemModal] = React.useState(false);
+  const [openEditMenuModal, setOpenEditMenuModal] = React.useState(false);
+  const [openViewMenuModal, setOpenViewMenuModal] = React.useState(false);
 
   return (
     <Stack
@@ -111,7 +113,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
             <IconButton
               size="small"
               sx={{ paddingY: 0, color: "primary.main" }}
-              onClick={() => setOpenViewItemModal(true)}
+              onClick={() => setOpenViewMenuModal(true)}
             >
               <EyeIcon width={22} height={22} />
             </IconButton>
@@ -123,7 +125,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
                 <IconButton
                   size="small"
                   sx={{ paddingY: 0, color: "info.contrastText" }}
-                  onClick={() => setOpenEditItemModal(true)}
+                  onClick={() => setOpenEditMenuModal(true)}
                 >
                   <EditIcon width={20} height={20} />
                 </IconButton>
@@ -132,6 +134,21 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
           }
         </Stack>
       </Stack>
+
+      <ViewMenuModal
+        isOpen={openViewMenuModal}
+        onClose={() => setOpenViewMenuModal(false)}
+        data={item}
+      />
+
+      <EditMenuModal
+        open={openEditMenuModal}
+        onClose={() => setOpenEditMenuModal(false)}
+        onSave={(data) => {
+          console.log(data);
+        }}
+        menu={item}
+      />
     </Stack>
   );
 };

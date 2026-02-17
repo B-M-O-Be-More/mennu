@@ -8,7 +8,6 @@ import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { ReportsTabProps } from ".";
-import { IReportMenu } from "@/Interfaces/Menu/menu";
 import { reportsMenuColumns } from "@/data/tableColumns";
 import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";

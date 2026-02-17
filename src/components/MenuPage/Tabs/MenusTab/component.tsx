@@ -2,7 +2,7 @@
 
 import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
-import { EditIcon, EyeIcon, FilterIcon, SearchIcon, TrashIcon } from "@/components/Icons";
+import { EyeIcon, FilterIcon, SearchIcon, TrashIcon } from "@/components/Icons";
 import Table from "@/components/Tables/Table";
 import { Button, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -14,14 +14,14 @@ import { menuColumns } from "@/data/tableColumns";
 import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import { mockMenus } from "@/data/menus";
-
+import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 
 export function MenusTab({ }: MenusTabProps) {
   const theme = useTheme();
 
   const [openDeleteMenuModal, setOpenDeleteMenuModal] = React.useState(false);
   const [openViewMenuModal, setOpenViewMenuModal] = React.useState(false);
-  const [selectedMenu, setSelectedMenu] = React.useState<IMenu>({} as IMenu);
+  const [selectedMenu, setSelectedMenu] = React.useState<IMenu | null>(null);
 
   const {
     register,
@@ -142,8 +142,16 @@ export function MenusTab({ }: MenusTabProps) {
           rows={mockMenus}
           initialRowsPerPage={5}
         />
-
       </Card>
+
+      {
+        selectedMenu &&
+        <ViewMenuModal
+          isOpen={openViewMenuModal}
+          onClose={() => setOpenViewMenuModal(false)}
+          data={selectedMenu}
+        />
+      }
     </>
   );
 }

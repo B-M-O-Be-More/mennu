@@ -2,14 +2,14 @@
 
 import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
-import { EditIcon, EyeIcon, FilterIcon, SearchIcon, TrashIcon } from "@/components/Icons";
+import { FilterIcon, SearchIcon } from "@/components/Icons";
 import Table from "@/components/Tables/Table";
-import { Box, Button, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { ConsumptionTabProps } from "./";
-import { IConsumptionHistory, IMenu } from "@/Interfaces/Menu/menu";
-import { consumptionHistoryColumns, menuColumns } from "@/data/tableColumns";
+import { IMenu } from "@/Interfaces/Menu/menu";
+import { consumptionHistoryColumns } from "@/data/tableColumns";
 import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import { mockConsumptionHistory } from "@/data/menus";

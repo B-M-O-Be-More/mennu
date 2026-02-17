@@ -5,7 +5,7 @@ import type { NewMenuItemModalProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { Button, Stack } from "@mui/material";
 import Select from "@/components/FormControl/Select";
-import { mockTiposRefeicao } from "@/data/menuItems";
+import { mockCategoriaRefeicao } from "@/data/menuItems";
 import CheckboxGroup from "@/components/FormControl/CheckboxGroup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
       id: -1,
       nome: "",
       descricao: "",
-      categoria: mockTiposRefeicao[0].value,
+      categoria: mockCategoriaRefeicao[0].value,
       restricoes: [],
       status: "ativo",
     },
@@ -50,7 +50,7 @@ export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
 
         <Select
           label={"Categoria"}
-          options={mockTiposRefeicao}
+          options={mockCategoriaRefeicao}
           name="categoria"
           control={control}
           error={errors.categoria?.message}
@@ -58,6 +58,7 @@ export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
 
         <Input
           label="Descrição"
+          multiline
           placeholder="Ex: Opção vegetariana disponível"
           register={register("descricao")}
           error={errors.descricao?.message}

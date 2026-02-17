@@ -9,6 +9,7 @@ export interface IMenu {
   };
   refeicoes: IMenuItems[];
   status: "ativo" | "programado" | "finalizado";
+  observacao: string | null;
 }
 
 interface IMenuItemCategoria {

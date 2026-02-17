@@ -1,41 +1,49 @@
 import { Stack } from "@mui/material";
-import { mockStatuses } from "../../../data/menuItems";
-import { NewMenuModalProps } from ".";
 import Modal from "../Modal";
-import { useForm } from "react-hook-form";
+import { EditMenuModalProps } from "./";
+import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createMenuSchema, CreateMenuSchemaFormData } from "@/schemas/menuSchema";
 import React from "react";
+import { createMenuSchema, CreateMenuSchemaFormData } from "@/schemas/menuSchema";
+import { mockMenuItems } from "@/data/menus";
 import BasicInfoStep from "./Steps/BasicInfoStep";
 import MealsStep from "./Steps/MealsStep";
-import { mockMenuItems } from "@/data/menus";
 
-export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
+export default function EditMenuModal({
+  open,
+  onClose,
+  menu,
+  onSave,
+}: EditMenuModalProps) {
   const [currentStep, setCurrentStep] = React.useState(0);
 
   const {
-    handleSubmit,
     register,
+    handleSubmit,
     watch,
     reset,
-    setValue,
     trigger,
+    setValue,
     formState: { errors },
-  } = useForm<CreateMenuSchemaFormData>({
-    resolver: yupResolver(createMenuSchema),
-    defaultValues: {
-      data: "",
-      unidade: "",
-      tipo: "",
-      horario: {
-        inicio: "",
-        fim: "",
+  } = useForm<CreateMenuSchemaFormData>(
+    {
+      resolver: yupResolver(createMenuSchema),
+      defaultValues: {
+        ...menu,
+        observacao: menu.observacao || "",
+        data: new Date(menu.data).toLocaleDateString("pt-BR")
       },
-      refeicoes: [],
-      status: mockStatuses[0].value,
-      observacao: "",
-    },
-  });
+    });
+
+  React.useEffect(() => {
+    if (open && menu) {
+      reset({
+        ...menu,
+        observacao: menu.observacao || "",
+        data: new Date(menu.data).toLocaleDateString("pt-BR")
+      })
+    }
+  }, [open, menu, reset]);
 
   const watchRefeicoes = watch("refeicoes");
 
@@ -58,10 +66,11 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
   );
 
   const onSubmit = (data: CreateMenuSchemaFormData) => {
-    console.log("Novo menu:", data);
+    onSave(data);
 
     onClose();
     setCurrentStep(0);
+    reset();
   };
 
   return (
@@ -73,7 +82,7 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
         setCurrentStep(0);
         reset();
       }}
-      title="Novo Cardápio"
+      title="Editar Menu"
       subtitle="Preencha as informações do cardápio"
       maxWidth="md"
     >
@@ -104,6 +113,6 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
           )
         }
       </Stack>
-    </Modal >
+    </Modal>
   );
 }

@@ -12,6 +12,7 @@ import ConsumptionTab from "./Tabs/ConsumptionTab";
 import ReportsTab from "./Tabs/ReportsTab";
 import NewMenuModal from "../Modals/NewMenuModal";
 import NewMenuItemModal from "../Modals/NewMenuItemModal";
+import NewManualRegisterModal from "../Modals/NewManualRegisterModal";
 
 const tabs = [
   { label: "Cardápios", icon: <CalendarIcon height={24} /> },
@@ -29,7 +30,6 @@ export function MenuPage({ }: MenuPageProps) {
 
   const [openCreateMenuItemModal, setOpenCreateMenuItemModal] = React.useState(false);
   const [openManualRegisterModal, setOpenManualRegisterModal] = React.useState(false);
-  const [openExportCSVModal, setOpenExportCSVModal] = React.useState(false);
 
   return (
     <Stack gap={2}>
@@ -98,6 +98,11 @@ export function MenuPage({ }: MenuPageProps) {
             >
               Registro Manual
             </Button>
+
+            <NewManualRegisterModal
+              open={openManualRegisterModal}
+              onClose={() => setOpenManualRegisterModal(false)}
+            />
           </React.Fragment>
         }
 
@@ -107,7 +112,9 @@ export function MenuPage({ }: MenuPageProps) {
             <Button
               variant="contained"
               startIcon={<PlusIcon />}
-              onClick={() => setOpenExportCSVModal(true)}
+              onClick={() => {
+                console.log("Exportar CSV");
+              }}
             >
               Exportar CSV
             </Button>

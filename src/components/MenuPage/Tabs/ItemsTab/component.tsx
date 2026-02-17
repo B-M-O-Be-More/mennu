@@ -3,11 +3,10 @@
 import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
 import { FilterIcon, SearchIcon } from "@/components/Icons";
-import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { ItemsTabProps } from "./";
-import { IMenuItems } from "@/Interfaces/Menu/menu";
 import { mockTiposCardapio } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import ItemsItemCard from "./ItemsItemCard";

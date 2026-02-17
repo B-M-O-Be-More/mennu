@@ -7,105 +7,6 @@ export const restricoesMock: { id: string, label: string }[] = [
   { id: "4", label: "Sem Lactose" },
 ];
 
-export const mockMenus: IMenu[] = [
-  {
-    id: 1,
-    data: "2026-02-10",
-    unidade: "Unidade Salvador",
-    tipo: "almoço",
-    horario: {
-      inicio: "11:30",
-      fim: "13:30"
-    },
-    refeicoes: [],
-    status: "ativo",
-  },
-  {
-    id: 2,
-    data: "2026-02-11",
-    unidade: "Unidade Salvador",
-    tipo: "jantar",
-    horario: {
-      inicio: "18:30",
-      fim: "20:30"
-    },
-    refeicoes: [],
-    status: "programado",
-  },
-  {
-    id: 3,
-    data: "2026-02-08",
-    unidade: "Unidade Feira de Santana",
-    tipo: "almoço",
-    horario: {
-      inicio: "11:30",
-      fim: "13:30"
-    },
-    refeicoes: [],
-    status: "finalizado",
-  },
-  {
-    id: 4,
-    data: "2026-02-12",
-    unidade: "Unidade Lauro de Freitas",
-    tipo: "jantar",
-    horario: {
-      inicio: "18:30",
-      fim: "20:30"
-    },
-    refeicoes: [],
-    status: "programado",
-  },
-  {
-    id: 5,
-    data: "2026-02-09",
-    unidade: "Unidade Camaçari",
-    tipo: "almoço",
-    horario: {
-      inicio: "11:30",
-      fim: "13:30"
-    },
-    refeicoes: [],
-    status: "finalizado",
-  },
-  {
-    id: 6,
-    data: "2026-02-08",
-    unidade: "Unidade Feira de Santana",
-    tipo: "almoço",
-    horario: {
-      inicio: "11:30",
-      fim: "13:30"
-    },
-    refeicoes: [],
-    status: "finalizado",
-  },
-  {
-    id: 7,
-    data: "2026-02-12",
-    unidade: "Unidade Lauro de Freitas",
-    tipo: "jantar",
-    horario: {
-      inicio: "18:30",
-      fim: "20:30"
-    },
-    refeicoes: [],
-    status: "programado",
-  },
-  {
-    id: 8,
-    data: "2026-02-09",
-    unidade: "Unidade Camaçari",
-    tipo: "almoço",
-    horario: {
-      inicio: "11:30",
-      fim: "13:30"
-    },
-    refeicoes: [],
-    status: "finalizado",
-  },
-];
-
 export const mockMenuItems: IMenuItems[] = [
   {
     id: 1,
@@ -173,6 +74,114 @@ export const mockMenuItems: IMenuItems[] = [
   },
 ];
 
+
+export const mockMenus: IMenu[] = [
+  {
+    id: 1,
+    data: "2026-02-10",
+    unidade: "Unidade Salvador",
+    tipo: "almoço",
+    horario: {
+      inicio: "11:30",
+      fim: "13:30"
+    },
+    refeicoes: [mockMenuItems[0], mockMenuItems[1], mockMenuItems[2]],
+    status: "ativo",
+    observacao: "Cardápio especial para o dia 10/02/2026",
+  },
+  {
+    id: 2,
+    data: "2026-02-11",
+    unidade: "Unidade Salvador",
+    tipo: "jantar",
+    horario: {
+      inicio: "18:30",
+      fim: "20:30"
+    },
+    refeicoes: [mockMenuItems[3], mockMenuItems[4], mockMenuItems[5]],
+    status: "programado",
+    observacao: null,
+  },
+  {
+    id: 3,
+    data: "2026-02-08",
+    unidade: "Unidade Feira de Santana",
+    tipo: "almoço",
+    horario: {
+      inicio: "11:30",
+      fim: "13:30"
+    },
+    refeicoes: [],
+    status: "finalizado",
+    observacao: "Cardápio finalizado para o dia 08/02/2026",
+  },
+  {
+    id: 4,
+    data: "2026-02-12",
+    unidade: "Unidade Lauro de Freitas",
+    tipo: "jantar",
+    horario: {
+      inicio: "18:30",
+      fim: "20:30"
+    },
+    refeicoes: [],
+    status: "programado",
+    observacao: "Cardápio programado para o dia 12/02/2026",
+  },
+  {
+    id: 5,
+    data: "2026-02-09",
+    unidade: "Unidade Camaçari",
+    tipo: "almoço",
+    horario: {
+      inicio: "11:30",
+      fim: "13:30"
+    },
+    refeicoes: [],
+    status: "finalizado",
+    observacao: "Cardápio finalizado para o dia 09/02/2026",
+  },
+  {
+    id: 6,
+    data: "2026-02-08",
+    unidade: "Unidade Feira de Santana",
+    tipo: "almoço",
+    horario: {
+      inicio: "11:30",
+      fim: "13:30"
+    },
+    refeicoes: [],
+    status: "finalizado",
+    observacao: "Cardápio finalizado para o dia 08/02/2026",
+  },
+  {
+    id: 7,
+    data: "2026-02-12",
+    unidade: "Unidade Lauro de Freitas",
+    tipo: "jantar",
+    horario: {
+      inicio: "18:30",
+      fim: "20:30"
+    },
+    refeicoes: [],
+    status: "programado",
+    observacao: "Cardápio programado para o dia 12/02/2026",
+  },
+  {
+    id: 8,
+    data: "2026-02-09",
+    unidade: "Unidade Camaçari",
+    tipo: "almoço",
+    horario: {
+      inicio: "11:30",
+      fim: "13:30"
+    },
+    refeicoes: [],
+    status: "finalizado",
+    observacao: "Cardápio finalizado para o dia 09/02/2026",
+  },
+];
+
 export const mockReportsMenu: IReportMenu[] = [
   {
     id: 1,
@@ -219,6 +228,22 @@ export const mockReportsMenu: IReportMenu[] = [
     eficiencia: 92,
     categoria: "salada",
   },
+];
+
+export const mockUsuarios = [
+  { label: "Selecione um usuário", value: "1" },
+  { value: "1", label: "João Silva" },
+  { value: "2", label: "Maria Oliveira" },
+  { value: "3", label: "Carlos Pereira" },
+  { value: "4", label: "Ana Santos" },
+];
+
+export const mockMenuTypes = [
+  { label: "Selecione uma medida", value: "1" },
+  { value: "2", label: "03/10/2025 - Almoço" },
+  { value: "3", label: "06/01/2026 - Jantar" },
+  { value: "4", label: "09/02/2026 - Café da Manhã" },
+  { value: "5", label: "12/02/2026 - Lanche" },
 ];
 
 export const mockConsumptionHistory: IConsumptionHistory[] = [

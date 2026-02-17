@@ -6,7 +6,7 @@ import { NewMealRecordModalProps } from "./interface";
 import Select from "@/components/FormControl/Select";
 import Input from "@/components/FormControl/Input";
 import TextArea from "@/components/FormControl/TextArea";
-import { mockTiposRefeicao, mockUsers } from "@/data/menuItems";
+import { mockCategoriaRefeicao, mockTiposCardapio, mockUsers } from "@/data/menuItems";
 import {
   ManualMealRecord,
   MealRecordInput,
@@ -33,7 +33,7 @@ export function NewMealRecordModal({
     resolver: yupResolver(mealRecordSchema),
     defaultValues: {
       user: mockUsers[0].value,
-      mealType: mockTiposRefeicao[0].value,
+      mealType: mockCategoriaRefeicao[0].value,
       date: "",
       time: "",
       reason: "",
@@ -79,7 +79,7 @@ export function NewMealRecordModal({
         <Select
           label={"Tipo de Refeição"}
           optional={false}
-          options={mockTiposRefeicao}
+          options={mockTiposCardapio}
           name="mealType"
           control={control}
           error={errors.mealType?.message}
