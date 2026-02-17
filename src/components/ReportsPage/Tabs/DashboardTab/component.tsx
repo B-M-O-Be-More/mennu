@@ -4,8 +4,11 @@ import { Box, Stack } from "@mui/material";
 import { TrendingUp, TrendingDown } from "@mui/icons-material";
 import Vertical7DaysChart from "@/components/Charts/Vertical7DaysChart";
 import RankingChart from "@/components/Charts/RankingChart";
+import React from "react";
+import KPICardSkeleton from "@/components/Skeletons/Cards/KPICardSkeleton";
+import { DashboardTabProps, KPICardData } from "./interface";
 
-const mockKPICards = [
+const mockKPICards: KPICardData[] = [
   {
     id: "total-refeicoes",
     label: "Total Refeições",
@@ -27,12 +30,23 @@ const mockKPICards = [
     label: "Taxa de Cancelamento",
     bgColor: "error.main",
     icon: <TrendingDown sx={{ color: "error.contrastText" }} />,
-    value: "3.2%",
-    trend: -1.5,
+    value: 3.2,
+    unit: "%",
+    trend: 0,
   },
 ];
 
-export function DashboardTab() {
+export function DashboardTab({}: DashboardTabProps) {
+  const [kpis, setKpis] = React.useState<KPICardData[] | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setKpis(mockKPICards);
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
   return (
     <>
       <Box
@@ -44,20 +58,28 @@ export function DashboardTab() {
           sm: "repeat(2, 1fr)",
           md: "repeat(3, 1fr)",
         }}>
-        {mockKPICards.map((card) => (
-          <KPICard
-            key={card.id}
-            label={card.label}
-            icon={card.icon}
-            bgColor={card.bgColor}
-            value={card.value}
-            trend={card.trend}
-            description={card.description}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 3 }).map((_, index) => (
+              <KPICardSkeleton key={index} />
+            ))
+          : kpis?.map((card) => (
+              <KPICard
+                key={card.id}
+                label={card.label}
+                icon={card.icon}
+                bgColor={card.bgColor}
+                value={card.value}
+                unit={card.unit}
+                trend={card.trend}
+                description={card.description}
+              />
+            ))}
       </Box>
 
-      <Vertical7DaysChart values={[36, 54, 58, 44, 64, 28, 16]} />
+      <Vertical7DaysChart
+        values={[36, 54, 58, 44, 64, 28, 16]}
+        isLoading={isLoading}
+      />
 
       <Stack
         direction={"row"}
@@ -74,6 +96,7 @@ export function DashboardTab() {
             { label: "Lanche", value: 32 },
             { label: "Ceia", value: 8 },
           ]}
+          isLoading={isLoading}
         />
         <RankingChart
           title="Distribuição por Unidade"
@@ -83,6 +106,7 @@ export function DashboardTab() {
             { label: "Unidade 2", value: 115 },
           ]}
           barColor="info.contrastText"
+          isLoading={isLoading}
         />
       </Stack>
     </>

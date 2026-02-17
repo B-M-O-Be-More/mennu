@@ -16,14 +16,18 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { TablePaginationActionsProps, TableProps } from "./";
+import TableSkeleton from "@/components/Skeletons/TableSkeleton";
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
 
-  const handleFirstPage = (event: React.MouseEvent<HTMLButtonElement>) => onPageChange(event, 0);
-  const handleBack = (event: React.MouseEvent<HTMLButtonElement>) => onPageChange(event, page - 1);
-  const handleNext = (event: React.MouseEvent<HTMLButtonElement>) => onPageChange(event, page + 1);
+  const handleFirstPage = (event: React.MouseEvent<HTMLButtonElement>) =>
+    onPageChange(event, 0);
+  const handleBack = (event: React.MouseEvent<HTMLButtonElement>) =>
+    onPageChange(event, page - 1);
+  const handleNext = (event: React.MouseEvent<HTMLButtonElement>) =>
+    onPageChange(event, page + 1);
   const handleLast = (event: React.MouseEvent<HTMLButtonElement>) =>
     onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
 
@@ -33,12 +37,24 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
         {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
       <IconButton onClick={handleBack} disabled={page === 0}>
-        {theme.direction === "rtl" ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
       </IconButton>
-      <IconButton onClick={handleNext} disabled={page >= Math.ceil(count / rowsPerPage) - 1}>
-        {theme.direction === "rtl" ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      <IconButton
+        onClick={handleNext}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}>
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
       </IconButton>
-      <IconButton onClick={handleLast} disabled={page >= Math.ceil(count / rowsPerPage) - 1}>
+      <IconButton
+        onClick={handleLast}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}>
         {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </div>
@@ -50,6 +66,7 @@ export default function TableG<T extends Record<string, any>>({
   rows,
   rowsPerPageOptions = [5, 10, 25, 50],
   initialRowsPerPage = 5,
+  isLoading = false,
 }: TableProps<T>) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
@@ -58,18 +75,30 @@ export default function TableG<T extends Record<string, any>>({
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
   const handleChangePage = (_: any, newPage: number) => setPage(newPage);
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  return (
-    <TableContainer sx={{
-      maxWidth: "100%",
-      overflowX: "auto",
-    }}>
+  return isLoading ? (
+    <TableSkeleton />
+  ) : (
+    <TableContainer
+      sx={{
+        maxWidth: "100%",
+        overflowX: "auto",
+      }}>
       <Table>
-        <TableHead sx={{ "& .MuiTableCell-root": { color: "tables.text", borderBottom: "1px solid", borderColor: "divider" } }}>
+        <TableHead
+          sx={{
+            "& .MuiTableCell-root": {
+              color: "tables.text",
+              borderBottom: "1px solid",
+              borderColor: "divider",
+            },
+          }}>
           <TableRow>
             {columns.map((col) => (
               <TableCell key={String(col.key)} align={col.align || "left"}>
@@ -91,9 +120,8 @@ export default function TableG<T extends Record<string, any>>({
                   color: "tables.text",
                   borderBottom: "1px solid",
                   borderColor: "grey.100",
-                }
-              }}
-            >
+                },
+              }}>
               {columns.map((col) => (
                 <TableCell key={String(col.key)} align={col.align || "left"}>
                   {col.render ? col.render(row) : row[col.key]}
@@ -103,7 +131,8 @@ export default function TableG<T extends Record<string, any>>({
           ))}
 
           {rows.length === 0 && (
-            <TableRow sx={{ "& .MuiTableCell-root": { color: "text.secondary" } }}>
+            <TableRow
+              sx={{ "& .MuiTableCell-root": { color: "text.secondary" } }}>
               <TableCell colSpan={columns.length} align="center">
                 Nenhum registro encontrado
               </TableCell>
@@ -111,7 +140,9 @@ export default function TableG<T extends Record<string, any>>({
           )}
 
           {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }} sx={{ "& .MuiTableCell-root": { color: "tables.text" } }}>
+            <TableRow
+              style={{ height: 53 * emptyRows }}
+              sx={{ "& .MuiTableCell-root": { color: "tables.text" } }}>
               <TableCell colSpan={columns.length} />
             </TableRow>
           )}

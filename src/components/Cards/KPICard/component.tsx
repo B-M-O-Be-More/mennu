@@ -7,13 +7,19 @@ import { TrendingUp, TrendingDown } from "@mui/icons-material";
 export function KPICard({
   label,
   value,
+  unit,
   icon,
   bgColor,
   trend,
   description,
 }: KPICardProps) {
-  const trendColor =
-    trend && trend >= 0 ? "success.contrastText" : "error.contrastText";
+  const trendColor = trend
+    ? trend > 0
+      ? "success.contrastText"
+      : trend < 0
+        ? "error.contrastText"
+        : "text.primary"
+    : undefined;
   return (
     <Card sx={{ padding: 2 }}>
       <Stack
@@ -33,15 +39,17 @@ export function KPICard({
       </Stack>
       <Typography variant="h4" fontWeight={500}>
         {value}
+        {unit}
       </Typography>
 
       {typeof trend === "number" ? (
         <Stack direction="row" gap={1} alignItems="center">
-          {trend >= 0 ? (
-            <TrendingUp sx={{ color: trendColor }} />
-          ) : (
-            <TrendingDown sx={{ color: trendColor }} />
-          )}
+          {trend !== 0 &&
+            (trend > 0 ? (
+              <TrendingUp sx={{ color: trendColor }} />
+            ) : (
+              <TrendingDown sx={{ color: trendColor }} />
+            ))}
           <Typography variant="body2" color={trendColor}>
             {trend}% vs semana anterior
           </Typography>

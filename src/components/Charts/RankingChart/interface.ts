@@ -3,4 +3,5 @@ export interface RankingChartProps {
   data: { label: string; value: number }[];
   unit?: string;
   barColor?: string;
+  isLoading?: boolean;
 }

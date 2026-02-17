@@ -5,8 +5,23 @@ import Table from "@/components/Tables/Table";
 import { consumptionHistoryMock, reportsInfoCards } from "@/data/reports";
 import { consumptionHistoryColumns } from "@/data/tableColumns";
 import { Box, Stack, Typography } from "@mui/material";
+import React from "react";
+import { ConsumptionHistoryTabProps } from "./interface";
+import InfoCardSkeleton from "@/components/Skeletons/Cards/InfoCardSkeleton";
 
-export function ConsumptionHistoryTab() {
+export function ConsumptionHistoryTab({}: ConsumptionHistoryTabProps) {
+  const [cards, setCards] = React.useState<typeof reportsInfoCards | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setCards(reportsInfoCards);
+      setIsLoading(false);
+    }, 2000);
+  }, []);
+
   return (
     <>
       <ReportsFilterForm />
@@ -19,15 +34,19 @@ export function ConsumptionHistoryTab() {
           sm: "repeat(2, 1fr)",
           md: "repeat(4, 1fr)",
         }}>
-        {reportsInfoCards.map((card) => (
-          <InfoCard
-            key={card.key}
-            icon={card.icon}
-            bgColor={card.bgColor}
-            label={card.label}
-            value={card.value}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <InfoCardSkeleton key={index} />
+            ))
+          : cards?.map((card) => (
+              <InfoCard
+                key={card.key} 
+                icon={card.icon}
+                bgColor={card.bgColor}
+                label={card.label}
+                value={card.value}
+              />
+            ))}
       </Box>
 
       <Card>
@@ -36,14 +55,17 @@ export function ConsumptionHistoryTab() {
           justifyContent="space-between"
           alignItems="center">
           <Typography>Histórico de Consumo</Typography>
-          <Typography variant="body2" color={"text.secondary"}>
-            {consumptionHistoryMock.length} registros encontrados
-          </Typography>
+          {!isLoading && (
+            <Typography variant="body2" color={"text.secondary"}>
+              {consumptionHistoryMock.length} registros encontrados
+            </Typography>
+          )}
         </Stack>
 
         <Table
           columns={consumptionHistoryColumns}
           rows={consumptionHistoryMock}
+          isLoading={isLoading}
         />
       </Card>
     </>

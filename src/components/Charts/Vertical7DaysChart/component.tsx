@@ -13,6 +13,8 @@ import {
 } from "chart.js";
 import ChartDataLabels, { Context } from "chartjs-plugin-datalabels";
 import { Vertical7DaysChartProps } from "./interface";
+import Vertical7DaysChartSkeleton from "@/components/Skeletons/Charts/Vertical7DaysChartSkeleton";
+import EmptyState from "@/components/EmptyState";
 
 ChartJS.register(
   CategoryScale,
@@ -22,7 +24,10 @@ ChartJS.register(
   ChartDataLabels,
 );
 
-export function Vertical7DaysChart({ values }: Vertical7DaysChartProps) {
+export function Vertical7DaysChart({
+  values,
+  isLoading = false,
+}: Vertical7DaysChartProps) {
   const theme = useTheme();
   const maxValue = 100;
 
@@ -86,24 +91,30 @@ export function Vertical7DaysChart({ values }: Vertical7DaysChartProps) {
     },
   };
 
-  return (
+  return isLoading ? (
+    <Vertical7DaysChartSkeleton />
+  ) : (
     <Card sx={{ px: 1 }} gap={2}>
       <Typography variant="h6" fontWeight={400} color="text.primary" pl={1}>
         Refeições nos últimos 7 dias
       </Typography>
-      <Box
-        height={300}
-        maxWidth={"100%"}
-        position={"relative"}
-        sx={{
-          "& canvas": {
-            display: "block",
-            width: "100% !important",
-            height: "100% !important",
-          },
-        }}>
-        <Bar data={data} options={options} />
-      </Box>
+      {values.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <Box
+          height={300}
+          maxWidth={"100%"}
+          position={"relative"}
+          sx={{
+            "& canvas": {
+              display: "block",
+              width: "100% !important",
+              height: "100% !important",
+            },
+          }}>
+          <Bar data={data} options={options} />
+        </Box>
+      )}
     </Card>
   );
 }

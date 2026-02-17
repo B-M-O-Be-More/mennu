@@ -1,3 +1,4 @@
 export interface Vertical7DaysChartProps {
-    values: number[];
+  values: number[];
+  isLoading?: boolean;
 }
