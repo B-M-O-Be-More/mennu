@@ -53,6 +53,13 @@ const mockTiposRefeicao = [
   { label: "Jantar", value: "jantar" },
 ];
 
+const mockTiposCardapio = [
+  { label: "Selecione um tipo", value: "1" },
+  { label: "Café", value: "cafe" },
+  { label: "Almoço", value: "almoco" },
+  { label: "Jantar", value: "jantar" },
+];
+
 export {
   mockTipoUsuario,
   mockUnidades,
@@ -61,5 +68,6 @@ export {
   mockTiposTerminal,
   mockUsers,
   mockExtraRequestTypes,
-  mockTiposRefeicao
+  mockTiposRefeicao,
+  mockTiposCardapio,
 };

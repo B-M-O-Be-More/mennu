@@ -1,4 +1,4 @@
-import { Box, Button, Chip, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { UnitsTabProps } from "./interface";
 import { BuildingIcon, EditIcon, PlusIcon, TrashIcon } from "@/components/Icons";
 import IconBox from "@/components/Cards/IconBox";
@@ -168,34 +168,38 @@ export default function UnitsTab({ }: UnitsTabProps) {
               >
                 Políticas
               </Button>
-              <IconButton
-                aria-label="edit"
-                size="medium"
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 3,
-                  height: 'fit-content',
-                  color: 'text.secondary'
-                }}
-                onClick={() => {
-                  setSelectedUnit(unit);
-                  setOpenEditUnitModal(true);
-                }}
-              >
-                <EditIcon width={22} height={22} />
-              </IconButton>
-              <IconButton
-                aria-label="delete"
-                size="medium"
-                sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, height: 'fit-content', color: 'error.contrastText' }}
-                onClick={() => {
-                  setSelectedUnit(unit);
-                  // setOpenDeleteUnitModal(true)
-                }}
-              >
-                <TrashIcon width={22} height={22} />
-              </IconButton>
+              <Tooltip title="Editar unidade" arrow>
+                <IconButton
+                  aria-label="edit"
+                  size="medium"
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    height: 'fit-content',
+                    color: 'text.secondary'
+                  }}
+                  onClick={() => {
+                    setSelectedUnit(unit);
+                    setOpenEditUnitModal(true);
+                  }}
+                >
+                  <EditIcon width={22} height={22} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Excluir unidade" arrow>
+                <IconButton
+                  aria-label="delete"
+                  size="medium"
+                  sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, height: 'fit-content', color: 'error.contrastText' }}
+                  onClick={() => {
+                    setSelectedUnit(unit);
+                    // setOpenDeleteUnitModal(true)
+                  }}
+                >
+                  <TrashIcon width={22} height={22} />
+                </IconButton>
+              </Tooltip>
             </Stack>
           </Stack>
         ))}

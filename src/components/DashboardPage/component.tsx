@@ -6,7 +6,7 @@ import { DownloadIcon, ArrowIcon, FileIcon, CSVIcon, RefeicoesIcon } from "../Ic
 import React from "react";
 import { cardsModules } from "@/data/infos";
 import ModuleCard from "../ModuleCard";
-import Last7DaysChart from "../Last7DaysChart";
+import Last7DaysChart from "../Charts/Last7DaysChart";
 import IconBox from "../Cards/IconBox";
 import Card from "../Cards/Card";
 import PageHeader from "../PageHeader";

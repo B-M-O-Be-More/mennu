@@ -4,7 +4,9 @@ import { SxProps } from "@mui/material";
 export interface ActionCellProps {
   checked: boolean;
   onToggle: (checked: boolean) => void;
+  tooltipToggle: string;
   onEdit?: () => void;
+  tooltipEdit: string;
   switchSize?: "small" | "medium";
   sxProps?: SxProps;
 }

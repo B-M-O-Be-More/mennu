@@ -7,6 +7,9 @@ import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { PaperIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
+import { formatDate } from "@/utils/formatDate";
+import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
+import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -224,4 +227,166 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
   },
 ];
 
-export { userColumns, stockColumns, movementColumns, extraRequestColumns, mealRecordsColumns };
+const menuColumns: IColumn<IMenu>[] = [
+  {
+    key: "data",
+    label: "Data",
+    render: (row) => (
+      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+    ),
+  },
+  {
+    key: "unidade",
+    label: "Unidade",
+  },
+  {
+    key: "tipo",
+    label: "Tipo de Refeição",
+  },
+  {
+    key: "refeicoes",
+    label: "Refeições",
+    render: (row) => (
+      <Typography variant="body2">{row.refeicoes.length} refeição{row.refeicoes.length > 1 ? "s" : ""}</Typography>
+    ),
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => (
+      <Chip
+        label={row.status}
+        color={row.status === "ativo" ? "success" : row.status === "programado" ? "info" : "default"}
+        size="small"
+        sx={{ minWidth: "100px", textTransform: "capitalize" }}
+      />
+    ),
+  },
+  {
+    key: "acoes",
+    label: "Ações",
+    render: () => (<></>),
+  },
+];
+
+const consumptionHistoryColumns: IColumn<IConsumptionHistory>[] = [
+  {
+    key: "nome",
+    label: "Usuario",
+    render: (row) => (
+      <Typography variant="body2">{row.user.nome}</Typography>
+    ),
+  },
+  {
+    key: "matricula",
+    label: "Matrícula",
+    render: (row) => (
+      <Typography variant="body2">{row.user.matricula}</Typography>
+    ),
+  },
+  {
+    key: "tipoRefeicao",
+    label: "Tipo de Refeição",
+    render: (row) => (
+      <Typography variant="body2">{row.refeicao.categoria}</Typography>
+    ),
+  },
+  {
+    key: "data",
+    label: "Data",
+    render: (row) => (
+      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+    ),
+  },
+  {
+    key: "horario",
+    label: "Horário",
+    render: (row) => (
+      <Typography variant="body2">{formatDate(new Date(row.horario), "HH:mm")}</Typography>
+    ),
+  },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => {
+      const colorMap: Record<string, "success" | "error"> = {
+        liberado: "success",
+        bloqueado: "error",
+      };
+      return (
+        <Chip
+          label={row.status}
+          color={colorMap[row.status]}
+          size="medium"
+          sx={{ textTransform: "capitalize" }}
+        />
+      );
+    },
+  },
+  {
+    key: "tipo",
+    label: "Tipo",
+    render: (row) => (
+      <Chip
+        label={row.tipo}
+        color={row.tipo === "manual" ? "orange" : "default"}
+        size="small"
+        icon={row.tipo === "manual" ? <PaperIcon width={16} height={16} /> : undefined}
+        sx={{ textTransform: "capitalize", gap: 0.5 }}
+      />
+    ),
+  }
+];
+
+const reportsMenuColumns: IColumn<IReportMenu>[] = [
+  {
+    key: "data",
+    label: "Data",
+    render: (row) => (
+      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+    ),
+  },
+  {
+    key: "categoria",
+    label: "Tipo de Refeição",
+  },
+  {
+    key: "planejado",
+    label: "Planejado",
+  },
+  {
+    key: "realizado",
+    label: "Realizado",
+  },
+  {
+    key: "variacao",
+    label: "Variação",
+    render: (row) => (
+      <Chip
+        label={row.variacao > 0 ? `+${row.variacao}%` : `${row.variacao}%`}
+        color={row.variacao > 0 ? "success" : row.variacao < 0 ? "error" : "default"}
+        size="small"
+      />
+    ),
+  },
+  {
+    key: "eficiencia",
+    label: "Eficiência",
+    render: (row) => (
+      <PercentageLineChart value={row.eficiencia} />
+    ),
+  }
+
+
+];
+
+export {
+  userColumns,
+  stockColumns,
+  movementColumns,
+  extraRequestColumns,
+  mealRecordsColumns,
+  menuColumns,
+  consumptionHistoryColumns,
+  reportsMenuColumns
+};

@@ -16,12 +16,13 @@ export default function Modal({
   subtitle,
   children,
   dialogSx,
+  maxWidth = "sm",
 }: ModalProps) {
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth={maxWidth}
       fullWidth
       keepMounted={false}
       disableRestoreFocus

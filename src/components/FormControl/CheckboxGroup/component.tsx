@@ -63,6 +63,7 @@ export function CheckboxGroup({
                     <FormControlLabel
                       control={
                         <Checkbox
+                          size="medium"
                           checked={checked}
                           onChange={(e) => {
                             if (e.target.checked) {
@@ -75,6 +76,11 @@ export function CheckboxGroup({
                           }}
                         />
                       }
+                      slotProps={{
+                        typography: {
+                          fontSize: { xs: "0.875rem", sm: "0.9rem" },
+                        },
+                      }}
                       label={option.label}
                     />
                   </Card>

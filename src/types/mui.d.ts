@@ -23,13 +23,7 @@ declare module "@mui/material/styles" {
       dark: string;
       contrastText: string;
     };
-    default: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    purple: {
+    pink: {
       main: string;
       light: string;
       dark: string;
@@ -65,13 +59,7 @@ declare module "@mui/material/styles" {
       dark?: string;
       contrastText?: string;
     };
-    default: {
-      main: string;
-      light: string;
-      dark: string;
-      contrastText: string;
-    };
-    purple: {
+    pink: {
       main?: string;
       light?: string;
       dark?: string;
@@ -105,5 +93,7 @@ declare module "@mui/material/Button" {
 declare module "@mui/material/Chip" {
   interface ChipPropsColorOverrides {
     purple: true;
+    pink: true;
+    orange: true;
   }
 }
