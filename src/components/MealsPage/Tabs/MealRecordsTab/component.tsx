@@ -11,7 +11,6 @@ import { mealRecordsColumns } from "@/data/tableColumns";
 import { Box, Button, Stack } from "@mui/material";
 import { mealInfoCards, mealRecordsMock } from "@/data/meals";
 import { useForm, useWatch } from "react-hook-form";
-import React from "react";
 import { SearchFields } from "./interface";
 
 export function MealRecordsTab() {
@@ -24,10 +23,6 @@ export function MealRecordsTab() {
   });
 
   const filters = useWatch({ control });
-
-  React.useEffect(() => {
-    console.log(filters);
-  }, [filters]);
 
   return (
     <Card>

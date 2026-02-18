@@ -14,7 +14,7 @@ import { MealTypeInput, MealTypeSchema } from "@/schemas/mealTypeSchema";
 import { useForm } from "react-hook-form";
 import { mealValidations, unitsMock } from "@/data/meals";
 import TimePicker from "@/components/FormControl/TimePicker";
-import { timeRangeFormToApi } from "@/adapters/timeRangeAdapter";
+import { timeRangeFormToApi } from "@/utils/timeRangeAdapter";
 import { CreateMealTypePayload } from "@/Interfaces/Meals/MealTypes";
 
 export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
@@ -45,7 +45,6 @@ export function NewMealTypeModal({ open, onClose }: NewMealTypeModalProps) {
       ...timeISO,
     };
 
-    console.log(payload);
     reset();
     onClose();
   }
