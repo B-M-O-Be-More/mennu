@@ -17,19 +17,16 @@ const headerButtons = [
     icon: <EyeIcon height={24} />,
     label: "Registrar Visualização",
     variant: "outlined" as const,
-    onClick: () => console.log("registrar visualização"),
   },
   {
     icon: <UpdateIcon height={24} />,
     label: "Atualizar",
     variant: "outlined" as const,
-    onClick: () => console.log("atualizar"),
   },
   {
     icon: <DownloadIcon height={24} />,
     label: "Exportar",
     variant: "contained" as const,
-    onClick: () => console.log("exportar"),
   },
 ];
 
@@ -45,8 +42,7 @@ export function ReportsPage() {
           <Button
             key={index}
             variant={button.variant}
-            startIcon={button.icon}
-            onClick={button.onClick}>
+            startIcon={button.icon}>
             {button.label}
           </Button>
         ))}

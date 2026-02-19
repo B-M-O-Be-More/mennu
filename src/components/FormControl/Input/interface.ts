@@ -11,5 +11,5 @@ export interface InputProps {
   type?: React.HTMLInputTypeAttribute;
   error?: string;
   register?: UseFormRegisterReturn;
-  helperText?: string;
+  description?: string;
 }

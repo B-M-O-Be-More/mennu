@@ -22,6 +22,7 @@ export default function Input({
   register,
   multiline = false,
   minRows = 3,
+  description,
 }: InputProps & { multiline?: boolean; minRows?: number }) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -117,6 +118,13 @@ export default function Input({
         error={!!error}
         helperText={error}
       />
+      <Typography
+        variant="caption"
+        fontWeight={400}
+        color="text.secondary"
+        mt={1}>
+        {description}
+      </Typography>
     </FormControl>
   );
 }

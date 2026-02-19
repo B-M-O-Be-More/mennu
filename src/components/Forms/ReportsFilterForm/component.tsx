@@ -1,4 +1,4 @@
-import { timeRangeFormToApi } from "@/adapters/timeRangeAdapter";
+import { timeRangeFormToApi } from "@/utils/timeRangeAdapter"; 
 import Input from "@/components/FormControl/Input";
 import TimePicker from "@/components/FormControl/TimePicker";
 import {

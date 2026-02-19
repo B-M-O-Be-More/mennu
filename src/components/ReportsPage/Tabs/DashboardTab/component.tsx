@@ -41,10 +41,13 @@ export function DashboardTab({}: DashboardTabProps) {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setKpis(mockKPICards);
       setIsLoading(false);
     }, 2000);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (

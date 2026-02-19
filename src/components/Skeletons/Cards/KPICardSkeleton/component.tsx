@@ -2,7 +2,7 @@ import Card from "@/components/Cards/Card";
 import { Skeleton, Stack } from "@mui/material";
 import { KPICardSkeletonProps } from "./interface";
 
-export function KPICardSkeleton({ }: KPICardSkeletonProps) {
+export function KPICardSkeleton({}: KPICardSkeletonProps) {
   return (
     <Card sx={{ p: 2 }}>
       <Stack

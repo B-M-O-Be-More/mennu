@@ -8,7 +8,6 @@ export function InfoCard({ icon, bgColor, label, value }: InfoCardProps) {
     <Card
       direction={"row"}
       gap={2}
-      alignItems={"space-between"}
       height={"100%"}>
       <IconBox icon={icon} bgColor={bgColor} padding={2} borderRadius={3} />
       <Stack justifyContent={"space-between"}>

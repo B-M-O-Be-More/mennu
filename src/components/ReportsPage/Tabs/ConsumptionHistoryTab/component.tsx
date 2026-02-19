@@ -16,10 +16,13 @@ export function ConsumptionHistoryTab({}: ConsumptionHistoryTabProps) {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setCards(reportsInfoCards);
       setIsLoading(false);
     }, 2000);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
@@ -40,7 +43,7 @@ export function ConsumptionHistoryTab({}: ConsumptionHistoryTabProps) {
             ))
           : cards?.map((card) => (
               <InfoCard
-                key={card.key} 
+                key={card.key}
                 icon={card.icon}
                 bgColor={card.bgColor}
                 label={card.label}
