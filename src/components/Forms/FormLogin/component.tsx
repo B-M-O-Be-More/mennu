@@ -9,30 +9,34 @@ import Card from "@/components/Cards/Card";
 import { useForm } from "react-hook-form";
 import { loginSchema, LoginSchemaFormData } from "@/schemas/loginSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useUser } from "@/context/AuthContext";
 
-export function FormLogin({ }: FormLoginProps) {
+export function FormLogin({}: FormLoginProps) {
+  const { login, isLoadingLogin } = useUser();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginSchemaFormData>(
-    {
-      resolver: yupResolver(loginSchema),
-      defaultValues:
-      {
-        email: "",
-        password: "",
-      },
-    }
-  );
+  } = useForm<LoginSchemaFormData>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const onSubmit = (data: LoginSchemaFormData) => {
-    console.log("Login:", data);
+  const onSubmit = async (data: LoginSchemaFormData) => {
+    await login(data);
   };
 
   return (
-    <Box bgcolor={"primary.main"} height="100%" position="relative" component={"form"}
-      onSubmit={handleSubmit(onSubmit)}>
+    <Box
+      bgcolor={"primary.main"}
+      height="100%"
+      position="relative"
+      component={"form"}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Card
         alignItems="center"
         boxShadow={"0 25px 50px -12px rgba(0, 0, 0, 0.25)"}
@@ -51,7 +55,11 @@ export function FormLogin({ }: FormLoginProps) {
           paddingX={4}
           paddingY={2}
         >
-          <Typography variant="h4" color="primary.contrastText" fontWeight={"400"}>
+          <Typography
+            variant="h4"
+            color="primary.contrastText"
+            fontWeight={"400"}
+          >
             Mennu
           </Typography>
         </Stack>
@@ -59,7 +67,11 @@ export function FormLogin({ }: FormLoginProps) {
           <Typography variant="h4" fontWeight={"600"}>
             Bem-vindo de volta
           </Typography>
-          <Typography variant="subtitle2" color="text.secondary" fontWeight={"400"}>
+          <Typography
+            variant="subtitle2"
+            color="text.secondary"
+            fontWeight={"400"}
+          >
             Acesse sua conta para continuar
           </Typography>
         </Stack>
@@ -97,11 +109,20 @@ export function FormLogin({ }: FormLoginProps) {
                 "&.Mui-checked": { color: "primary.main" },
               }}
             />
-            <Typography variant="body2" color="text.secondary" fontWeight={"400"}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              fontWeight={"400"}
+            >
               Lembrar-me
             </Typography>
           </Stack>
-          <Link component={NextLink} href="/passwordreset" color="background.auth" underline="none">
+          <Link
+            component={NextLink}
+            href="/passwordreset"
+            color="background.auth"
+            underline="none"
+          >
             Esqueci minha senha
           </Link>
         </Stack>
@@ -113,6 +134,7 @@ export function FormLogin({ }: FormLoginProps) {
           }}
           variant="contained"
           type="submit"
+          loading={isLoadingLogin}
         >
           Entrar
         </Button>
