@@ -1,25 +1,12 @@
 import * as yup from "yup";
-import { dateRegex, normalizeDate } from "@/utils/normalizeDate";
-import { normalizeTime, timeRegex } from "@/utils/normalizeTime";
+import { Dayjs } from "dayjs";
 
 export const mealRecordSchema = yup.object({
   user: yup.string().required().notOneOf(["1"], "Usuário inválido"),
   mealType: yup.string().required().notOneOf(["1"], "Tipo inválido"),
-  date: yup
-    .string()
-    .transform((value) => normalizeDate(value))
-    .matches(dateRegex, "Formato inválido")
-    .optional(),
-  time: yup
-    .string()
-    .transform((value) => normalizeTime(value))
-    .matches(timeRegex, "Formato inválido")
-    .optional(),
+  date: yup.mixed<Dayjs>().nullable(),
+  time: yup.mixed<Dayjs>().nullable(),
   reason: yup.string().required("Motivo é obrigatório"),
 });
 
 export type MealRecordInput = yup.InferType<typeof mealRecordSchema>;
-
-export type ManualMealRecord = MealRecordInput & {
-  isManual: true;
-};

@@ -1,4 +1,3 @@
-
 import { IColumn } from "@/components/Tables/Table";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
 import { IMovement } from "@/Interfaces/Movement/movement";
@@ -7,6 +6,7 @@ import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { PaperIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
+import { formatDateTime } from "@/utils/formatDateTime";
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -82,7 +82,10 @@ const movementColumns: IColumn<IMovement>[] = [
     key: "tipo",
     label: "Tipo",
     render: (row) => {
-      const colorMap: Record<IMovement["tipo"], "success" | "info" | "error" | "purple"> = {
+      const colorMap: Record<
+        IMovement["tipo"],
+        "success" | "info" | "error" | "purple"
+      > = {
         entrada: "success",
         saida: "info",
         perda: "error",
@@ -113,8 +116,13 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
     render: (row) => (
       <Stack direction="row" alignItems="center">
         <Avatar
-          sx={{ bgcolor: "primary.main", mr: 1, width: 32, height: 32, fontSize: 14 }}
-        >
+          sx={{
+            bgcolor: "primary.main",
+            mr: 1,
+            width: 32,
+            height: 32,
+            fontSize: 14,
+          }}>
           {row.usuario.nome
             .split(" ")
             .map((n) => n[0])
@@ -127,9 +135,13 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
   { key: "tipo", label: "Tipo" },
   { key: "motivo", label: "Motivo" },
   {
-    key: "status", label: "Status",
+    key: "status",
+    label: "Status",
     render: (row) => {
-      const colorMap: Record<IExtraRequest["status"], "success" | "warning" | "error"> = {
+      const colorMap: Record<
+        IExtraRequest["status"],
+        "success" | "warning" | "error"
+      > = {
         aprovado: "success",
         pendente: "warning",
         reprovado: "error",
@@ -140,29 +152,43 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
           label={row.status}
           color={colorMap[row.status]}
           size="small"
-          sx={{ minWidth: "100px", textTransform: "capitalize" }} />);
+          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+        />
+      );
     },
   },
   {
-    key: "resposta", label: "Resposta",
+    key: "resposta",
+    label: "Resposta",
     render: (row) =>
       row.resposta ? (
         <Stack>
-          <Typography variant="caption" color="text.secondary"> {row.resposta.data} </Typography>
-          <Typography variant="caption"> Por: {row.resposta.usuario} </Typography>
-          <Typography variant="caption" color="text.secondary"> Comentário: {row.resposta.comentario} </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {" "}
+            {row.resposta.data}{" "}
+          </Typography>
+          <Typography variant="caption">
+            {" "}
+            Por: {row.resposta.usuario}{" "}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {" "}
+            Comentário: {row.resposta.comentario}{" "}
+          </Typography>
         </Stack>
       ) : (
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
-          width="100%"
-        >
-          <Typography variant="body2" color="text.secondary"> — </Typography>
+          width="100%">
+          <Typography variant="body2" color="text.secondary">
+            {" "}
+            —{" "}
+          </Typography>
         </Box>
       ),
-  }
+  },
 ];
 
 const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
@@ -177,14 +203,12 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
             mr: 1,
             width: 32,
             height: 32,
-            fontSize: 14
-          }}
-        >
+            fontSize: 14,
+          }}>
           {row.usuario
             .split(" ")
             .map((n) => n[0])
-            .join("")
-          }
+            .join("")}
         </Avatar>
         <Typography variant="body2">{row.usuario}</Typography>
         {row.isManual && (
@@ -201,7 +225,11 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
   { key: "matricula", label: "Matrícula" },
   { key: "tipo", label: "Tipo" },
   { key: "unidade", label: "Unidade" },
-  { key: "horario", label: "Horário" },
+  {
+    key: "horario",
+    label: "Horário",
+    render: (row) => formatDateTime(row.horario),
+  },
   { key: "terminal", label: "Terminal" },
   {
     key: "status",
@@ -224,4 +252,10 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
   },
 ];
 
-export { userColumns, stockColumns, movementColumns, extraRequestColumns, mealRecordsColumns };
+export {
+  userColumns,
+  stockColumns,
+  movementColumns,
+  extraRequestColumns,
+  mealRecordsColumns,
+};
