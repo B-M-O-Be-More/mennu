@@ -17,7 +17,8 @@ export const createMenuItemSchema = yup.object({
     .required("A descrição da refeição é obrigatória"),
 
   restricoes: yup
-    .array(yup.string().required()).required("As restrições são obrigatórias"),
+    .array(yup.string().required())
+    .default([]),
 
   categoria: yup
     .string()

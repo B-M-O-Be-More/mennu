@@ -147,7 +147,7 @@ export function MenusTab({ }: MenusTabProps) {
       </Card>
 
       {
-        selectedMenu && selectedMenu &&
+        openViewMenuModal && selectedMenu &&
         <ViewMenuModal
           isOpen={openViewMenuModal}
           onClose={() => setOpenViewMenuModal(false)}

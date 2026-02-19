@@ -38,7 +38,7 @@ export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Novo item" subtitle="Preencha as informações do Item">
+    <Modal open={open} onClose={onClose} title="Novo item" subtitle="Preencha as informações do item">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Nome"

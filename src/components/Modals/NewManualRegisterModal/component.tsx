@@ -37,11 +37,11 @@ export function NewManualRegisterModal({ open, onClose }: NewManualRegisterModal
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Novo item" subtitle="Preencha as informações do Item">
+    <Modal open={open} onClose={onClose} title="Registrar Consumo Manual" subtitle="Para exceções e correções operacionais">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
 
         <Select
-          label={"Usuario"}
+          label={"Usuário"}
           options={mockUsuarios}
           name="usuario"
           control={control}

@@ -240,14 +240,14 @@ export const mockReportsMenu: IReportMenu[] = [
 
 export const mockUsuarios = [
   { label: "Selecione um usuário", value: "1" },
-  { value: "1", label: "João Silva" },
-  { value: "2", label: "Maria Oliveira" },
-  { value: "3", label: "Carlos Pereira" },
-  { value: "4", label: "Ana Santos" },
+  { value: "joao silva", label: "João Silva" },
+  { value: "maria oliveira", label: "Maria Oliveira" },
+  { value: "carlos pereira", label: "Carlos Pereira" },
+  { value: "ana santos", label: "Ana Santos" },
 ];
 
 export const mockMenuTypes = [
-  { label: "Selecione uma medida", value: "1" },
+  { label: "Selecione um tipo de cardápio", value: "1" },
   { value: "2", label: "03/10/2025 - Almoço" },
   { value: "3", label: "06/01/2026 - Jantar" },
   { value: "4", label: "09/02/2026 - Café da Manhã" },
