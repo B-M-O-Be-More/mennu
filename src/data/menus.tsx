@@ -79,6 +79,7 @@ export const mockMenus: IMenu[] = [
   {
     id: 1,
     data: "2026-02-10",
+    tipoIntervalo: "semanal",
     unidade: "Unidade Salvador",
     tipo: "almoço",
     horario: {
@@ -92,6 +93,7 @@ export const mockMenus: IMenu[] = [
   {
     id: 2,
     data: "2026-02-11",
+    tipoIntervalo: "personalizado",
     unidade: "Unidade Salvador",
     tipo: "jantar",
     horario: {
@@ -105,6 +107,7 @@ export const mockMenus: IMenu[] = [
   {
     id: 3,
     data: "2026-02-08",
+    tipoIntervalo: "personalizado",
     unidade: "Unidade Feira de Santana",
     tipo: "almoço",
     horario: {
@@ -117,6 +120,7 @@ export const mockMenus: IMenu[] = [
   },
   {
     id: 4,
+    tipoIntervalo: "personalizado",
     data: "2026-02-12",
     unidade: "Unidade Lauro de Freitas",
     tipo: "jantar",
@@ -130,6 +134,7 @@ export const mockMenus: IMenu[] = [
   },
   {
     id: 5,
+    tipoIntervalo: "personalizado",
     data: "2026-02-09",
     unidade: "Unidade Camaçari",
     tipo: "almoço",
@@ -143,6 +148,7 @@ export const mockMenus: IMenu[] = [
   },
   {
     id: 6,
+    tipoIntervalo: "personalizado",
     data: "2026-02-08",
     unidade: "Unidade Feira de Santana",
     tipo: "almoço",
@@ -156,6 +162,7 @@ export const mockMenus: IMenu[] = [
   },
   {
     id: 7,
+    tipoIntervalo: "personalizado",
     data: "2026-02-12",
     unidade: "Unidade Lauro de Freitas",
     tipo: "jantar",
@@ -169,6 +176,7 @@ export const mockMenus: IMenu[] = [
   },
   {
     id: 8,
+    tipoIntervalo: "personalizado",
     data: "2026-02-09",
     unidade: "Unidade Camaçari",
     tipo: "almoço",

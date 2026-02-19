@@ -46,7 +46,7 @@ const mockExtraRequestTypes = [
   { label: "Tipo 4", value: "tipo4" },
 ];
 
-const mockCategoriaRefeicao = [
+const mockTiposRefeicao = [
   { label: "Selecione um tipo", value: "1" },
   { label: "Prato Principal", value: "prato principal" },
   { label: "Acompanhamento", value: "acompanhamento" },
@@ -71,6 +71,6 @@ export {
   mockTiposTerminal,
   mockUsers,
   mockExtraRequestTypes,
-  mockCategoriaRefeicao,
+  mockTiposRefeicao,
   mockTiposCardapio,
 };

@@ -19,6 +19,7 @@ export function CheckboxGroup({
   error,
   name,
   control,
+  disabled = false,
 }: CheckboxGroupProps) {
   return (
     <FormGroup>
@@ -68,6 +69,10 @@ export function CheckboxGroup({
                         <Checkbox
                           size="medium"
                           checked={checked}
+                          disabled={disabled}
+                          sx={{
+                            transition: "0.3s"
+                          }}
                           onChange={(e) => {
                             if (e.target.checked) {
                               field.onChange([...values, option.id]);

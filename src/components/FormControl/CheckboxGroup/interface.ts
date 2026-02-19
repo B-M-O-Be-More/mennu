@@ -10,4 +10,5 @@ export interface CheckboxGroupProps {
   error?: string;
   name: string;
   control: Control<any>;
+  disabled?: boolean;
 }

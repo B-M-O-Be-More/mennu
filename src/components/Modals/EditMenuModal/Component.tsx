@@ -6,8 +6,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import { createMenuSchema, CreateMenuSchemaFormData } from "@/schemas/menuSchema";
 import { mockMenuItems } from "@/data/menus";
-import BasicInfoStep from "./Steps/BasicInfoStep";
-import MealsStep from "./Steps/MealsStep";
+import BasicInfoStep from "../NewMenuModal/Steps/BasicInfoStep";
+import PeriodStep from "../NewMenuModal/Steps/PeriodStep";
+import MealsStep from "../NewMenuModal/Steps/MealsStep";
+import dayjs from "dayjs";
 
 export default function EditMenuModal({
   open,
@@ -24,14 +26,22 @@ export default function EditMenuModal({
     reset,
     trigger,
     setValue,
+    control,
     formState: { errors },
   } = useForm<CreateMenuSchemaFormData>(
     {
       resolver: yupResolver(createMenuSchema),
       defaultValues: {
         ...menu,
+        vigencia: {
+          inicio: dayjs(menu.data),
+          fim: null,
+        },
+        horario: {
+          inicio: dayjs(menu.horario.inicio),
+          fim: dayjs(menu.horario.fim),
+        },
         observacao: menu.observacao || "",
-        data: new Date(menu.data).toLocaleDateString("pt-BR")
       },
     });
 
@@ -39,8 +49,15 @@ export default function EditMenuModal({
     if (open && menu) {
       reset({
         ...menu,
+        vigencia: {
+          inicio: dayjs(menu.data),
+          fim: null,
+        },
+        horario: {
+          inicio: dayjs(menu.horario.inicio),
+          fim: dayjs(menu.horario.fim),
+        },
         observacao: menu.observacao || "",
-        data: new Date(menu.data).toLocaleDateString("pt-BR")
       })
     }
   }, [open, menu, reset]);
@@ -89,18 +106,30 @@ export default function EditMenuModal({
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         {
           currentStep === 0 && (
+            <PeriodStep
+              register={register}
+              errors={errors}
+              trigger={trigger}
+              setCurrentStep={setCurrentStep}
+              onClose={onClose}
+              control={control}
+              setValue={setValue}
+            />
+          )
+        }
+        {
+          currentStep === 1 && (
             <BasicInfoStep
               register={register}
               errors={errors}
               trigger={trigger}
-              onClose={onClose}
               setCurrentStep={setCurrentStep}
+              control={control}
             />
           )
         }
-
         {
-          currentStep === 1 && (
+          currentStep === 2 && (
             <MealsStep
               registerSearch={registerSearch}
               filteredItems={filteredItems}

@@ -260,7 +260,9 @@ const menuColumns: IColumn<IMenu>[] = [
     key: "data",
     label: "Data",
     render: (row) => (
-      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+      <Typography variant="body2">
+        {formatDate(new Date(row.data), "dd/MM/yyyy")}
+      </Typography>
     ),
   },
   {

@@ -2,6 +2,7 @@ import { Box, Button, Chip, Grid, Stack, Typography, useTheme } from "@mui/mater
 import Modal from "../Modal";
 import { ViewMenuModalProps } from "./";
 import { ClockIcon, RefeicoesIcon } from "@/components/Icons";
+import { formatDate } from "@/utils/formatDate";
 
 const categoriaColorMap: Record<string, "success" | "info" | "purple" | "pink" | "orange"> =
 {
@@ -25,7 +26,7 @@ export function ViewMenuModal({
       open={isOpen}
       onClose={onClose}
       title={"Detalhes do Cardápio"}
-      subtitle={data.data + " - " + data.tipo}>
+    >
       <Stack gap={2}>
         <Typography >
           Informações
@@ -44,7 +45,7 @@ export function ViewMenuModal({
               Data:
             </Typography>
             <Typography>
-              {data.data}
+              {formatDate(new Date(data.data), "dd/MM/yyyy")}
             </Typography>
           </Grid>
 

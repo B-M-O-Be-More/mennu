@@ -14,6 +14,8 @@ export default function DatePickerG({
   label,
   name,
   control,
+  minDate,
+  maxDate,
 }: DatePickerProps) {
   return (
     <Stack width={"100%"}>
@@ -30,8 +32,9 @@ export default function DatePickerG({
           render={({ field }) => (
             <DatePicker
               value={field.value}
+              minDate={minDate}
+              maxDate={maxDate}
               onChange={(e) => field.onChange(e)}
-              disableFuture
               slotProps={{
                 field: {
                   readOnly: true,

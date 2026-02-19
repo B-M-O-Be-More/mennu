@@ -99,7 +99,8 @@ export function ReportsTab({ }: ReportsTabProps) {
         </Card>
       }
 
-      {activeTab === 1 &&
+      {
+        activeTab === 1 &&
         <Card>
           <Box>
             <Stack direction={"row"} alignItems={"center"} gap={1}>
@@ -124,7 +125,6 @@ export function ReportsTab({ }: ReportsTabProps) {
 
         </Card>
       }
-
     </>
   );
 }

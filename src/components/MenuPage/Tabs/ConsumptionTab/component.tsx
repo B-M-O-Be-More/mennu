@@ -4,22 +4,15 @@ import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
 import { FilterIcon, SearchIcon } from "@/components/Icons";
 import Table from "@/components/Tables/Table";
-import { Box, Button, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { ConsumptionTabProps } from "./";
-import { IMenu } from "@/Interfaces/Menu/menu";
 import { consumptionHistoryColumns } from "@/data/tableColumns";
 import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import { mockConsumptionHistory } from "@/data/menus";
 export function ConsumptionTab({ }: ConsumptionTabProps) {
-  const theme = useTheme();
-
-  const [openDeleteMenuModal, setOpenDeleteMenuModal] = React.useState(false);
-  const [openViewMenuModal, setOpenViewMenuModal] = React.useState(false);
-  const [selectedMenu, setSelectedMenu] = React.useState<IMenu>({} as IMenu);
-
   const {
     register,
     watch

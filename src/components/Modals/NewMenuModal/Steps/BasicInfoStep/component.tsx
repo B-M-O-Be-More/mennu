@@ -3,14 +3,15 @@ import { mockUnidades, mockStatuses, mockTiposCardapio } from "@/data/menuItems"
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { BasicInfoStepProps } from "./";
+import TimePicker from "@/components/FormControl/TimePicker";
 
 
 export function BasicInfoStep({
   register,
   errors,
   trigger,
-  onClose,
   setCurrentStep,
+  control,
 }: BasicInfoStepProps) {
   return (
     <>
@@ -19,18 +20,7 @@ export function BasicInfoStep({
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Input
-            label="Data do Cardápio"
-            placeholder="Ex: 01/01/2024"
-            optional={false}
-            sx={{ flex: 1 }}
-            register={register("data")}
-            error={errors.data?.message}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={12}>
           <Select
             label="Unidade"
             options={mockUnidades}
@@ -58,22 +48,18 @@ export function BasicInfoStep({
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Input
-            label="Horário de Início"
-            placeholder="Ex: 12:00"
-            optional={false}
-            register={register("horario.inicio")}
-            error={errors.horario?.inicio?.message}
+          <TimePicker
+            label="Horário inicial"
+            control={control}
+            name="horario.inicio"
           />
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Input
-            label="Horário de Fim"
-            placeholder="Ex: 14:00"
-            optional={false}
-            register={register("horario.fim")}
-            error={errors.horario?.fim?.message}
+          <TimePicker
+            label="Horário final"
+            control={control}
+            name="horario.fim"
           />
         </Grid>
 
@@ -98,9 +84,9 @@ export function BasicInfoStep({
             transition: "all 0.2s ease-in-out",
             "&:hover": { color: "text.primary" },
           }}
-          onClick={onClose}
+          onClick={() => setCurrentStep(0)}
         >
-          Cancelar
+          Voltar
         </Button>
         <Button
           sx={{ flex: 1 }}
@@ -108,7 +94,6 @@ export function BasicInfoStep({
           type="button"
           onClick={async () => {
             const valid = await trigger([
-              "data",
               "unidade",
               "tipo",
               "horario",
@@ -117,7 +102,7 @@ export function BasicInfoStep({
             ]);
 
             if (valid) {
-              setCurrentStep(1);
+              setCurrentStep(2);
             }
           }}
         >

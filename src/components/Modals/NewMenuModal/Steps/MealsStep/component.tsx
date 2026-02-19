@@ -143,7 +143,7 @@ export function MealsStep({
             transition: "all 0.2s ease-in-out",
             "&:hover": { color: "text.primary" },
           }}
-          onClick={() => setCurrentStep(0)}
+          onClick={() => setCurrentStep(1)}
         >
           Voltar
         </Button>

@@ -1,44 +1,54 @@
-"use client";
-
-import Modal from "@/components/Modals/Modal";
-import type { NewMenuItemModalProps } from "./interface";
-import Input from "@/components/FormControl/Input";
 import { Button, Stack } from "@mui/material";
+import Modal from "../Modal";
+import { EditMenuItemModalProps } from "./";
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup";
+import React from "react";
+import { createMenuItemSchema, CreateMenuItemSchemaFormData } from "@/schemas/menuSchema";
+import { restricoesMock } from "@/data/menus";
+import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { mockTiposRefeicao } from "@/data/menuItems";
-import CheckboxGroup from "@/components/FormControl/CheckboxGroup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { CreateMenuItemSchemaFormData, createMenuItemSchema } from "@/schemas/menuSchema";
-import { restricoesMock } from "@/data/menus";
+import { CheckboxGroup } from "@/components/FormControl/CheckboxGroup/component";
 
-export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
+export default function EditMenuItemModal({
+  open,
+  onClose,
+  menuItem,
+  onSave,
+}: EditMenuItemModalProps) {
+
   const {
     register,
     handleSubmit,
     reset,
     control,
     formState: { errors },
-  } = useForm<CreateMenuItemSchemaFormData>({
-    resolver: yupResolver(createMenuItemSchema),
-    defaultValues: {
-      id: -1,
-      nome: "",
-      descricao: "",
-      categoria: mockTiposRefeicao[0].value,
-      restricoes: [],
-      status: "ativo",
-    },
-  });
+  } = useForm<CreateMenuItemSchemaFormData>(
+    {
+      resolver: yupResolver(createMenuItemSchema),
+      defaultValues: {
+        ...menuItem,
+      },
+    });
 
-  function onSubmit(data: CreateMenuItemSchemaFormData) {
-    reset();
-    console.log(data);
+  React.useEffect(() => {
+    if (open && menuItem) {
+      reset({
+        ...menuItem,
+      })
+    }
+  }, [open, menuItem, reset]);
+
+  const onSubmit = (data: CreateMenuItemSchemaFormData) => {
+    onSave(data);
+
     onClose();
-  }
+    reset();
+  };
 
   return (
-    <Modal open={open} onClose={onClose} title="Novo item" subtitle="Preencha as informações do Item">
+    <Modal open={open} onClose={onClose} title="Editar Item de Cardápio" subtitle="Preencha as informações do item de cardápio">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Nome"
@@ -78,7 +88,7 @@ export function NewMenuItemModal({ open, onClose }: NewMenuItemModalProps) {
             Cancelar
           </Button>
           <Button sx={{ flex: 1 }} variant="contained" type="submit">
-            Criar Item
+            Editar Item
           </Button>
         </Stack>
       </Stack>

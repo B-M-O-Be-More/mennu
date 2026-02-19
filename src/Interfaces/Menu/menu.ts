@@ -1,5 +1,6 @@
 export interface IMenu {
   id: number;
+  tipoIntervalo: "semanal" | "personalizado";
   data: string;
   unidade: string;
   tipo: string;

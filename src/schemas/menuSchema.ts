@@ -1,6 +1,7 @@
-import { mockCategoriaRefeicao, mockStatuses, mockTiposCardapio, mockUnidades } from "@/data/menuItems";
+import { mockTiposRefeicao, mockStatuses, mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import { mockMenuTypes, mockUsuarios } from "@/data/menus";
 import * as yup from "yup";
+import { Dayjs } from "dayjs";
 
 export const createMenuItemSchema = yup.object({
   id: yup
@@ -21,7 +22,7 @@ export const createMenuItemSchema = yup.object({
   categoria: yup
     .string()
     .required("A categoria é obrigatória")
-    .oneOf(mockCategoriaRefeicao.slice(1).map(t => t.value), "Categoria inválida"),
+    .oneOf(mockTiposRefeicao.slice(1).map(t => t.value), "Categoria inválida"),
 
   status: yup
     .string()
@@ -32,10 +33,10 @@ export const createMenuItemSchema = yup.object({
 export type CreateMenuItemSchemaFormData = yup.InferType<typeof createMenuItemSchema>;
 
 export const createMenuSchema = yup.object({
-  data: yup
-    .string()
-    .required("A data é obrigatória")
-    .matches(/^\d{2}\/\d{2}\/\d{4}$/, "A data deve estar no formato DD/MM/AAAA"),
+  vigencia: yup.object({
+    inicio: yup.mixed<Dayjs>(),
+    fim: yup.mixed<Dayjs>().nullable(),
+  }),
 
   unidade: yup
     .string()
@@ -48,14 +49,8 @@ export const createMenuSchema = yup.object({
     .oneOf(mockTiposCardapio.slice(1).map(t => t.value), "Tipo inválido"),
 
   horario: yup.object({
-    inicio: yup
-      .string()
-      .required("O horário de início é obrigatório")
-      .matches(/^\d{2}:\d{2}$/, "O horário deve estar no formato HH:mm"),
-    fim: yup
-      .string()
-      .required("O horário de fim é obrigatório")
-      .matches(/^\d{2}:\d{2}$/, "O horário deve estar no formato HH:mm"),
+    inicio: yup.mixed<Dayjs>(),
+    fim: yup.mixed<Dayjs>(),
   }),
 
   refeicoes: yup
@@ -71,6 +66,31 @@ export const createMenuSchema = yup.object({
   observacao: yup
     .string()
     .required("A observação é obrigatória"),
+
+  tipoIntervalo: yup
+    .string()
+    .required("O tipo de intervalo é obrigatório")
+    .oneOf(["semanal", "Personalizado"], "Tipo de intervalo inválido"),
+
+  diasSemana: yup
+    .array(
+      yup.string().oneOf([
+        "domingo",
+        "segunda",
+        "terca",
+        "quarta",
+        "quinta",
+        "sexta",
+        "sabado",
+      ])
+    )
+    .required()
+    .default([])
+    .when("tipoIntervalo", {
+      is: "semanal",
+      then: schema => schema.min(1, "Selecione pelo menos um dia da semana"),
+    }),
+
 });
 
 export type CreateMenuSchemaFormData = yup.InferType<typeof createMenuSchema>;

@@ -11,6 +11,8 @@ import { EditIcon, TrashIcon } from "@/components/Icons";
 import { ItemsItemCardProps } from "./";
 import React from "react";
 import Card from "@/components/Cards/Card";
+import EditMenuItemModal from "@/components/Modals/EditMenuItemModal";
+import ActionModal from "@/components/Modals/ActionModal";
 
 const tipoColorMap: Record<string, "success" | "info" | "purple" | "pink" | "orange"> =
 {
@@ -89,6 +91,33 @@ const ItemsItemCard = ({ item }: ItemsItemCardProps) => {
           />
         ))}
       </Stack>
+
+      {
+        openEditItemModal && (
+          <EditMenuItemModal
+            open={openEditItemModal}
+            onClose={() => setOpenEditItemModal(false)}
+            onSave={() => console.log("Item updated:", item)}
+            menuItem={item}
+          />
+        )
+      }
+
+      {
+        openDeleteItemModal && (
+          <ActionModal
+            open={openDeleteItemModal}
+            onCancel={() => setOpenDeleteItemModal(false)}
+            onConfirm={() => console.log("Item deleted:", item)}
+            title="Tem certeza?"
+            subtitle={`Essa ação irá deletar o item "${item.nome}", deseja continuar?`}
+            confirmLabel="Confirmar"
+            cancelLabel="Cancelar"
+            color="error"
+            icon={<TrashIcon width={60} height={60} />}
+          />
+        )
+      }
     </Card>
   );
 };

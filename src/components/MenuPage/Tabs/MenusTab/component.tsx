@@ -15,6 +15,8 @@ import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import { mockMenus } from "@/data/menus";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
+import { ActionModal } from "@/components/Modals/ActionModal/component";
+import { formatDate } from "@/utils/formatDate";
 
 export function MenusTab({ }: MenusTabProps) {
   const theme = useTheme();
@@ -41,7 +43,7 @@ export function MenusTab({ }: MenusTabProps) {
   }, [filters]);
 
   return (
-    <>
+    <React.Fragment>
       <Stack
         gap={0}
         padding={{ xs: 1, md: 3 }}
@@ -145,13 +147,29 @@ export function MenusTab({ }: MenusTabProps) {
       </Card>
 
       {
-        selectedMenu &&
+        selectedMenu && selectedMenu &&
         <ViewMenuModal
           isOpen={openViewMenuModal}
           onClose={() => setOpenViewMenuModal(false)}
           data={selectedMenu}
         />
       }
-    </>
+
+      {
+        openDeleteMenuModal && selectedMenu && (
+          <ActionModal
+            open={openDeleteMenuModal}
+            onCancel={() => setOpenDeleteMenuModal(false)}
+            onConfirm={() => console.log("Menu deleted:", selectedMenu)}
+            title="Tem certeza?"
+            subtitle={`Essa ação irá deletar o cardápio da data "${formatDate(new Date(selectedMenu.data), "dd/MM/yyyy")}", deseja continuar?`}
+            confirmLabel="Confirmar"
+            cancelLabel="Cancelar"
+            color="error"
+            icon={<TrashIcon width={60} height={60} />}
+          />
+        )
+      }
+    </React.Fragment>
   );
 }
