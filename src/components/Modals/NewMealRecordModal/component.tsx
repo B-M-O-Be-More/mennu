@@ -1,21 +1,20 @@
 "use client";
 
-import { Button, Stack, useTheme } from "@mui/material";
+import { Box, Button, Stack, useTheme } from "@mui/material";
 import Modal from "../Modal";
 import { NewMealRecordModalProps } from "./interface";
 import Select from "@/components/FormControl/Select";
-import Input from "@/components/FormControl/Input";
 import TextArea from "@/components/FormControl/TextArea";
-import { mockCategoriaRefeicao, mockTiposCardapio, mockUsers } from "@/data/menuItems";
-import {
-  ManualMealRecord,
-  MealRecordInput,
-  mealRecordSchema,
-} from "@/schemas/mealRecordSchema";
+import { mockTiposRefeicao, mockTiposCardapio, mockUsers } from "@/data/menuItems";
+import { MealRecordInput, mealRecordSchema } from "@/schemas/mealRecordSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { ErrorOutlineIcon } from "@/components/Icons";
+import DatePicker from "@/components/FormControl/DatePicker";
+import TimePicker from "@/components/FormControl/TimePicker";
+import { dateTimeFormToApi } from "@/adapters/dateTimeAdapter";
+import { ManualMealRecordPayload } from "@/Interfaces/Meals/MealTypes";
 
 export function NewMealRecordModal({
   isOpen,
@@ -33,16 +32,21 @@ export function NewMealRecordModal({
     resolver: yupResolver(mealRecordSchema),
     defaultValues: {
       user: mockUsers[0].value,
-      mealType: mockCategoriaRefeicao[0].value,
-      date: "",
-      time: "",
+      mealType: mockTiposRefeicao[0].value,
+      date: null,
+      time: null,
       reason: "",
     },
   });
 
   function onSubmit(data: MealRecordInput) {
-    const payload: ManualMealRecord = {
-      ...data,
+    const dateTimeISO = dateTimeFormToApi(data);
+
+    const payload: ManualMealRecordPayload = {
+      user: data.user,
+      mealType: data.mealType,
+      dateTime: dateTimeISO,
+      reason: data.reason,
       isManual: true,
     };
 
@@ -57,12 +61,9 @@ export function NewMealRecordModal({
       open={isOpen}
       onClose={onClose}>
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-
         <ClosableAlertBox
           severity="warning"
-          icon={
-            <ErrorOutlineIcon color={theme.palette.warning.contrastText} />
-          }
+          icon={<ErrorOutlineIcon color={theme.palette.warning.contrastText} />}
           title="Registro Excepcional"
           description='Use este recurso apenas em casos excepcionais, como falha no terminal. O registro será marcado como "Manual" e auditado.'
         />
@@ -85,24 +86,14 @@ export function NewMealRecordModal({
           error={errors.mealType?.message}
         />
 
-        <Stack direction={"row"} gap={1}>
-          <Input
-            label="Data"
-            placeholder="05/12/2025"
-            register={register("date", {
-              setValueAs: (v) => (v === "" ? undefined : v),
-            })}
-            error={errors.date?.message}
-          />
+        <Stack direction={"row"} gap={1} justifyContent={"space-between"}>
+          <Box width={"50%"}>
+            <DatePicker label={"Data"} name={"date"} control={control} />
+          </Box>
 
-          <Input
-            label="Horário"
-            placeholder="22:30"
-            register={register("time", {
-              setValueAs: (v) => (v === "" ? undefined : v),
-            })}
-            error={errors.time?.message}
-          />
+          <Box width={"50%"}>
+            <TimePicker label="Horário" control={control} name={"time"} />
+          </Box>
         </Stack>
 
         <TextArea

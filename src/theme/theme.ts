@@ -96,50 +96,51 @@ const palette = {
   },
   tables: {
     text: "#4A5565",
-  }
+  },
 };
 
 const typography = {
-  fontFamily: 'var(--font-poppins), "Poppins", "Helvetica", "Arial", sans-serif',
+  fontFamily:
+    'var(--font-poppins), "Poppins", "Helvetica", "Arial", sans-serif',
   h1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 700
+    fontWeight: 700,
   },
   h2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600
+    fontWeight: 600,
   },
   h3: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600
+    fontWeight: 600,
   },
   h4: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600
+    fontWeight: 600,
   },
   h5: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500
+    fontWeight: 500,
   },
   h6: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 500
+    fontWeight: 500,
   },
   body1: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400
+    fontWeight: 400,
   },
   body2: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400
+    fontWeight: 400,
   },
   caption: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 400
+    fontWeight: 400,
   },
   overline: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
-    fontWeight: 600
+    fontWeight: 600,
   },
   button: {
     fontFamily: 'var(--font-poppins), "Poppins", sans-serif',
@@ -155,6 +156,25 @@ const baseTheme = createTheme({
 
 export const theme = createTheme(baseTheme, {
   components: {
+    MuiPickersOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          borderRadius: 12,
+          height: 58,
+          borderColor: baseTheme.palette.divider,
+          transition: "border-color 0.2s ease",
+        },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          "&.Mui-error": {
+            color: baseTheme.palette.error.contrastText,
+          },
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         contained: {

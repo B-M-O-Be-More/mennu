@@ -1,4 +1,4 @@
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import Modal from "../Modal";
 import { EditMealTypeModalProps } from "./interface";
 import TextArea from "@/components/FormControl/TextArea";
@@ -12,6 +12,12 @@ import { MealTypeInput, MealTypeSchema } from "@/schemas/mealTypeSchema";
 import { mockStatuses } from "@/data/menuItems";
 import React from "react";
 import { mealValidations, unitsMock } from "@/data/meals";
+import TimePicker from "@/components/FormControl/TimePicker";
+import {
+  timeRangeFormToApi,
+  timeRangeApiToForm,
+} from "@/adapters/timeRangeAdapter";
+import { UpdateMealTypePayload } from "@/Interfaces/Meals/MealTypes";
 
 export function EditMealTypeModal({
   open,
@@ -36,8 +42,11 @@ export function EditMealTypeModal({
 
   React.useEffect(() => {
     if (open && initialData) {
+      const timeISO = timeRangeApiToForm(initialData);
+
       reset({
         ...initialData,
+        ...timeISO,
         units: initialData.units.map((u) => u.id),
         validations: initialData.validations?.map((v) => v.id),
       });
@@ -45,8 +54,16 @@ export function EditMealTypeModal({
   }, [open, initialData, reset]);
 
   const onEdit = (data: MealTypeInput) => {
+    const timeISO = timeRangeFormToApi(data);
+
+    const payload: UpdateMealTypePayload = {
+      ...data,
+      ...timeISO,
+      typeId,
+    };
+
+    console.log(payload);
     reset();
-    console.log(typeId, data);
     onClose();
   };
 
@@ -72,23 +89,21 @@ export function EditMealTypeModal({
         </Stack>
 
         <Stack direction={"row"} gap={2}>
-          <Input
-            label="Horário de Início"
-            placeholder="Selecione um Horário"
-            register={register("startTime", {
-              setValueAs: (v) => (v === "" ? undefined : v),
-            })}
-            error={errors.startTime?.message}
-          />
+          <Box width={"50%"}>
+            <TimePicker
+              label="Horário de início"
+              control={control}
+              name="startTime"
+            />
+          </Box>
 
-          <Input
-            label="Horário de Fim"
-            placeholder="Selecione um Horário"
-            register={register("endTime", {
-              setValueAs: (v) => (v === "" ? undefined : v),
-            })}
-            error={errors.endTime?.message}
-          />
+          <Box width={"50%"}>
+            <TimePicker
+              label="Horário de Fim"
+              control={control}
+              name="endTime"
+            />
+          </Box>
         </Stack>
 
         <CheckboxGroup
