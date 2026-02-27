@@ -9,6 +9,7 @@ export default function ClosableAlertBox({
   icon,
   title,
   description,
+  isCloseable = true,
 }: ClosableAlertBoxProps) {
   const [isOpen, setIsOpen] = React.useState(true);
 
@@ -39,13 +40,15 @@ export default function ClosableAlertBox({
           </Typography>
         </Stack>
 
-        <IconButton
-          size="small"
-          onClick={() => setIsOpen(false)}
-          sx={{ color: `${severity}.contrastText` }}
-        >
-          <CloseIcon />
-        </IconButton>
+        {isCloseable && (
+          <IconButton
+            size="small"
+            onClick={() => setIsOpen(false)}
+            sx={{ color: `${severity}.contrastText` }}
+          >
+            <CloseIcon />
+          </IconButton>
+        )}
       </Stack>
     </Collapse>
   );

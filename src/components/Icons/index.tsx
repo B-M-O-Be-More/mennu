@@ -38,6 +38,15 @@ const DownloadIcon = ({ color = "currentColor", width = 24, height = 24, classNa
   </svg>
 );
 
+const UploadIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+    <path d="M12 3V15" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17 8L12 3L7 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+
 const ArrowIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
     <path d="M4.99902 11.998H18.9969" stroke={color} strokeWidth="1.9997" strokeLinecap="round" strokeLinejoin="round" />
@@ -347,9 +356,18 @@ const CardIcon = ({ color = "currentColor", width = 24, height = 24, className }
   </svg>
 );
 
+const ImageIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M38 6H10C7.79086 6 6 7.79086 6 10V38C6 40.2091 7.79086 42 10 42H38C40.2091 42 42 40.2091 42 38V10C42 7.79086 40.2091 6 38 6Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18 22C20.2091 22 22 20.2091 22 18C22 15.7909 20.2091 14 18 14C15.7909 14 14 15.7909 14 18C14 20.2091 15.7909 22 18 22Z" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M42 29.9999L35.828 23.8279C35.0779 23.078 34.0607 22.6567 33 22.6567C31.9393 22.6567 30.9221 23.078 30.172 23.8279L12 41.9999" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export {
   MailIcon,
   DownloadIcon,
+  UploadIcon,
   ArrowIcon,
   FileIcon,
   CSVIcon,
@@ -388,4 +406,5 @@ export {
   PhoneIcon,
   QRCodeIcon,
   CardIcon,
+  ImageIcon
 };

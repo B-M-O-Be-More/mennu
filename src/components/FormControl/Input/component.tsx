@@ -16,6 +16,7 @@ export default function Input({
   optional = true,
   placeholder = "Buscar...",
   sx,
+  labelSx,
   icon,
   type = "text",
   error,
@@ -23,7 +24,7 @@ export default function Input({
   multiline = false,
   minRows = 3,
   description,
-}: InputProps & { multiline?: boolean; minRows?: number }) {
+}: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
@@ -31,17 +32,17 @@ export default function Input({
 
   return (
     <FormControl fullWidth>
-      <Stack
-        direction={"row"}
-        gap={1}
-        sx={{
-          "& svg": {
-            width: 18,
-            height: 20,
-          },
-        }}>
-        {labelIcon}
-        {label && (
+      {label && (
+        <Stack
+          direction={"row"}
+          gap={1}
+          sx={{
+            "& svg": {
+              width: 18,
+              height: 20,
+            },
+          }}>
+          {labelIcon}
           <Typography
             variant="body2"
             mb={1}
@@ -56,8 +57,8 @@ export default function Input({
               *
             </Typography>
           </Typography>
-        )}
-      </Stack>
+        </Stack>
+      )}
 
       <TextField
         variant="outlined"

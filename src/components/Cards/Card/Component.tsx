@@ -12,7 +12,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         borderColor="divider"
         borderRadius={3}
         bgcolor="background.paper"
-        padding={isCompact ? 1 : 3}
+        padding={isCompact ? 1 : { xs: 1, md: 3 }}
         spacing={isCompact ? 1 : 2}
         sx={{
           flex: isCompact ? "unset" : 1,

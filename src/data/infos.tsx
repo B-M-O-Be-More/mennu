@@ -1,4 +1,4 @@
-import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "@/components/SettingsTabs";
+import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "../components/SettingsPage/SettingsTabs";
 import { AlertIcon, BuildingIcon, CardapiosIcon, CircledCheckIcon, CircledXIcon, ClockIcon, ConfiguracoesIcon, EstoqueIcon, LockIcon, NoWifiIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosIcon, UsuariosXIcon } from "../components/Icons";
 
 const cardsUsers = [
