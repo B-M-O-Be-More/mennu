@@ -51,17 +51,32 @@ export default function GeneralTab({ }: GeneralTabProps) {
 
 
   React.useEffect(() => {
+    let isMounted = true;
+
     const initializeForm = async () => {
-      if (generalSettingsMock.logo === null) return;
+      try {
+        if (generalSettingsMock.logo === null) return;
 
-      const file = await urlToFile(generalSettingsMock.logo, "logo.png");
-      if (!file) return;
+        const file = await urlToFile(generalSettingsMock.logo, "logo.png");
+        if (!file) return;
 
-      const fileList = fileToFileList(file);
-      reset({ ...generalSettingsMock, image: fileList });
+        const fileList = fileToFileList(file);
+
+        if (isMounted) {
+          reset({ ...generalSettingsMock, image: fileList });
+        }
+      } catch (error) {
+        console.error("Erro ao inicializar formulário:", error);
+      }
     };
+
     initializeForm();
-  }, [reset]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [generalSettingsMock, reset]);
+
 
   const onSubmit = (data: GeneralSettingsFormData) => {
     console.log("Data:", data);

@@ -2,7 +2,7 @@ import { Controller, useForm } from "react-hook-form";
 import { SecurityTabProps } from "./interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Box, Button, Divider, Stack, Switch, Typography } from "@mui/material";
-import Input from "@/components/FormControl/Input/component";
+import Input from "@/components/FormControl/Input";
 import { SafetySettingsFormData, safetySettingsSchema } from "@/schemas/safetySettings";
 
 const safetySettingsMock = {

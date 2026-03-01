@@ -16,7 +16,7 @@ import TimePicker from "@/components/FormControl/TimePicker";
 import {
   timeRangeFormToApi,
   timeRangeApiToForm,
-} from "@/adapters/timeRangeAdapter";
+} from "@/utils/timeRangeAdapter";
 import { UpdateMealTypePayload } from "@/Interfaces/Meals/MealTypes";
 
 export function EditMealTypeModal({
@@ -62,7 +62,6 @@ export function EditMealTypeModal({
       typeId,
     };
 
-    console.log(payload);
     reset();
     onClose();
   };

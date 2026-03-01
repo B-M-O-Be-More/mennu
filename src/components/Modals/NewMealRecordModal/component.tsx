@@ -13,7 +13,7 @@ import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { ErrorOutlineIcon } from "@/components/Icons";
 import DatePicker from "@/components/FormControl/DatePicker";
 import TimePicker from "@/components/FormControl/TimePicker";
-import { dateTimeFormToApi } from "@/adapters/dateTimeAdapter";
+import { dateTimeFormToApi } from "@/utils/dateTimeAdapter";
 import { ManualMealRecordPayload } from "@/Interfaces/Meals/MealTypes";
 
 export function NewMealRecordModal({
@@ -51,7 +51,6 @@ export function NewMealRecordModal({
     };
 
     reset();
-    console.log(payload);
     onClose();
   }
 

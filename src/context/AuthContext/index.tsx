@@ -38,7 +38,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   };
 
   const login = async (formData: LoginSchemaFormData) => {
-    const resp = await requestLogin("/api/auth/login", {
+    const resp = await requestLogin("/api/login", {
       method: "POST",
       body: formData,
     }).catch((error) => {

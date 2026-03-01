@@ -36,7 +36,6 @@ export function EditMealRulesModal({
 
   function handleEdit(data: MealRuleInput) {
     reset();
-    console.log(data);
     onClose();
   }
 
