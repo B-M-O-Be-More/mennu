@@ -48,6 +48,16 @@ const mockExtraRequestTypes = [
 
 const mockTiposRefeicao = [
   { label: "Selecione um tipo", value: "1" },
+  { label: "Prato Principal", value: "prato principal" },
+  { label: "Acompanhamento", value: "acompanhamento" },
+  { label: "Sobremesa", value: "sobremesa" },
+  { label: "Bebida", value: "bebida" },
+  { label: "Salada", value: "salada" },
+];
+
+
+const mockTiposCardapio = [
+  { label: "Selecione um tipo", value: "1" },
   { label: "Café", value: "cafe" },
   { label: "Almoço", value: "almoco" },
   { label: "Jantar", value: "jantar" },
@@ -61,5 +71,6 @@ export {
   mockTiposTerminal,
   mockUsers,
   mockExtraRequestTypes,
-  mockTiposRefeicao
+  mockTiposRefeicao,
+  mockTiposCardapio,
 };

@@ -21,6 +21,7 @@ export default function Input({
   register,
   multiline = false,
   minRows = 3,
+  disabled = false,
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -56,6 +57,7 @@ export default function Input({
         minRows={multiline ? minRows : undefined}
         slotProps={{
           input: {
+            disabled,
             startAdornment: (
               <InputAdornment position="start">
                 {type === "password" ? (

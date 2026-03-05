@@ -20,10 +20,10 @@ export function TabButton({
         transition: "all .4s ease-in-out",
         color: isActive ? "" : "text.secondary",
         bgcolor: isActive ? "" : "#fff",
-        maxHeight: "3.75rem",
-        padding: "1.5rem",
         fontSize: { xs: "0.7rem", sm: "0.8rem", lg: "0.9rem" },
-      }}>
+        borderRadius: 3,
+      }}
+    >
       {label}
     </Button>
   );

@@ -5,7 +5,7 @@ import Modal from "../Modal";
 import { NewMealRecordModalProps } from "./interface";
 import Select from "@/components/FormControl/Select";
 import TextArea from "@/components/FormControl/TextArea";
-import { mockTiposRefeicao, mockUsers } from "@/data/menuItems";
+import { mockTiposRefeicao, mockTiposCardapio, mockUsers } from "@/data/menuItems";
 import { MealRecordInput, mealRecordSchema } from "@/schemas/mealRecordSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -79,7 +79,7 @@ export function NewMealRecordModal({
         <Select
           label={"Tipo de Refeição"}
           optional={false}
-          options={mockTiposRefeicao}
+          options={mockTiposCardapio}
           name="mealType"
           control={control}
           error={errors.mealType?.message}

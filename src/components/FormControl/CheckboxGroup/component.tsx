@@ -19,6 +19,7 @@ export function CheckboxGroup({
   error,
   name,
   control,
+  disabled = false,
 }: CheckboxGroupProps) {
   return (
     <FormGroup>
@@ -66,7 +67,12 @@ export function CheckboxGroup({
                     <FormControlLabel
                       control={
                         <Checkbox
+                          size="medium"
                           checked={checked}
+                          disabled={disabled}
+                          sx={{
+                            transition: "0.3s"
+                          }}
                           onChange={(e) => {
                             if (e.target.checked) {
                               field.onChange([...values, option.id]);
@@ -78,6 +84,11 @@ export function CheckboxGroup({
                           }}
                         />
                       }
+                      slotProps={{
+                        typography: {
+                          fontSize: { xs: "0.875rem", sm: "0.9rem" },
+                        },
+                      }}
                       label={option.label}
                     />
                   </Card>
