@@ -4,7 +4,13 @@ import { Button, Stack } from "@mui/material";
 import React from "react";
 
 import PageHeader from "../PageHeader";
-import { ConfiguracoesIcon, DownloadIcon, PaperIcon, PlusIcon, RefeicoesIcon } from "../Icons";
+import {
+  ConfiguracoesIcon,
+  DownloadIcon,
+  PaperIcon,
+  PlusIcon,
+  RefeicoesIcon,
+} from "../Icons";
 import TabButton from "../TabButton";
 import NewMealTypeModal from "../Modals/NewMealTypeModal";
 import MealTypesTab from "./Tabs/MealTypesTab";
@@ -28,66 +34,43 @@ export function MealsPage() {
     <Stack gap={2}>
       <PageHeader
         title="Refeições"
-        subtitle="Gerencie os registros e configurações de refeições"
-      >
+        subtitle="Gerencie os registros e configurações de refeições">
         {activeTab === 0 && (
-          <>
+          <Stack direction={{md: "row"}} gap={1.5}>
             <Button
               variant="outlined"
-              startIcon={<PlusIcon style={{ padding: 0 }} />}
-              sx={{
-                maxHeight: "60px",
-                fontSize: {
-                  xs: "0.7rem",
-                  sm: "0.8rem",
-                  md: "0.9rem",
-                },
-              }}
+              startIcon={<PlusIcon height={24} />}
               onClick={() => setOpenManualRecordModal(true)}>
               Registro Manual
             </Button>
-            <NewMealRecordModal
-              isOpen={openManualRecordModal}
-              onClose={() => setOpenManualRecordModal(false)}
-            />
 
             <Button
               variant="contained"
-              startIcon={<DownloadIcon />}
-              sx={{
-                fontSize: {
-                  xs: "0.7rem",
-                  sm: "0.8rem",
-                  md: "0.9rem",
-                },
-              }}>
+              startIcon={<DownloadIcon height={24} />}
+              onClick={() => console.log("Exportar")}>
               Exportar
             </Button>
-          </>
+          </Stack>
         )}
         {activeTab === 1 && (
-          <>
-            <Button
-              variant="contained"
-              startIcon={<PlusIcon />}
-              sx={{
-                fontSize: {
-                  xs: "0.7rem",
-                  sm: "0.8rem",
-                  md: "0.9rem",
-                },
-              }}
-              onClick={() => setOpenNewTypeModal(true)}>
-              Novo Tipo de Refeição
-            </Button>
-
-            <NewMealTypeModal
-              open={openNewTypeModal}
-              onClose={() => setOpenNewTypeModal(false)}
-            />
-          </>
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            onClick={() => setOpenNewTypeModal(true)}>
+            Novo Tipo de Refeição
+          </Button>
         )}
       </PageHeader>
+
+      <NewMealRecordModal
+        isOpen={openManualRecordModal}
+        onClose={() => setOpenManualRecordModal(false)}
+      />
+
+      <NewMealTypeModal
+        open={openNewTypeModal}
+        onClose={() => setOpenNewTypeModal(false)}
+      />
 
       <Stack direction={"row"} gap={2}>
         {tabs.map((tab, index) => (

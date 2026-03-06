@@ -17,6 +17,7 @@
     "@mui/x-date-pickers": "^8.27.0",
     "add": "^2.0.6",
     "chart.js": "^4.5.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "color-mode": "^0.1.0",
     "dayjs": "^1.11.19",
     "gsap": "^3.13.0",

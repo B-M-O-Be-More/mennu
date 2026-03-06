@@ -19,8 +19,10 @@ export function TabButton({
       sx={{
         transition: "all .4s ease-in-out",
         color: isActive ? "" : "text.secondary",
-        bgcolor: isActive ? "" : "#fff",
-        fontSize: { xs: "0.7rem", sm: "0.8rem", lg: "0.9rem" },
+        bgcolor: isActive ? "" : "background.paper",
+        maxHeight: "3rem",
+        padding: "1rem",
+        fontSize: { xs: "0.675rem", sm: "0.75rem", lg: "0.875rem" },
         borderRadius: 3,
       }}
     >

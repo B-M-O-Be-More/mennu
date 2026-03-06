@@ -4,6 +4,7 @@ import {
   IconButton,
   InputAdornment,
   TextField,
+  Stack,
 } from "@mui/material";
 import React from "react";
 import { InputProps } from "./";
@@ -11,6 +12,7 @@ import { EyeIcon, LockIcon } from "@/components/Icons";
 
 export default function Input({
   label,
+  labelIcon,
   optional = true,
   placeholder = "Buscar...",
   sx,
@@ -21,6 +23,7 @@ export default function Input({
   register,
   multiline = false,
   minRows = 3,
+  description,
   disabled = false,
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -31,21 +34,31 @@ export default function Input({
   return (
     <FormControl fullWidth>
       {label && (
-        <Typography
-          variant="body2"
-          mb={1}
-          color="text.label" fontWeight={400}
-          sx={labelSx}
-        >
-          {label}{" "}
+        <Stack
+          direction={"row"}
+          gap={1}
+          sx={{
+            "& svg": {
+              width: 18,
+              height: 20,
+            },
+          }}>
+          {labelIcon}
           <Typography
             variant="body2"
-            component="span"
-            color={!optional ? "primary.main" : "transparent"}
-            sx={{ transition: "all 0.2s ease-in-out" }}>
-            *
+            mb={1}
+            color="text.label"
+            fontWeight={400}>
+            {label}{" "}
+            <Typography
+              variant="body2"
+              component="span"
+              color={!optional ? "primary.main" : "transparent"}
+              sx={{ transition: "all 0.2s ease-in-out" }}>
+              *
+            </Typography>
           </Typography>
-        </Typography>
+        </Stack>
       )}
 
       <TextField
@@ -65,9 +78,12 @@ export default function Input({
                     onClick={() => setShowPassword((prev) => !prev)}
                     edge="start"
                     size="small"
-                    sx={{ color: "text.secondary" }}
-                  >
-                    {showPassword ? <EyeIcon /> : <LockIcon width={18} height={18} />}
+                    sx={{ color: "text.secondary" }}>
+                    {showPassword ? (
+                      <EyeIcon />
+                    ) : (
+                      <LockIcon width={18} height={18} />
+                    )}
                   </IconButton>
                 ) : (
                   icon
@@ -105,6 +121,13 @@ export default function Input({
         error={!!error}
         helperText={error}
       />
+      <Typography
+        variant="caption"
+        fontWeight={400}
+        color="text.secondary"
+        mt={1}>
+        {description}
+      </Typography>
     </FormControl>
   );
 }

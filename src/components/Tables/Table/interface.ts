@@ -20,6 +20,7 @@ export interface TableProps<TRow> {
   rows: TRow[];
   rowsPerPageOptions?: number[];
   initialRowsPerPage?: number;
+  isLoading?: boolean;
 }
 
 export interface TablePaginationActionsProps {

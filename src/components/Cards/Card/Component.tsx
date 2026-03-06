@@ -14,7 +14,6 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         bgcolor="background.paper"
         padding={isCompact ? 1 : { xs: 1, md: 3 }}
         spacing={isCompact ? 1 : 2}
-        minWidth={"fit-content"}
         sx={{
           flex: isCompact ? "unset" : 1,
           display: isCompact ? "block" : "flex",

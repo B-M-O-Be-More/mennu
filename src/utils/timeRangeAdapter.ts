@@ -1,16 +1,15 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 export function timeRangeFormToApi(data: {
-  startTime?: Dayjs | null;
-  endTime?: Dayjs | null;
+  startTime?: unknown;
+  endTime?: unknown;
 }) {
+  const start = dayjs.isDayjs(data.startTime) ? data.startTime : null;
+  const end = dayjs.isDayjs(data.endTime) ? data.endTime : null;
+
   return {
-    startTime: data.startTime
-      ? data.startTime.second(0).millisecond(0).toISOString()
-      : null,
-    endTime: data.endTime
-      ? data.endTime.second(0).millisecond(0).toISOString()
-      : null,
+    startTime: start?.second(0).millisecond(0).toISOString() ?? null,
+    endTime: end?.second(0).millisecond(0).toISOString() ?? null,
   };
 }
 

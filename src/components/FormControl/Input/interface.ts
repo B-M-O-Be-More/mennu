@@ -3,6 +3,7 @@ import { SxProps, Theme } from "@mui/material";
 
 export interface InputProps {
   label?: string;
+  labelIcon?: React.ReactNode;
   optional?: boolean;
   placeholder?: string;
   sx?: SxProps<Theme>;
@@ -11,7 +12,7 @@ export interface InputProps {
   type?: React.HTMLInputTypeAttribute;
   error?: string;
   register?: UseFormRegisterReturn;
-  helperText?: string;
+  description?: string;
   multiline?: boolean;
   minRows?: number;
   disabled?: boolean;

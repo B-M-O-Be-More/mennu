@@ -12,14 +12,26 @@ const brLocaleText =
 
 export default function TimePickerG({
   label,
+  labelIcon,
   name,
   control,
 }: TimePickerProps) {
   return (
     <Stack width={"100%"}>
-      <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
-        {label}
-      </Typography>
+      <Stack
+        direction={"row"}
+        gap={1}
+        sx={{
+          "& svg": {
+            width: 18,
+            height: 20,
+          },
+        }}>
+        {labelIcon}
+        <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
+          {label}
+        </Typography>
+      </Stack>
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
         adapterLocale="pt-br"

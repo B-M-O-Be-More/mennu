@@ -10,6 +10,7 @@ import { formatDate } from "@/utils/formatDate";
 import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
 import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
+import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -53,7 +54,7 @@ const userColumns: IColumn<IUser>[] = [
   {
     key: "acoes",
     label: "Ações",
-    render: () => (<></>),
+    render: () => <></>,
   },
 ];
 
@@ -64,7 +65,8 @@ const stockColumns: IColumn<IStock>[] = [
   { key: "estoqueMinimo", label: "Estoque Mínimo" },
   { key: "unidade", label: "Unidade" },
   {
-    key: "status", label: "Status",
+    key: "status",
+    label: "Status",
     render: (row) => (
       <Chip
         label={row.status ? "Ativo" : "Inativo"}
@@ -74,8 +76,9 @@ const stockColumns: IColumn<IStock>[] = [
     ),
   },
   {
-    key: "acoes", label: "Ações",
-    render: () => (<></>)
+    key: "acoes",
+    label: "Ações",
+    render: () => <></>,
   },
 ];
 
@@ -410,6 +413,53 @@ const reportsMenuColumns: IColumn<IReportMenu>[] = [
 
 ];
 
+const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[] = [
+  {
+    key: "data_hora",
+    label: "Data/Hora",
+    render: (row) => formatDateTime(row.data_hora),
+  },
+  {
+    key: "usuario",
+    label: "Usuário",
+    render: (row) => (
+      <Stack direction={{ md: "row" }} alignItems="center" gap={0.5}>
+        <Typography variant="body2">{row.usuario}</Typography>
+        {row.isManual && (
+          <Chip
+            icon={<PaperIcon color="#8200DB" height={18} />}
+            color="purple"
+            label="Manual"
+            sx={{ padding: "0.5rem" }}
+          />
+        )}
+      </Stack>
+    ),
+  },
+  { key: "terminal", label: "Terminal" },
+  { key: "tipo", label: "Tipo de Refeição" },
+  { key: "unidade", label: "Unidade" },
+  { key: "matricula", label: "Matrícula" },
+  {
+    key: "status",
+    label: "Status",
+    render: (row) => {
+      const colorMap: Record<string, "success" | "error"> = {
+        Servida: "success",
+        Cancelada: "error",
+      };
+      return (
+        <Chip
+          label={row.status}
+          color={colorMap[row.status]}
+          size="small"
+          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+        />
+      );
+    },
+  },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -418,5 +468,6 @@ export {
   mealRecordsColumns,
   menuColumns,
   consumptionHistoryColumns,
-  reportsMenuColumns
+  reportsMenuColumns,
+  reportsConsumptionHistoryColumns,
 };
