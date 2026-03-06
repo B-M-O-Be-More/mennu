@@ -6,7 +6,7 @@ const palette = {
   mode: "light" as const,
   primary: {
     main: "#FF3D00",
-    light: "#FF5C26",
+    light: "#FFE9E3",
     dark: "#CC3100",
     contrastText: "#FFFFFF",
   },
@@ -48,9 +48,15 @@ const palette = {
   },
   purple: {
     main: "#FAF5FF",
-    light: "#FFFFFF",
-    dark: "#6A7282",
+    light: "#C4B5FD",
+    dark: "#4C1D95",
     contrastText: "#8200DB",
+  },
+  pink: {
+    main: "#FDF2F8",
+    light: "#F9A8D4",
+    dark: "#9D174D",
+    contrastText: "#C6005C",
   },
   grey: {
     50: "#F9FAFB",
@@ -189,6 +195,7 @@ export const theme = createTheme(baseTheme, {
             backgroundColor: baseTheme.palette.grey[500],
             color: baseTheme.palette.primary.contrastText,
           },
+          outlineColor: "transparent",
         },
         outlined: {
           backgroundColor: "transparent",
@@ -296,6 +303,14 @@ export const theme = createTheme(baseTheme, {
         colorPurple: {
           backgroundColor: palette.purple.main,
           color: palette.purple.contrastText,
+        },
+        colorPink: {
+          backgroundColor: palette.pink.main,
+          color: palette.pink.contrastText,
+        },
+        colorOrange: {
+          backgroundColor: palette.primary.light,
+          color: palette.primary.main,
         },
         outlined: {
           border: `1px solid ${palette.divider}`,

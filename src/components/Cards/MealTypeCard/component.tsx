@@ -3,7 +3,7 @@
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
 import { ClockIcon, EditIcon, RefeicoesIcon } from "@/components/Icons";
-import { Box, Chip, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { MealTypeCardProps } from "./interface";
 import React from "react";
@@ -54,20 +54,22 @@ export function MealTypeCard({ type }: MealTypeCardProps) {
           </Box>
         </Stack>
 
-        <IconButton
-          aria-label="edit"
-          size="small"
-          onClick={() => setOpenEditTypeModal(true)}
-          sx={{
-            marginRight: 1,
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: 2,
-            height: "2.25rem",
-            color: "default.dark",
-          }}>
-          <EditIcon height={20} />
-        </IconButton>
+        <Tooltip title="Editar refeição" arrow>
+          <IconButton
+            aria-label="edit"
+            size="small"
+            onClick={() => setOpenEditTypeModal(true)}
+            sx={{
+              marginRight: 1,
+              border: "1px solid",
+              borderColor: "divider",
+              borderRadius: 2,
+              height: "2.25rem",
+              color: "default.dark",
+            }}>
+            <EditIcon height={20} />
+          </IconButton>
+        </Tooltip>
         <EditMealTypeModal
           open={openEditTypeModal}
           onClose={() => setOpenEditTypeModal(false)}

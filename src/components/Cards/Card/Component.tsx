@@ -19,6 +19,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           display: isCompact ? "block" : "flex",
           width: isCompact ? "100%" : "auto",
           maxWidth: isCompact ? "30%" : "auto",
+          transition: "0.2s all",
           ...sx,
         }}
         {...rest}>

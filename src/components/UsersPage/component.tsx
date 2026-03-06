@@ -198,7 +198,11 @@ export function UsersPage({ }: UsersPageProps) {
               ? {
                 ...col,
                 render: (row: IUser) => (
-                  <ActionCell checked={true} onToggle={(newState) => { console.log("Switch:", newState); }}
+                  <ActionCell
+                    checked={true}
+                    tooltipToggle="Ativar/Desativar usuário"
+                    onToggle={(newState) => { console.log("Switch:", newState); }}
+                    tooltipEdit="Editar usuário"
                     onEdit={() => {
                       setSelectedUser(row);
                       setOpenEditUserModal(true);

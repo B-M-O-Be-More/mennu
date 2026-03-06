@@ -2,8 +2,8 @@ import Card from "@/components/Cards/Card";
 import InfoCard from "@/components/Cards/InfoCard";
 import ReportsFilterForm from "@/components/Forms/ReportsFilterForm";
 import Table from "@/components/Tables/Table";
-import { consumptionHistoryMock, reportsInfoCards } from "@/data/reports";
-import { consumptionHistoryColumns } from "@/data/tableColumns";
+import { reportsConsumptionHistoryMock, reportsInfoCards } from "@/data/reports";
+import { reportsConsumptionHistoryColumns } from "@/data/tableColumns";
 import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
 import { ConsumptionHistoryTabProps } from "./interface";
@@ -60,14 +60,14 @@ export function ConsumptionHistoryTab({}: ConsumptionHistoryTabProps) {
           <Typography>Histórico de Consumo</Typography>
           {!isLoading && (
             <Typography variant="body2" color={"text.secondary"}>
-              {consumptionHistoryMock.length} registros encontrados
+              {reportsConsumptionHistoryMock.length} registros encontrados
             </Typography>
           )}
         </Stack>
 
         <Table
-          columns={consumptionHistoryColumns}
-          rows={consumptionHistoryMock}
+          columns={reportsConsumptionHistoryColumns}
+          rows={reportsConsumptionHistoryMock}
           isLoading={isLoading}
         />
       </Card>

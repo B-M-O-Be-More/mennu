@@ -1,6 +1,6 @@
 import { InfoCardProps } from "@/components/Cards/InfoCard";
 import { PaperIcon, RefeicoesIcon } from "@/components/Icons";
-import { ConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
+import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 
 export const reportsInfoCards: InfoCardProps[] = [
   {
@@ -33,7 +33,7 @@ export const reportsInfoCards: InfoCardProps[] = [
   },
 ];
 
-export const consumptionHistoryMock: ConsumptionHistoryItem[] = [
+export const reportsConsumptionHistoryMock: ReportsConsumptionHistoryItem[] = [
   {
     data_hora: "2025-12-01T11:20:00.000Z",
     usuario: "Maria Santos",

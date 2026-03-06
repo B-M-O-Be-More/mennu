@@ -1,4 +1,4 @@
-export interface ConsumptionHistoryItem {
+export interface ReportsConsumptionHistoryItem {
   isManual?: boolean;
   usuario: string;
   data_hora: string;

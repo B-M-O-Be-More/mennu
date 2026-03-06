@@ -148,6 +148,13 @@ const CircledXIcon = ({ color = "currentColor", width = 24, height = 24, classNa
   </svg>
 );
 
+const XIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <path d="M15 5L5 15" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5 5L15 15" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const TrashIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
     <path d="M8.3335 9.16602V14.166" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
@@ -364,6 +371,51 @@ const ImageIcon = ({ color = "currentColor", width = 24, height = 24, className 
   </svg>
 );
 
+const CalendarIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M10.665 2.66797V8.0005" stroke={color} strokeWidth="2.66626" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21.3301 2.66797V8.0005" stroke={color} strokeWidth="2.66626" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M25.3296 5.33203H6.66578C5.19324 5.33203 3.99951 6.52576 3.99951 7.99829V26.6621C3.99951 28.1347 5.19324 29.3284 6.66578 29.3284H25.3296C26.8022 29.3284 27.9959 28.1347 27.9959 26.6621V7.99829C27.9959 6.52576 26.8022 5.33203 25.3296 5.33203Z" stroke={color} strokeWidth="2.66626" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3.99951 13.332H27.9959" stroke={color} strokeWidth="2.66626" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const MarkedCalendarIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M15.8333 3.33203H4.16667C3.24619 3.33203 2.5 4.07822 2.5 4.9987V16.6654C2.5 17.5858 3.24619 18.332 4.16667 18.332H15.8333C16.7538 18.332 17.5 17.5858 17.5 16.6654V4.9987C17.5 4.07822 16.7538 3.33203 15.8333 3.33203Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13.3335 1.66797V5.0013" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2.5 8.33203H17.5" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6.6665 1.66797V5.0013" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14.1665 11.668H9.1665" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10.8335 15H5.8335" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5.8335 11.668H5.84183" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M14.1665 15H14.1748" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CookHatIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M17 21.0002C17.2652 21.0002 17.5196 20.8948 17.7071 20.7073C17.8947 20.5197 18 20.2654 18 20.0002V14.6502C18 14.1932 18.316 13.8062 18.727 13.6092C19.578 13.2032 20.2582 12.5097 20.6476 11.651C21.0371 10.7924 21.1107 9.82375 20.8554 8.91611C20.6002 8.00847 20.0326 7.22016 19.2527 6.6903C18.4728 6.16044 17.5309 5.92309 16.593 6.02015C16.2068 5.12236 15.5659 4.35745 14.7496 3.81999C13.9333 3.28253 12.9774 2.99609 12 2.99609C11.0227 2.99609 10.0668 3.28253 9.25045 3.81999C8.43415 4.35745 7.79326 5.12236 7.40702 6.02015C6.4696 5.92377 5.52826 6.16145 4.74895 6.69129C3.96965 7.22112 3.40243 8.00909 3.14731 8.91625C2.89218 9.82342 2.96553 10.7915 3.35443 11.6499C3.74332 12.5083 4.42278 13.2018 5.27302 13.6082C5.68402 13.8062 6.00002 14.1932 6.00002 14.6492V20.0002C6.00002 20.2654 6.10538 20.5197 6.29291 20.7073C6.48045 20.8948 6.7348 21.0002 7.00002 21.0002H17Z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6 17H18" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const StatsIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M3 3V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H21" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18 17V9" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M13 17V5" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 17V14" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CopyIcon = ({ color = "currentColor", width = 24, height = 24, className }: SVGIconProps) => (
+  <svg width={width} height={height} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} style={{ display: "block", flexShrink: 0 }}>
+    <path d="M16.6665 6.66797H8.33317C7.4127 6.66797 6.6665 7.41416 6.6665 8.33464V16.668C6.6665 17.5884 7.4127 18.3346 8.33317 18.3346H16.6665C17.587 18.3346 18.3332 17.5884 18.3332 16.668V8.33464C18.3332 7.41416 17.587 6.66797 16.6665 6.66797Z" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3.33317 13.3346C2.4165 13.3346 1.6665 12.5846 1.6665 11.668V3.33464C1.6665 2.41797 2.4165 1.66797 3.33317 1.66797H11.6665C12.5832 1.66797 13.3332 2.41797 13.3332 3.33464" stroke={color} strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export {
   MailIcon,
   DownloadIcon,
@@ -383,6 +435,7 @@ export {
   EditIcon,
   CircledCheckIcon,
   CircledXIcon,
+  XIcon,
   TrashIcon,
   BuildingIcon,
   LockIcon,
@@ -406,5 +459,10 @@ export {
   PhoneIcon,
   QRCodeIcon,
   CardIcon,
-  ImageIcon
+  ImageIcon,
+  CalendarIcon,
+  MarkedCalendarIcon,
+  CookHatIcon,
+  StatsIcon,
+  CopyIcon,
 };

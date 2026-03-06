@@ -23,7 +23,9 @@ export function TabButton({
         maxHeight: "3rem",
         padding: "1rem",
         fontSize: { xs: "0.675rem", sm: "0.75rem", lg: "0.875rem" },
-      }}>
+        borderRadius: 3,
+      }}
+    >
       {label}
     </Button>
   );

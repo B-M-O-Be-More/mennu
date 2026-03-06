@@ -195,7 +195,11 @@ export function StockPage({ }: StockPageProps) {
                     ? {
                       ...col,
                       render: (row: IStock) => (
-                        <ActionCell checked={true} onToggle={(newState) => { console.log("Switch:", newState); }}
+                        <ActionCell
+                          checked={true}
+                          tooltipToggle="Ativar/Desativar item"
+                          onToggle={(newState) => { console.log("Switch:", newState); }}
+                          tooltipEdit="Editar item"
                           onEdit={() => {
                             setSelectedStock(row);
                             setOpenEditStockModal(true);

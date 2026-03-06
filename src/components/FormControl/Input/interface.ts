@@ -15,4 +15,6 @@ export interface InputProps {
   description?: string;
   multiline?: boolean;
   minRows?: number;
+  disabled?: boolean;
+  mask?: string
 }

@@ -184,7 +184,9 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
               }
               <ActionCell
                 checked={terminal.ativo}
+                tooltipToggle="Ativar/Desativar terminal"
                 onToggle={(checked) => console.log("Toggle terminal:", terminal.nome, checked)}
+                tooltipEdit="Editar terminal"
                 onEdit={() => {
                   setSelectedTerminal(terminal)
                   setOpenEditTerminalModal(true)

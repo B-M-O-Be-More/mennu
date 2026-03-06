@@ -8,4 +8,5 @@ export interface ModalProps {
   subtitle?: string;
   children?: ReactNode;
   dialogSx?: SxProps;
+  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
 }
