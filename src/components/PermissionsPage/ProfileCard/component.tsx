@@ -71,9 +71,9 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
                 <TrashIcon width={20} color={theme.palette.error.contrastText} />
               </IconButton>
             </Tooltip>
-            <Tooltip title={isOpen ? "Expandir" : "Recolher"}>
+            <Tooltip title={isOpen ? "Recolher" : "Expandir"}>
               <IconButton
-                aria-label="delete"
+                aria-label={isOpen ? "collapse" : "expand"}
                 size="small"
                 onClick={() => setIsOpen((prev) => !prev)}
                 sx={{

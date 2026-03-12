@@ -1,6 +1,5 @@
-import { IProfilePermissions } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
+import { IProfilePermissions } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface EditPermissionProfileModalProps {
   open: boolean;
   onClose: () => void;

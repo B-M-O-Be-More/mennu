@@ -2,6 +2,8 @@ export interface IProfilePermissions {
   id: number;
   nome: string;
   descricao: string;
+  usuarios: string[];
+  criadoEm: string;
   permissoes: IProfilePermissionsItems[];
 }
 

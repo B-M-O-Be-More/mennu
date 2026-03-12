@@ -10,7 +10,7 @@ import { ProfilePermissionsFormData, profilePermissionsSchema } from "@/schemas/
 import { profilePermissionsMock } from "@/data/permissions";
 import Table from "@/components/Tables/Table";
 import { permissionsColumns } from "@/data/tableColumns";
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
 
 export function NewPermissionProfileModal({
@@ -22,7 +22,7 @@ export function NewPermissionProfileModal({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<ProfilePermissionsFormData>({
     resolver: yupResolver(profilePermissionsSchema),
     defaultValues: {
       nome: "",
@@ -41,7 +41,7 @@ export function NewPermissionProfileModal({
 
   return (
     <Modal
-      title={"Registro Manual de Refeição"}
+      title={"Criar Novo Perfil"}
       maxWidth="md"
       open={isOpen}
       onClose={onClose}>
@@ -56,7 +56,7 @@ export function NewPermissionProfileModal({
         />
 
         <Input
-          label="Descricao"
+          label="Descrição"
           placeholder="Descreva as responsabilidades deste perfil"
           multiline
           optional={false}
@@ -87,7 +87,7 @@ export function NewPermissionProfileModal({
             Cancelar
           </Button>
           <Button sx={{ flex: 1 }} variant="contained" type="submit">
-            Criar Registro
+            Criar Perfil
           </Button>
         </Stack>
       </Stack>

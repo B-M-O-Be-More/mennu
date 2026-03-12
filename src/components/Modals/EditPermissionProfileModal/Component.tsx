@@ -7,8 +7,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Table from "@/components/Tables/Table";
 import { permissionsColumns } from "@/data/tableColumns";
 import { ProfilePermissionsFormData, profilePermissionsSchema } from "@/schemas/profilePermissionsSchema";
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
 import React from "react";
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
 export default function EditPermissionProfileModal({
   open,
@@ -59,7 +59,7 @@ export default function EditPermissionProfileModal({
         />
 
         <Input
-          label="Descricao"
+          label="Descrição"
           placeholder="Descreva as responsabilidades deste perfil"
           multiline
           optional={false}

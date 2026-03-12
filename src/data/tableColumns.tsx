@@ -4,7 +4,7 @@ import { IMovement } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
-import { CheckIcon, CircledCheckIcon, PaperIcon, XIcon } from "@/components/Icons";
+import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 import { formatDate } from "@/utils/formatDate";
 import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
@@ -12,7 +12,7 @@ import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
 const userColumns: IColumn<IUser>[] = [
   {

@@ -1,4 +1,4 @@
-import { IProfilePermissions } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
+import { IProfilePermissions } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
 export const profilePermissionsMock: IProfilePermissions[] = [
   {
