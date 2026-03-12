@@ -1,7 +1,7 @@
 export interface BaseColumn<T> {
   label: string;
   align?: "left" | "right" | "center";
-  render?: (row: T) => React.ReactNode;
+  render?: (row: T, index: number) => React.ReactNode; // permitir índice
 }
 
 export interface DataColumn<T, K extends keyof T> extends BaseColumn<T> {
@@ -10,7 +10,7 @@ export interface DataColumn<T, K extends keyof T> extends BaseColumn<T> {
 
 export interface CustomColumn<T> extends BaseColumn<T> {
   key: string;
-  render: (row: T) => React.ReactNode;
+  render?: (row: T, index: number) => React.ReactNode;
 }
 
 export type IColumn<T> = DataColumn<T, keyof T> | CustomColumn<T>;

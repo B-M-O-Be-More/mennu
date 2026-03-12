@@ -124,7 +124,7 @@ export default function TableG<T extends Record<string, any>>({
               }}>
               {columns.map((col) => (
                 <TableCell key={String(col.key)} align={col.align || "left"}>
-                  {col.render ? col.render(row) : row[col.key]}
+                  {col.render ? col.render(row, idx) : row[col.key]}
                 </TableCell>
               ))}
             </TableRow>

@@ -4,13 +4,15 @@ import { IMovement } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { IUser } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
-import { PaperIcon } from "@/components/Icons";
+import { CheckIcon, CircledCheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 import { formatDate } from "@/utils/formatDate";
 import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
 import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
+import theme from "@/theme/theme";
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/ProfilePermissions";
 
 const userColumns: IColumn<IUser>[] = [
   {
@@ -460,6 +462,55 @@ const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[]
   },
 ];
 
+const permissionsColumns: IColumn<IProfilePermissionsItems>[] = [
+  { key: "modulo", label: "Módulo" },
+  {
+    key: "visualizar",
+    label: "Visualizar",
+    render: (row) => (
+      row.visualizar ? (
+        <CheckIcon color={theme.palette.success.contrastText} width={20} height={20} />
+      ) : (
+        <XIcon color={theme.palette.default.light} width={20} height={20} />
+      )
+    )
+  },
+  {
+    key: "criar",
+    label: "Criar",
+    render: (row) => (
+      row.criar ? (
+        <CheckIcon color={theme.palette.success.contrastText} width={20} height={20} />
+      ) : (
+        <XIcon color={theme.palette.default.light} width={20} height={20} />
+      )
+    )
+  },
+  {
+    key: "editar",
+    label: "Editar",
+    render: (row) => (
+      row.editar ? (
+        <CheckIcon color={theme.palette.success.contrastText} width={20} height={20} />
+      ) : (
+        <XIcon color={theme.palette.default.light} width={20} height={20} />
+      )
+    )
+  },
+  {
+    key: "excluir",
+    label: "Excluir",
+    render: (row) => (
+      row.excluir ? (
+        <CheckIcon color={theme.palette.success.contrastText} width={20} height={20} />
+      ) : (
+        <XIcon color={theme.palette.default.light} width={20} height={20} />
+      )
+    )
+  },
+];
+
+
 export {
   userColumns,
   stockColumns,
@@ -470,4 +521,5 @@ export {
   consumptionHistoryColumns,
   reportsMenuColumns,
   reportsConsumptionHistoryColumns,
+  permissionsColumns,
 };
