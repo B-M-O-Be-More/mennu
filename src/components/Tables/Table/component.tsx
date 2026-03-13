@@ -82,6 +82,8 @@ export default function TableG<T extends Record<string, any>>({
     setPage(0);
   };
 
+  const startIndex = page * rowsPerPage;
+
   return isLoading ? (
     <TableSkeleton />
   ) : (
@@ -109,26 +111,35 @@ export default function TableG<T extends Record<string, any>>({
         </TableHead>
 
         <TableBody>
-          {(rowsPerPage > 0
-            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : rows
-          ).map((row, idx) => (
-            <TableRow
-              key={idx}
-              sx={{
-                "& .MuiTableCell-root": {
-                  color: "tables.text",
-                  borderBottom: "1px solid",
-                  borderColor: "grey.100",
-                },
-              }}>
-              {columns.map((col) => (
-                <TableCell key={String(col.key)} align={col.align || "left"}>
-                  {col.render ? col.render(row) : row[col.key]}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {
+            (rowsPerPage > 0
+              ? rows.slice(startIndex, startIndex + rowsPerPage)
+              : rows
+            ).map((row, idx) => {
+              const absoluteIndex = startIndex + idx;
+
+              return (
+                <TableRow
+                  key={absoluteIndex}
+                  sx={{
+                    "& .MuiTableCell-root": {
+                      color: "tables.text",
+                      borderBottom: "1px solid",
+                      borderColor: "grey.100",
+                    },
+                  }}
+                >
+                  {columns.map((col) => (
+                    <TableCell key={String(col.key)} align={col.align || "left"}>
+                      {col.render
+                        ? col.render(row, absoluteIndex)
+                        : row[col.key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })
+          }
 
           {rows.length === 0 && (
             <TableRow

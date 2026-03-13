@@ -54,6 +54,12 @@ const ArrowIcon = ({ color = "currentColor", width = 24, height = 24, className,
   </svg>
 );
 
+const ArrowHeadIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none">
+    <path d="M6.25 18.4937L8.0125 20.2562L15 13.2812L21.9875 20.2562L23.75 18.4937L15 9.74365L6.25 18.4937Z" fill={color} />
+  </svg>
+);
+
 const FileIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
     <path fillRule="evenodd" clipRule="evenodd" d="M4 22V2H16V4H14V8H18V6H20V22H4ZM12 4H6V20H18V10H12V4Z" fill={color} />
@@ -145,6 +151,12 @@ const CircledXIcon = ({ color = "currentColor", width = 24, height = 24, classNa
     <path d="M14.0002 25.6673C20.4435 25.6673 25.6668 20.444 25.6668 14.0007C25.6668 7.55733 20.4435 2.33398 14.0002 2.33398C7.55684 2.33398 2.3335 7.55733 2.3335 14.0007C2.3335 20.444 7.55684 25.6673 14.0002 25.6673Z" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M17.5 10.5L10.5 17.5" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M10.5 10.5L17.5 17.5" stroke={color} strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const CheckIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+    <path d="M20 6L9 17L4 12" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -421,6 +433,7 @@ export {
   DownloadIcon,
   UploadIcon,
   ArrowIcon,
+  ArrowHeadIcon,
   FileIcon,
   CSVIcon,
   PlusIcon,
@@ -435,6 +448,7 @@ export {
   EditIcon,
   CircledCheckIcon,
   CircledXIcon,
+  CheckIcon,
   XIcon,
   TrashIcon,
   BuildingIcon,
