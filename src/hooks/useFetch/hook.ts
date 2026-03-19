@@ -38,9 +38,10 @@ export default function useFetch<T>() {
     }
 
     try {
-      const res = await executeAsyncFunction(() =>
-        fetch(`${url}?${params.toString()}`, config)
-      );
+      const queryString = params.toString();
+    const requestUrl = queryString ? `${url}?${queryString}` : url;
+
+    const res = await executeAsyncFunction(() => fetch(requestUrl, config));
 
       if (!res.ok) {
         const errorData = await res.json();
