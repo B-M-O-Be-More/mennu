@@ -1,11 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const baseUrlRaw = process.env.NEXT_PUBLIC_API_URL;
-const baseUrl = baseUrlRaw
-  ?.trim()
-  .replace(/^['"]|['"]$/g, "")
-  .replace(/\/+$/, "");
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function POST() {
   if (!baseUrl) {
@@ -14,7 +10,6 @@ export async function POST() {
       { status: 500 }
     );
   }
-
 
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
@@ -26,9 +21,8 @@ export async function POST() {
     );
   }
 
-  const logoutUrl = baseUrl.endsWith("/api")
-    ? `${baseUrl}/auth/logout`
-    : `${baseUrl}/api/auth/logout`;
+  
+  const logoutUrl = `${baseUrl}/auth/logout`;
 
   try {
     const response = await fetch(logoutUrl, {
@@ -36,22 +30,18 @@ export async function POST() {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: token, 
+        Authorization: token,
       },
     });
 
-    let data: unknown;
-
-    try {
-      data = await response.json();
-    } catch {
-      data = { message: "Resposta sem JSON" };
-    }
+    
+    const data = await response.json();
 
     const res = NextResponse.json(data, {
       status: response.status,
     });
 
+    
     res.cookies.set("mennu_token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
