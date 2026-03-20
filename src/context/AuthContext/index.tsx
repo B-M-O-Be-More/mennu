@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { destroyCookie, setCookie } from "nookies";
+import { destroyCookie } from "nookies";
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -15,29 +15,25 @@ const UserContext = React.createContext<UserContextProps>({
   isLoadingPages: true,
   isLoadingValidateToken: true,
   login: async () => ({}) as IUser,
-  logout: async () => { },
-  handleValidateToken: async () => { },
-  user: {} as IUser
+  logout: async () => {},
+  handleValidateToken: async () => {},
+  user: {} as IUser,
 });
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [requestLogin, isLoadingLogin] = useFetch<IUser>();
   const [requestValidateToken, isLoadingValidateToken] = useFetch<IUser>();
   const [requestLogout] = useFetch<unknown>();
+
   const [isLoadingPages, setLoadingPages] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<IUser>(initialUser());
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+
   const router = useRouter();
 
-  const handleSetCookies = (token: string) => {
-    setCookie(undefined, "mennu_token", token, { path: "/" });
-  };
-
+ 
   const handleUserState = (data: IUser) => {
     setUser(data);
-    if (data?.token_access?.token) {
-      handleSetCookies(data.token_access.token);
-    }
   };
 
   const login = async (formData: LoginSchemaFormData) => {
@@ -70,8 +66,11 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const clearSession = React.useCallback(() => {
     setUser(initialUser());
+
+    
     destroyCookie(undefined, "token", { path: "/" });
     destroyCookie(undefined, "mennu_token", { path: "/" });
+
     setIsAuthenticated(false);
   }, []);
 
@@ -91,6 +90,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setUser({ ...resp.data });
     }
   }, [requestValidateToken, clearSession]);
+
 
   const logout = async () => {
     await requestLogout("/api/auth/logout", {

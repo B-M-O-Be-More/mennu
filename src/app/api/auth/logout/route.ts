@@ -1,47 +1,68 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 const baseUrlRaw = process.env.NEXT_PUBLIC_API_URL;
-const baseUrl = baseUrlRaw?.trim().replace(/^['"]|['"]$/g, "").replace(/\/+$/, "");
+const baseUrl = baseUrlRaw
+  ?.trim()
+  .replace(/^['"]|['"]$/g, "")
+  .replace(/\/+$/, "");
 
-export async function POST(req: Request) {
+export async function POST() {
   if (!baseUrl) {
-    return NextResponse.json({ message: "NEXT_PUBLIC_API_URL não está configurado" }, { status: 500 });
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_API_URL não está configurado" },
+      { status: 500 }
+    );
   }
 
-  const cookies = req.headers.get("cookie") || "";
-  const tokenMatch = cookies.match(/(?:^|; )mennu_token=([^;]+)/);
-  const token = tokenMatch ? decodeURIComponent(tokenMatch[1]) : null;
+  
+  const cookieStore = await cookies();
+  const token = cookieStore.get("mennu_token")?.value;
 
-  const logoutUrl = baseUrl.endsWith("/api") ? `${baseUrl}/auth/logout` : `${baseUrl}/api/auth/logout`;
+  if (!token) {
+    return NextResponse.json(
+      { message: "Token não encontrado" },
+      { status: 401 }
+    );
+  }
 
-  const response = await fetch(logoutUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(token ? { Authorization: `Bearer ${token}`, "X-API-Key": token } : {}),
-    },
-  });
+  const logoutUrl = baseUrl.endsWith("/api")
+    ? `${baseUrl}/auth/logout`
+    : `${baseUrl}/api/auth/logout`;
 
-  const data = await response.json();
-  const res = NextResponse.json(data, { status: response.status });
+  try {
+    const response = await fetch(logoutUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+        "X-API-Key": token,
+      },
+    });
 
-  // Remove cookie localmente
-  res.cookies.set("mennu_token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-    path: "/",
-  });
+    const data = await response.json();
 
-  res.cookies.set("token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-    path: "/",
-  });
+    const res = NextResponse.json(data, {
+      status: response.status,
+    });
 
-  return res;
+    // limpar cookie
+    res.cookies.set("mennu_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    return res;
+  } catch (error) {
+    console.error("Erro no logout:", error);
+
+    return NextResponse.json(
+      { message: "Erro ao conectar com o servidor de autenticação" },
+      { status: 500 }
+    );
+  }
 }
