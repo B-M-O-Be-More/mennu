@@ -5,9 +5,12 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function GET(request: Request) {
   const cookiesState = await cookies();
-  const token = cookiesState.get("mennu_token")?.value || cookiesState.get("token")?.value;
+
+  
+  const token = cookiesState.get("mennu_token")?.value;
 
   const params = request.url.split("?")[1];
+
   const res = await fetch(
     `${baseUrl}/rota/example` + (params ? `?${params}` : ""),
     {
@@ -15,11 +18,12 @@ export async function GET(request: Request) {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
-        "X-API-Key": token || "",
+        Authorization: token || "",
       },
-    },
+    }
   );
+
   const data = await res.json();
+
   return NextResponse.json(data, { status: res.status });
 }
