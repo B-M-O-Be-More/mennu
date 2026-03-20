@@ -26,14 +26,13 @@ export async function POST(req: Request) {
 
   const data = await response.json();
 
-  if (!response.ok) {
-    return NextResponse.json(data, { status: response.status });
-  }
+ if (!response.ok) {
+   return NextResponse.json(data, { status: response.status });
+ }
 
-  const token =
-    data?.data?.token || data?.data?.token_access?.token || data?.token || data?.token_access?.token;
+ const token = data?.token_access?.token;
 
-  const res = NextResponse.json(data, { status: response.status });
+ const res = NextResponse.json(data, { status: response.status });
 
   if (token) {
     res.cookies.set("mennu_token", token, {
