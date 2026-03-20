@@ -15,7 +15,7 @@ export async function POST() {
     );
   }
 
-  
+
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
 
@@ -36,18 +36,22 @@ export async function POST() {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-        "X-API-Key": token,
+        Authorization: token, 
       },
     });
 
-    const data = await response.json();
+    let data: unknown;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = { message: "Resposta sem JSON" };
+    }
 
     const res = NextResponse.json(data, {
       status: response.status,
     });
 
-    // limpar cookie
     res.cookies.set("mennu_token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
