@@ -31,7 +31,6 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const router = useRouter();
 
- 
   const handleUserState = (data: IUser) => {
     setUser(data);
   };
@@ -40,9 +39,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const resp = await requestLogin("/api/auth/login", {
       method: "POST",
       body: formData,
-    }).catch((error) => {
-      console.error(error);
-    });
+    }).catch(() => {});
 
     type LoginResponse = { data?: IUser; message?: string };
 
@@ -67,8 +64,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const clearSession = React.useCallback(() => {
     setUser(initialUser());
 
-    
-    destroyCookie(undefined, "token", { path: "/" });
+    // ✅ remove apenas o cookie correto
     destroyCookie(undefined, "mennu_token", { path: "/" });
 
     setIsAuthenticated(false);
@@ -91,13 +87,10 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, [requestValidateToken, clearSession]);
 
-
   const logout = async () => {
     await requestLogout("/api/auth/logout", {
       method: "POST",
-    }).catch((error) => {
-      console.error("Logout failed:", error);
-    });
+    }).catch(() => {});
 
     clearSession();
     router.push("/");
