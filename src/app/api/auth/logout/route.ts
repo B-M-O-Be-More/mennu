@@ -21,7 +21,6 @@ export async function POST() {
     );
   }
 
-  
   const logoutUrl = `${baseUrl}/auth/logout`;
 
   try {
@@ -34,14 +33,12 @@ export async function POST() {
       },
     });
 
-    
     const data = await response.json();
 
     const res = NextResponse.json(data, {
       status: response.status,
     });
 
-    
     res.cookies.set("mennu_token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -51,9 +48,7 @@ export async function POST() {
     });
 
     return res;
-  } catch (error) {
-    console.error("Erro no logout:", error);
-
+  } catch {
     return NextResponse.json(
       { message: "Erro ao conectar com o servidor de autenticação" },
       { status: 500 }
