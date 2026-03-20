@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 
-const baseUrlRaw = process.env.NEXT_PUBLIC_API_URL;
-const baseUrl = baseUrlRaw?.trim().replace(/^['"]|['"]$/g, "").replace(/\/+$/, "");
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function POST(req: Request) {
   if (!baseUrl) {
-    return NextResponse.json({ message: "NEXT_PUBLIC_API_URL não está configurado" }, { status: 500 });
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_API_URL não está configurado" },
+      { status: 500 }
+    );
   }
 
   const body = await req.json();
 
-  const authUrl = baseUrl.endsWith("/api")
-    ? `${baseUrl}/auth/login`
-    : `${baseUrl}/api/auth/login`;
+ 
+  const authUrl = `${baseUrl}/auth/login`;
 
   const response = await fetch(authUrl, {
     method: "POST",
