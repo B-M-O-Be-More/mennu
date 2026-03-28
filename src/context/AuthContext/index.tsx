@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { destroyCookie, setCookie } from "nookies";
+import { destroyCookie } from "nookies";
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -15,44 +15,62 @@ const UserContext = React.createContext<UserContextProps>({
   isLoadingPages: true,
   isLoadingValidateToken: true,
   login: async () => ({}) as IUser,
-  logout: async () => { },
-  handleValidateToken: async () => { },
-  user: {} as IUser
+  logout: async () => {},
+  handleValidateToken: async () => {},
+  user: {} as IUser,
 });
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [requestLogin, isLoadingLogin] = useFetch<IUser>();
   const [requestValidateToken, isLoadingValidateToken] = useFetch<IUser>();
-  const [isLoadingPages, setLoadingPages] = React.useState<boolean>(true);
+  const [requestLogout] = useFetch<unknown>();
+
+  const [isLoadingPages, setLoadingPages] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<IUser>(initialUser());
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
-  const router = useRouter();
 
-  const handleSetCookies = (token: string) => {
-    setCookie(undefined, "token", token, { path: "/" });
-  };
+  const router = useRouter();
 
   const handleUserState = (data: IUser) => {
     setUser(data);
-    handleSetCookies(data.token_access.token);
   };
 
   const login = async (formData: LoginSchemaFormData) => {
-    const resp = await requestLogin("/api/login", {
+    const resp = await requestLogin("/api/auth/login", {
       method: "POST",
       body: formData,
-    }).catch((error) => {
-      console.error(error);
-    });
+    }).catch(() => {});
 
-    if (resp && resp.data) {
-      handleUserState(resp.data);
-      setIsAuthenticated(true);
+    type LoginResponse = { data?: IUser; message?: string };
+
+    const respData = resp as LoginResponse | IUser | undefined;
+    let userData: IUser | undefined;
+
+    if (respData && "data" in respData && respData.data) {
+      userData = respData.data;
+    } else if (respData && !("data" in (respData as IUser))) {
+      userData = respData as IUser;
     }
-    return resp?.data as IUser;
+
+    if (userData) {
+      handleUserState(userData);
+      setIsAuthenticated(true);
+      router.push("/dashboard");
+    }
+
+    return userData as IUser;
   };
 
-  const handleValidateToken = async () => {
+  const clearSession = React.useCallback(() => {
+    setUser(initialUser());
+
+    // ✅ remove apenas o cookie correto
+    destroyCookie(undefined, "mennu_token", { path: "/" });
+
+    setIsAuthenticated(false);
+  }, []);
+
+  const handleValidateToken = React.useCallback(async () => {
     const resp = await requestValidateToken(`/api/auth/active`, {
       method: "GET",
     })
@@ -67,22 +85,16 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       setUser({ ...resp.data });
     }
-  };
+  }, [requestValidateToken, clearSession]);
 
   const logout = async () => {
+    await requestLogout("/api/auth/logout", {
+      method: "POST",
+    }).catch(() => {});
+
     clearSession();
     router.push("/");
   };
-
-  const clearSession = () => {
-    setUser(initialUser());
-    destroyCookie(undefined, "token", { path: "/" });
-    setIsAuthenticated(false);
-  };
-
-  React.useEffect(() => {
-    handleValidateToken();
-  }, []);
 
   return (
     <UserContext.Provider

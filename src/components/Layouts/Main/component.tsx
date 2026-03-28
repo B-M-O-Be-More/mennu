@@ -11,7 +11,7 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useUser();
+  const { isAuthenticated, logout } = useUser();
 
   const pathname = usePathname();
 
@@ -52,7 +52,7 @@ export default function MainLayout({
           menuItems={menuItems}
           adminMenuItems={adminMenuItems}
           user={user}
-          onLogout={() => console.log("logout")}
+          onLogout={logout}
           logoutIcon={<SairIcon />}
           showAdminSection
           activePath={pathname}
