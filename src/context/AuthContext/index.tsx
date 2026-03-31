@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { destroyCookie } from "nookies";
+// Native cookie deletion helper — no external dependency needed
+const destroyCookie = (name: string, options?: { path?: string }) => {
+  const path = options?.path ?? "/";
+  document.cookie = `${name}=; Max-Age=0; path=${path}`;
+};
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -65,7 +69,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setUser(initialUser());
 
     // ✅ remove apenas o cookie correto
-    destroyCookie(undefined, "mennu_token", { path: "/" });
+    destroyCookie("mennu_token", { path: "/" });
 
     setIsAuthenticated(false);
   }, []);
