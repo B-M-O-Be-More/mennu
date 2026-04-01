@@ -1,10 +1,10 @@
-import React from "react";
-import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import React, { useState } from "react";
+import { Stack, Typography, Box, Button, Alert } from "@mui/material";
+import { mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { EditStockModalProps } from "./";
+import { EditStockModalProps } from "./interface";
 import { useForm } from "react-hook-form";
 import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,104 +15,111 @@ export default function EditStockModal({
   stockItem,
   onSave,
 }: EditStockModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { register,
+  const {
+    register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
     reset,
-    control,
   } = useForm<CreateStockSchemaFormData>({
     resolver: yupResolver(createStockSchema),
-    defaultValues:
-      stockItem,
+    defaultValues: stockItem,
   });
 
-  const onSubmit = (data: CreateStockSchemaFormData) => {
-    onSave(data);
-    onClose();
+  const onSubmit = async (data: CreateStockSchemaFormData) => {
+    if (!stockItem?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/insumo/${stockItem.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao atualizar insumo');
+      }
+
+      // Success
+      onSave?.(data);
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+    } finally {
+      setLoading(false);
+    }
   };
 
   React.useEffect(() => {
     if (open && stockItem) {
-      reset(stockItem)
+      reset(stockItem);
     }
   }, [open, stockItem, reset]);
 
-  const status = watch("status")
-
   return (
-    <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
+    <Modal open={open} onClose={onClose} title="Editar Insumo">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        {error && <Alert severity="error">{error}</Alert>}
+
         <Input
-          label="Nome do Item"
+          label="Nome do Insumo"
           placeholder="Ex. Arroz Branco"
           optional={false}
-          register={register("item")}
-          error={errors.item?.message}
+          register={register("nome")}
+          error={errors.nome?.message}
         />
         <Stack direction="row" spacing={2}>
-          <Select
-            name="categoria"
-            control={control}
+          <Input
             label="Categoria"
-            optional={false}
-            options={mockTipoUsuario}
+            placeholder="Ex. Alimentos"
+            optional={true}
             register={register("categoria")}
             error={errors.categoria?.message}
           />
 
-          <Select
-            name="unidadeMedida"
-            control={control}
-            label="Unidade de Medida"
-            optional={false}
-            options={mockUnidadesMedida}
-            register={register("unidadeMedida")}
-            error={errors.unidadeMedida?.message}
+          <Input
+            label="Tipo Padrão"
+            placeholder="Ex. Tipo A"
+            optional={true}
+            register={register("tipo_padrao")}
+            error={errors.tipo_padrao?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
-          <Input
-            label="Saldo"
-            placeholder="0"
+          <Select
+            label="Unidade de Medida"
             optional={false}
-            sx={{ flex: 1 }}
-            register={register("saldo")}
-            error={errors.saldo?.message}
+            options={mockUnidadesMedida}
+            register={register("unidade_medida")}
+            error={errors.unidade_medida?.message}
           />
           <Input
-            label="Estoque Mínimo"
+            label="Ponto de Reposição"
             placeholder="0"
-            optional={false}
-            sx={{ flex: 1 }}
-            register={register("estoqueMinimo")}
-            error={errors.estoqueMinimo?.message}
+            optional={true}
+            register={register("ponto_reposicao")}
+            error={errors.ponto_reposicao?.message}
           />
         </Stack>
 
         <Select
-          name="unidade"
-          control={control}
           label="Unidade"
           optional={true}
           options={mockUnidades}
-          register={register("unidade")}
-          error={errors.unidade?.message}
+          register={register("unidade_id")}
+          error={errors.unidade_id?.message}
         />
-
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography color="text.primary">Status do Item</Typography>
-            <Typography color="text.secondary" variant="body2">
-              Itens inativos não aparecem nas movimentações
-            </Typography>
-          </Box>
-          <Switch checked={status} onChange={(e) => setValue("status", e.target.checked)}
-          />
-        </Stack>
 
         <Stack direction="row" gap={2}>
           <Button
@@ -125,6 +132,7 @@ export default function EditStockModal({
               color: "text.secondary",
             }}
             onClick={onClose}
+            disabled={loading}
           >
             Cancelar
           </Button>
@@ -135,8 +143,9 @@ export default function EditStockModal({
             }}
             variant="contained"
             type="submit"
+            disabled={loading}
           >
-            Salvar Alterações
+            {loading ? "Atualizando..." : "Salvar Alterações"}
           </Button>
         </Stack>
       </Stack>

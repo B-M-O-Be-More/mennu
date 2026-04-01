@@ -1,9 +1,11 @@
 export interface IStock {
-  item: string;
-  categoria: string;
-  saldo: string;
-  estoqueMinimo: string;
-  unidade: string;
-  status: boolean;
-  unidadeMedida: string;
+  id: number;
+  nome: string;
+  categoria: string | null;
+  tipo_padrao: string | null;
+  unidade_medida: string;
+  quantidade_atual: string; // Decimal retornado como string
+  ponto_reposicao: string;
+  ativo: boolean;
+  unidade_id?: string | null;
 }

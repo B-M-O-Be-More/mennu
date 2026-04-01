@@ -61,18 +61,19 @@ const userColumns: IColumn<IUser>[] = [
 ];
 
 const stockColumns: IColumn<IStock>[] = [
-  { key: "item", label: "Item" },
+  { key: "nome", label: "Nome" },
   { key: "categoria", label: "Categoria" },
-  { key: "saldo", label: "Saldo", align: "right" },
-  { key: "estoqueMinimo", label: "Estoque Mínimo" },
-  { key: "unidade", label: "Unidade" },
+  { key: "tipo_padrao", label: "Tipo Padrão" },
+  { key: "unidade_medida", label: "Unidade de Medida" },
+  { key: "quantidade_atual", label: "Quantidade Atual", align: "right" },
+  { key: "ponto_reposicao", label: "Ponto de Reposição", align: "right" },
   {
-    key: "status",
+    key: "ativo",
     label: "Status",
     render: (row) => (
       <Chip
-        label={row.status ? "Ativo" : "Inativo"}
-        color={row.status ? "success" : "default"}
+        label={row.ativo ? "Ativo" : "Inativo"}
+        color={row.ativo ? "success" : "default"}
         size="small"
       />
     ),

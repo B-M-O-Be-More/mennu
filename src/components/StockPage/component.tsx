@@ -1,7 +1,7 @@
 "use client";
 
-import { Stack, Typography, Box, Button } from "@mui/material";
-import React from "react";
+import { Stack, Typography, Box, Button, Alert } from "@mui/material";
+import React, { useState, useEffect } from "react";
 import { DownloadIcon, EstoqueIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Icons";
 import { StockPageProps } from "./";
 import Card from "../Cards/Card";
@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import PageHeader from "../PageHeader";
+import { useDebounce } from "@/hooks/useDebounce/hook";
 
 export const stockMock: IStock[] = [
   {
@@ -38,7 +39,6 @@ export const stockMock: IStock[] = [
     unidade: "Kg",
     status: false,
   },
-
 ];
 
 export const mockMovements: IMovement[] = [
@@ -76,7 +76,7 @@ export const mockMovements: IMovement[] = [
   },
 ];
 
-export function StockPage({ }: StockPageProps) {
+export function StockPage({}: StockPageProps) {
   const [openTab, setOpenTab] = React.useState(0);
 
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
@@ -84,19 +84,63 @@ export function StockPage({ }: StockPageProps) {
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
 
-  const [selectedStock, setSelectedStock] = React.useState<IStock>({} as IStock);
+  const [selectedStock, setSelectedStock] = React.useState<IStock | null>(null);
+  const [stockData, setStockData] = useState<IStock[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { register } = useForm<{ itemSearch: string }>({
+  const { register, watch } = useForm<{ itemSearch: string }>({
     defaultValues: { itemSearch: "" },
   });
 
+  const searchTerm = watch("itemSearch");
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  const loadStockData = async (search?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const url = search ? `/api/insumo?search=${encodeURIComponent(search)}` : "/api/insumo";
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Erro ao carregar insumos");
+      const data = await response.json();
+      setStockData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (openTab === 0) {
+      loadStockData(debouncedSearch);
+    }
+  }, [openTab, debouncedSearch]);
+
+  const handleDeleteStock = async (stock: IStock) => {
+    if (!stock.id) return;
+    try {
+      const response = await fetch(`/api/insumo/${stock.id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error("Erro ao excluir insumo");
+      loadStockData(debouncedSearch);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao excluir");
+    }
+  };
+
+  const handleEditStock = (stock: IStock) => {
+    setSelectedStock(stock);
+    setOpenEditStockModal(true);
+  };
+
+  const handleSaveStock = () => {
+    loadStockData(debouncedSearch);
+  };
+
   return (
     <Stack gap={2}>
-
-      <PageHeader
-        title="Estoque"
-        subtitle="Gerencie insumos e movimentações"
-      >
+      <PageHeader title="Estoque" subtitle="Gerencie insumos e movimentações">
         <Button
           variant="outlined"
           startIcon={<UpdateIcon />}
@@ -104,7 +148,6 @@ export function StockPage({ }: StockPageProps) {
         >
           Atualizar
         </Button>
-
         <Button
           variant="contained"
           startIcon={<DownloadIcon />}
@@ -114,7 +157,7 @@ export function StockPage({ }: StockPageProps) {
         </Button>
       </PageHeader>
 
-      <Stack gap={2} direction={"row"}>
+      <Stack gap={2} direction="row">
         <Button
           variant={openTab === 0 ? "contained" : "outlined"}
           startIcon={<EstoqueIcon width={22} height={22} />}
@@ -123,7 +166,6 @@ export function StockPage({ }: StockPageProps) {
         >
           Itens de Estoque
         </Button>
-
         <Button
           variant={openTab === 1 ? "contained" : "outlined"}
           startIcon={<PaperIcon width={22} height={22} />}
@@ -134,14 +176,16 @@ export function StockPage({ }: StockPageProps) {
         </Button>
       </Stack>
 
-      <Box
-        display="grid"
-        gap={2}
-        gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))"
-      >
+      <Box display="grid" gap={2} gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))">
         {cardsStock.map((card, i) => (
           <Card key={i} spacing={0}>
-            <Stack alignItems={"center"} direction="row" gap={2} justifyContent={"space-between"} width={"100%"}>
+            <Stack
+              alignItems="center"
+              direction="row"
+              gap={2}
+              justifyContent="space-between"
+              width="100%"
+            >
               <Box>
                 <Typography color="text.primary" variant="body1" fontWeight={400}>
                   {card.title}
@@ -150,11 +194,7 @@ export function StockPage({ }: StockPageProps) {
                   {card.subtitle}
                 </Typography>
               </Box>
-
-              <IconBox
-                icon={card.icon}
-                bgColor={card.bgColor}
-              />
+              <IconBox icon={card.icon} bgColor={card.bgColor} />
             </Stack>
             <Typography variant="h4" fontWeight={400} color="text.primary">
               {card.value}
@@ -162,89 +202,92 @@ export function StockPage({ }: StockPageProps) {
           </Card>
         ))}
       </Box>
+
+    
       <Card>
-        {openTab === 0 ? // tabs
-          (
-            <React.Fragment>
-              <Stack direction={"row"} justifyContent={"space-between"} gap={2} alignItems={"center"}>
-                <Typography>Itens Cadastrados</Typography>
-                <Stack direction={"row"} gap={2} minWidth={"450px"}>
-                  <Input
-                    placeholder="Buscar item..."
-                    icon={<SearchIcon />}
-                    register={register("itemSearch")}
-                  />
-                  <Button
-                    variant="contained"
-                    startIcon={<PlusIcon />}
-                    onClick={() => setOpenNewStockModal(true)}
-                    sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
-                  >
-                    Novo Item
-                  </Button>
-                  <NewStockModal
-                    open={openNewStockModal}
-                    onClose={() => setOpenNewStockModal(false)}
-                  />
-                </Stack>
-              </Stack>
+        {openTab === 0 ? (
+          <React.Fragment>
+            {error && <Alert severity="error">{error}</Alert>}
 
-              <Table
-                columns={stockColumns.map(col =>
-                  col.key === "acoes"
-                    ? {
-                      ...col,
-                      render: (row: IStock) => (
-                        <ActionCell
-                          checked={true}
-                          tooltipToggle="Ativar/Desativar item"
-                          onToggle={(newState) => { console.log("Switch:", newState); }}
-                          tooltipEdit="Editar item"
-                          onEdit={() => {
-                            setSelectedStock(row);
-                            setOpenEditStockModal(true);
-                          }}
-                        />
-                      ),
-                    }
-                    : col
-                )}
-                rows={stockMock}
-                initialRowsPerPage={5} />
-              <EditStockModal
-                open={openEditStockModal}
-                onClose={() => setOpenEditStockModal(false)}
-                stockItem={selectedStock}
-                onSave={() => { }}
-              />
-            </React.Fragment>
-          ) :
-          (
-            <React.Fragment>
-              <Stack direction={"row"} justifyContent={"space-between"} gap={2} alignItems={"center"}>
-                <Typography>Histórico de Movimentações</Typography>
-
+            <Stack direction="row" justifyContent="space-between" gap={2} alignItems="center">
+              <Typography>Itens Cadastrados</Typography>
+              <Stack direction="row" gap={2} minWidth="450px">
+                <Input
+                  placeholder="Buscar item..."
+                  icon={<SearchIcon />}
+                  register={register("itemSearch")}
+                />
                 <Button
                   variant="contained"
                   startIcon={<PlusIcon />}
-                  onClick={() => setOpenNewMovementModal(true)}
+                  onClick={() => setOpenNewStockModal(true)}
                   sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
                 >
-                  Nova Movimentação
+                  Novo Item
                 </Button>
-                <NewMovementModal
-                  open={openNewMovementModal}
-                  onClose={() => setOpenNewMovementModal(false)}
+                <NewStockModal
+                  open={openNewStockModal}
+                  onClose={() => {
+                    setOpenNewStockModal(false);
+                    loadStockData(debouncedSearch);
+                  }}
                 />
               </Stack>
+            </Stack>
 
-              <Table columns={movementColumns} rows={mockMovements} initialRowsPerPage={5} />
-            </React.Fragment>
-          )
-        }
+            <Table
+              columns={stockColumns.map((col) =>
+                col.key === "acoes"
+                  ? {
+                      ...col,
+                      render: (row: IStock) => (
+                        <ActionCell
+                          checked={row.ativo}
+                          tooltipToggle="Ativar/Desativar item"
+                          onToggle={(newState) => console.log("Switch:", newState)}
+                          tooltipEdit="Editar item"
+                          onEdit={() => handleEditStock(row)}
+                          tooltipDelete="Excluir item"
+                          onDelete={() => handleDeleteStock(row)}
+                        />
+                      ),
+                    }
+                  : col
+              )}
+              rows={stockData}
+              initialRowsPerPage={5}
+              loading={loading}
+            />
+
+            <EditStockModal
+              open={openEditStockModal}
+              onClose={() => setOpenEditStockModal(false)}
+              stockItem={selectedStock}
+              onSave={handleSaveStock}
+            />
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Stack direction="row" justifyContent="space-between" gap={2} alignItems="center">
+              <Typography>Histórico de Movimentações</Typography>
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() => setOpenNewMovementModal(true)}
+                sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
+              >
+                Nova Movimentação
+              </Button>
+              <NewMovementModal
+                open={openNewMovementModal}
+                onClose={() => setOpenNewMovementModal(false)}
+              />
+            </Stack>
+
+            <Table columns={movementColumns} rows={mockMovements} initialRowsPerPage={5} />
+          </React.Fragment>
+        )}
       </Card>
-
-    </Stack >
-
+    </Stack>
   );
 }
