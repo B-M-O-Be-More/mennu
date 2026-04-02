@@ -8,17 +8,14 @@ async function getHeaders(): Promise<Record<string, string> | null> {
   const token = cookieStore.get("mennu_token")?.value;
   const empresaId = cookieStore.get("empresa_id")?.value;
 
-  if (!token) return null;
+  if (!token || !empresaId) return null;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json",
-    "X-API-Key": token,
+    Authorization: token,
+    "empresa-id-x": empresaId,
   };
-
-  if (empresaId) {
-    headers["Empresa-id"] = empresaId;
-  }
 
   return headers;
 }
@@ -27,32 +24,52 @@ async function safeJson(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     const text = await response.text();
-    throw new Error(`Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`);
+    throw new Error(
+      `Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`,
+    );
   }
   return response.json();
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   if (!baseUrl) {
-    return NextResponse.json({ message: "NEXT_PUBLIC_API_URL não está configurado" }, { status: 500 });
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_API_URL não está configurado" },
+      { status: 500 },
+    );
   }
 
   const headers = await getHeaders();
   if (!headers) {
-    return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
   }
 
-  const { id } = params;
+  const { id } = await params;
   const body = await req.json();
 
+  if (body.quantidade_atual === undefined || body.quantidade_atual === null) {
+    return NextResponse.json(
+      { message: "O campo 'quantidade_atual' é obrigatório." },
+      { status: 400 },
+    );
+  }
+
+  const payload = {
+    ...body,
+    quantidade_atual: body.quantidade_atual,
+  };
+
   try {
-    const response = await fetch(`${baseUrl}/api/insumo/${id}`, {
+    const response = await fetch(`${baseUrl}/insumo/${id}`, {
       method: "PUT",
       headers,
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
 
     const data = await safeJson(response);
@@ -64,21 +81,27 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   if (!baseUrl) {
-    return NextResponse.json({ message: "NEXT_PUBLIC_API_URL não está configurado" }, { status: 500 });
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_API_URL não está configurado" },
+      { status: 500 },
+    );
   }
 
   const headers = await getHeaders();
   if (!headers) {
-    return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   try {
-    const response = await fetch(`${baseUrl}/api/insumo/${id}`, {
+    const response = await fetch(`${baseUrl}/insumo/${id}`, {
       method: "DELETE",
       headers,
     });

@@ -1,48 +1,122 @@
-import { Stack, Typography, Box, Button, Switch, Alert } from "@mui/material";
-import { mockUnidades, mockUnidadesMedida } from "../../../data/menuItems";
+import { Stack, Button, Alert } from "@mui/material";
+import React from "react";
+import { mockUnidadesMedida } from "../../../data/menuItems";
 import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
+import { createStockSchema } from "@/schemas/stockSchema";
 import { useState } from "react";
+import * as yup from "yup";
+
+type Unidade = {
+  id: number;
+  nome: string;
+};
+
+type StockFormData = yup.Asserts<typeof createStockSchema>;
 
 export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
     reset,
-  } = useForm<CreateStockSchemaFormData>({
-    resolver: yupResolver(createStockSchema),
+    control,
+    getValues,
+    setValue,
+  } = useForm<StockFormData>({
+    resolver: yupResolver(createStockSchema) as Resolver<StockFormData>,
     defaultValues: {
       nome: "",
-      categoria: "",
-      tipo_padrao: "",
-      unidade_medida: mockUnidadesMedida[1].value, // Default to first real option
-      ponto_reposicao: "",
-      unidade_id: "",
+      categoria: undefined,
+      tipo_padrao: undefined,
+      unidade_medida: "kg",
+      ponto_reposicao: 0,
+      unidade_id: undefined,
+      quantidade_atual: 0,
     },
   });
 
-  const onSubmit = async (data: CreateStockSchemaFormData) => {
+  React.useEffect(() => {
+    let isCancelled = false;
+
+    const fetchUnidades = async () => {
+      try {
+        const response = (await fetch("/api/unidades", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => res.json())) as { results?: Unidade[] };
+
+        const options = response.results || [];
+
+        if (!isCancelled) {
+          setUnidades(options);
+        }
+
+        const currentUnidadeId = Number(getValues("unidade_id"));
+        const hasUnidade = options.some((u) => u.id === currentUnidadeId);
+
+        if (!isCancelled && !hasUnidade) {
+          setValue("unidade_id", undefined, {
+            shouldDirty: false,
+            shouldTouch: false,
+            shouldValidate: false,
+          });
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setUnidades([]);
+        }
+      }
+    };
+
+    if (open) {
+      fetchUnidades();
+    } else {
+      setUnidades([]);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [open, getValues, setValue]);
+
+  const onSubmit = async (data: StockFormData) => {
     setLoading(true);
     setError(null);
 
     try {
+      const payload = {
+        nome: data.nome,
+        categoria: data.categoria || "",
+        tipo_padrao: data.tipo_padrao || "",
+        unidade_medida: data.unidade_medida,
+        ponto_reposicao: Number(data.ponto_reposicao),
+        unidade_id: data.unidade_id ? Number(data.unidade_id) : 0,
+        quantidade_atual: Number(data.quantidade_atual),
+      };
+      
+
       const response = await fetch('/api/insumo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -50,10 +124,9 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
         throw new Error(errorData.message || 'Erro ao criar insumo');
       }
 
-      // Success
+      // Sucesso
       reset();
       onClose();
-      // TODO: Refresh the list or notify parent
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
     } finally {
@@ -97,7 +170,8 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
               label="Unidade de Medida"
               optional={false}
               options={mockUnidadesMedida}
-              register={register("unidade_medida")}
+              control={control}
+              name="unidade_medida"
               error={errors.unidade_medida?.message}
             />
             <Input
@@ -109,13 +183,24 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             />
           </Stack>
 
-          <Select
-            label="Unidade"
-            optional={true}
-            options={mockUnidades}
-            register={register("unidade_id")}
-            error={errors.unidade_id?.message}
+          <Input
+            label="Quantidade Atual"
+            placeholder="0"
+            optional={false}
+            register={register("quantidade_atual")}
+            error={errors.quantidade_atual?.message}
           />
+
+          {mounted && (
+            <Select
+              label="Unidade"
+              optional={true}
+              options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
+              control={control}
+              name="unidade_id"
+              error={errors.unidade_id?.message}
+            />
+          )}
 
           <Stack direction="row" gap={2}>
             <Button

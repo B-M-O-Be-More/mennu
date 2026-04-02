@@ -13,16 +13,14 @@ export const createStockSchema = yup.object({
       "Unidade de medida inválida",
     ),
   ponto_reposicao: yup
-    .string()
-    .optional()
-    .matches(/^\d+$/, "Ponto de reposição deve ser numérico"),
-  unidade_id: yup
-    .string()
-    .optional()
-    .oneOf(
-      mockUnidades.slice(1).map((u) => u.value),
-      "Unidade inválida",
-    ),
+    .number()
+    .typeError("Ponto de reposição deve ser numérico")
+    .optional(),
+  unidade_id: yup.number().typeError("Unidade deve ser um número").optional(),
+  quantidade_atual: yup
+    .number()
+    .typeError("Quantidade atual deve ser numérica")
+    .required("A quantidade atual é obrigatória"),
 });
 
 export type CreateStockSchemaFormData = yup.InferType<typeof createStockSchema>;

@@ -3,7 +3,7 @@ import { Controller } from "react-hook-form";
 import { SelectGProps } from "./";
 
 
-export default function SelectG<T>({
+export default function SelectG({
   label = "",
   optional = true,
   options,
@@ -31,9 +31,17 @@ export default function SelectG<T>({
         <Controller
           name={name}
           control={control}
-          render={({ field }) => (
+          render={({ field }) => {
+            const currentValue = field.value ?? "";
+            const hasOption = options.some(
+              (opt: { label: string; value: string }) =>
+                String(opt.value) === String(currentValue),
+            );
+
+            return (
             <Select
               {...field}
+              value={hasOption ? currentValue : ""}
               sx={{
                 width: "100%",
                 fontSize: 14,
@@ -43,7 +51,7 @@ export default function SelectG<T>({
                   transition: "border-color 0.1s ease",
                 },
                 height: "100%",
-                ...selectSx
+                ...selectSx,
               }}>
               {options.map((opt: { label: string; value: string }) => (
                 <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12 }}>
@@ -51,12 +59,12 @@ export default function SelectG<T>({
                 </MenuItem>
               ))}
             </Select>
-          )}
+            );
+          }}
         />
       ) : (
         <Select
           {...register}
-          defaultValue={options[0]?.value}
           sx={{
             width: "100%",
             fontSize: 14,
