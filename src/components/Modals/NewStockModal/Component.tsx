@@ -22,6 +22,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [unidadesError, setUnidadesError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   React.useEffect(() => {
@@ -54,17 +55,27 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
 
     const fetchUnidades = async () => {
       try {
-        const response = (await fetch("/api/unidades", {
+        const response = await fetch("/api/unidades", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        }).then((res) => res.json())) as { results?: Unidade[] };
+        });
 
-        const options = response.results || [];
+        if (!response.ok) {
+          throw new Error(
+            response.status === 401
+              ? "Sessão expirada. Faça login novamente."
+              : "Erro ao carregar unidades. Tente novamente."
+          );
+        }
+
+        const data = (await response.json()) as { results?: Unidade[] };
+        const options = data.results || [];
 
         if (!isCancelled) {
           setUnidades(options);
+          setUnidadesError(null);
         }
 
         const currentUnidadeId = Number(getValues("unidade_id"));
@@ -77,9 +88,10 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             shouldValidate: false,
           });
         }
-      } catch (error) {
+      } catch (err) {
         if (!isCancelled) {
           setUnidades([]);
+          setUnidadesError(err instanceof Error ? err.message : "Erro ao carregar unidades");
         }
       }
     };
@@ -120,6 +132,19 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
       });
 
       if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('Já existe um insumo com este nome. Escolha um nome diferente.');
+        }
+        if (response.status === 401) {
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
+        if (response.status === 422) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Dados inválidos. Verifique os campos.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Erro no servidor. Tente novamente mais tarde.');
+        }
         const errorData = await response.json();
         throw new Error(errorData.message || 'Erro ao criar insumo');
       }
@@ -128,7 +153,9 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
       reset();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(errorMsg);
+      console.error('Erro ao criar insumo:', err);
     } finally {
       setLoading(false);
     }
@@ -139,6 +166,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack gap={2}>
           {error && <Alert severity="error">{error}</Alert>}
+          {unidadesError && <Alert severity="warning">{unidadesError}</Alert>}
 
           <Input
             label="Nome do Insumo"

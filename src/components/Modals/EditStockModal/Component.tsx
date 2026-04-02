@@ -26,6 +26,7 @@ export default function EditStockModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [unidadesError, setUnidadesError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   const {
@@ -84,19 +85,31 @@ export default function EditStockModal({
 
     const fetchUnidades = async () => {
       try {
-        const response = (await fetch("/api/unidades", {
+        const response = await fetch("/api/unidades", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        }).then((res) => res.json())) as { results?: Unidade[] };
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            response.status === 401
+              ? "Sessão expirada. Faça login novamente."
+              : "Erro ao carregar unidades. Tente novamente."
+          );
+        }
+
+        const data = (await response.json()) as { results?: Unidade[] };
 
         if (!isCancelled) {
-          setUnidades(response.results ?? []);
+          setUnidades(data.results ?? []);
+          setUnidadesError(null);
         }
-      } catch (fetchError) {
+      } catch (err) {
         if (!isCancelled) {
           setUnidades([]);
+          setUnidadesError(err instanceof Error ? err.message : "Erro ao carregar unidades");
         }
       }
     };
@@ -138,6 +151,19 @@ export default function EditStockModal({
       });
 
       if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('Já existe um insumo com este nome. Escolha um nome diferente.');
+        }
+        if (response.status === 401) {
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
+        if (response.status === 422) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Dados inválidos. Verifique os campos.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Erro no servidor. Tente novamente mais tarde.');
+        }
         const errorData = await response.json();
         throw new Error(errorData.message || 'Erro ao atualizar insumo');
       }
@@ -154,7 +180,9 @@ export default function EditStockModal({
       });
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(errorMsg);
+      console.error('Erro ao atualizar insumo:', err);
     } finally {
       setLoading(false);
     }
@@ -164,6 +192,7 @@ export default function EditStockModal({
     <Modal open={open} onClose={onClose} title="Editar Insumo">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         {error && <Alert severity="error">{error}</Alert>}
+        {unidadesError && <Alert severity="warning">{unidadesError}</Alert>}
 
         <Input
           label="Nome do Insumo"

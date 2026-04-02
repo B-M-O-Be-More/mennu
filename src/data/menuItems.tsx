@@ -19,8 +19,12 @@ const mockStatuses = [
 
 const mockUnidadesMedida = [
   { label: "Selecione uma medida", value: "1" },
-  { label: "Quilograma", value: "kg" },
-  { label: "Grama", value: "g" },
+  { label: "Quilogramas", value: "kg" },
+  { label: "Gramas", value: "g" },
+  { label: "Litro", value: "L" },
+  { label: "Mililitros", value: "ml" },
+  { label: "Unidades", value: "un" },
+  { label: "Dúzia", value: "dz" },
 ];
 
 const mockTiposTerminal = [
