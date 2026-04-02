@@ -10,12 +10,12 @@ async function getHeaders(): Promise<Record<string, string> | null> {
 
   if (!token || !empresaId) return null;
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    "X-API-Key": token,
-    "Empresa-id": empresaId,
-  };
+const headers: Record<string, string> = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+  Authorization: token,
+  "Empresa-id": empresaId,
+};
 
   return headers;
 }
@@ -50,14 +50,11 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search");
 
-  const url = new URL(`${baseUrl}/api/insumo/`);
+  const url = new URL(`${baseUrl}/insumo/`);
   if (search) url.searchParams.append("search", search);
 
   try {
-    const response = await fetch(url.toString(), {
-      headers,
-    });
-
+    const response = await fetch(url.toString(), { headers });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {
@@ -84,7 +81,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   try {
-    const response = await fetch(`${baseUrl}/api/insumo/`, {
+    const response = await fetch(`${baseUrl}/insumo/`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),

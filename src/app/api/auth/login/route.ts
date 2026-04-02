@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   if (!baseUrl) {
     return NextResponse.json(
       { message: "NEXT_PUBLIC_API_URL não está configurado" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   const token = data?.token_access?.token;
-  const empresaId = data?.empresa_id; 
+  const empresaId = data?.empresa_id;
 
   const res = NextResponse.json(data, { status: response.status });
 

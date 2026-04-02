@@ -20,62 +20,6 @@ import { IMovement } from "@/Interfaces/Movement/movement";
 import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 
-export const stockMock: IStock[] = [
-  {
-    item: "Arroz Branco",
-    categoria: "Alimentos",
-    saldo: "120",
-    estoqueMinimo: "50",
-    unidade: "Kg",
-    unidadeMedida: "kg",
-    status: true,
-  },
-  {
-    item: "Feijão Carioca",
-    categoria: "Alimentos",
-    saldo: "30",
-    estoqueMinimo: "60",
-    unidadeMedida: "kg",
-    unidade: "Kg",
-    status: false,
-  },
-];
-
-export const mockMovements: IMovement[] = [
-  {
-    data: "10/01/2026",
-    tipo: "entrada",
-    item: "Arroz Branco",
-    quantidade: 50,
-    responsavel: "João Silva",
-    justificativa: "Motivo da entrada",
-  },
-  {
-    data: "11/01/2026",
-    tipo: "saida",
-    item: "Feijão Carioca",
-    quantidade: 20,
-    responsavel: "Maria Oliveira",
-    justificativa: "Motivo da saída",
-  },
-  {
-    data: "12/01/2026",
-    tipo: "perda",
-    item: "Óleo de Soja",
-    quantidade: 5,
-    responsavel: "Carlos Santos",
-    justificativa: "Motivo do ajuste",
-  },
-  {
-    data: "13/01/2026",
-    tipo: "ajuste",
-    item: "Açúcar Refinado",
-    quantidade: 15,
-    responsavel: "Ana Costa",
-    justificativa: "Motivo da saída",
-  },
-];
-
 export function StockPage({}: StockPageProps) {
   const [openTab, setOpenTab] = React.useState(0);
 
@@ -86,6 +30,7 @@ export function StockPage({}: StockPageProps) {
 
   const [selectedStock, setSelectedStock] = React.useState<IStock | null>(null);
   const [stockData, setStockData] = useState<IStock[]>([]);
+  const [movementData, setMovementData] = useState<IMovement[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,9 +47,30 @@ export function StockPage({}: StockPageProps) {
     try {
       const url = search ? `/api/insumo?search=${encodeURIComponent(search)}` : "/api/insumo";
       const response = await fetch(url);
-      if (!response.ok) throw new Error("Erro ao carregar insumos");
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(`Erro ${response.status}: ${errData.message}`);
+      }
       const data = await response.json();
-      setStockData(data);
+      setStockData(data.results ?? data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMovementData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/movimentacao-estoque");
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(`Erro ${response.status}: ${errData.message}`);
+      }
+      const data = await response.json();
+      setMovementData(data.results ?? data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -115,6 +81,8 @@ export function StockPage({}: StockPageProps) {
   useEffect(() => {
     if (openTab === 0) {
       loadStockData(debouncedSearch);
+    } else {
+      loadMovementData();
     }
   }, [openTab, debouncedSearch]);
 
@@ -203,7 +171,6 @@ export function StockPage({}: StockPageProps) {
         ))}
       </Box>
 
-    
       <Card>
         {openTab === 0 ? (
           <React.Fragment>
@@ -244,7 +211,7 @@ export function StockPage({}: StockPageProps) {
                         <ActionCell
                           checked={row.ativo}
                           tooltipToggle="Ativar/Desativar item"
-                          onToggle={(newState) => console.log("Switch:", newState)}
+                          onToggle={(_newState) => {}}
                           tooltipEdit="Editar item"
                           onEdit={() => handleEditStock(row)}
                           tooltipDelete="Excluir item"
@@ -268,6 +235,8 @@ export function StockPage({}: StockPageProps) {
           </React.Fragment>
         ) : (
           <React.Fragment>
+            {error && <Alert severity="error">{error}</Alert>}
+
             <Stack direction="row" justifyContent="space-between" gap={2} alignItems="center">
               <Typography>Histórico de Movimentações</Typography>
               <Button
@@ -284,7 +253,7 @@ export function StockPage({}: StockPageProps) {
               />
             </Stack>
 
-            <Table columns={movementColumns} rows={mockMovements} initialRowsPerPage={5} />
+            <Table columns={movementColumns} rows={movementData} initialRowsPerPage={5} loading={loading} />
           </React.Fragment>
         )}
       </Card>
