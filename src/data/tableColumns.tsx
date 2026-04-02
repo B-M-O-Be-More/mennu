@@ -75,6 +75,14 @@ const stockColumns: IColumn<IStock>[] = [
         label={row.ativo ? "Ativo" : "Inativo"}
         color={row.ativo ? "success" : "default"}
         size="small"
+        sx={{
+          width: 86,
+          justifyContent: "center",
+          "& .MuiChip-label": {
+            width: "100%",
+            textAlign: "center",
+          },
+        }}
       />
     ),
   },

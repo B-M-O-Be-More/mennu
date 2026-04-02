@@ -24,7 +24,6 @@ export function StockPage({}: StockPageProps) {
   const [openTab, setOpenTab] = React.useState(0);
 
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
-  const [_openExportStockModal, setOpenExportStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
 
@@ -86,17 +85,6 @@ export function StockPage({}: StockPageProps) {
     }
   }, [openTab, debouncedSearch]);
 
-  const handleDeleteStock = async (stock: IStock) => {
-    if (!stock.id) return;
-    try {
-      const response = await fetch(`/api/insumo/${stock.id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Erro ao excluir insumo");
-      loadStockData(debouncedSearch);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao excluir");
-    }
-  };
-
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
     setOpenEditStockModal(true);
@@ -104,6 +92,51 @@ export function StockPage({}: StockPageProps) {
 
   const handleSaveStock = () => {
     loadStockData(debouncedSearch);
+  };
+
+  const handleToggleStock = async (stock: IStock, newState: boolean) => {
+    if (!stock.id) return;
+
+    try {
+      setError(null);
+      const response = await fetch(`/api/insumo/${stock.id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Sessão expirada. Faça login novamente.");
+        }
+        if (response.status === 403) {
+          throw new Error("Você não tem permissão para alterar o status deste insumo.");
+        }
+        if (response.status === 404) {
+          throw new Error("Insumo não encontrado.");
+        }
+        if (response.status === 409) {
+          throw new Error("Não foi possível alterar o status deste insumo no momento.");
+        }
+        if (response.status >= 500) {
+          throw new Error("Erro no servidor ao alterar status. Tente novamente.");
+        }
+
+        const errData = await response.json().catch(() => ({ message: "Erro ao atualizar status" }));
+        throw new Error(errData.message || "Erro ao atualizar status");
+      }
+
+      setStockData((prev) =>
+        prev.map((item) => (item.id === stock.id ? { ...item, ativo: newState } : item)),
+      );
+    } catch (err) {
+      if (err instanceof TypeError) {
+        setError("Falha de conexão. Verifique sua internet e tente novamente.");
+        return;
+      }
+      setError(err instanceof Error ? err.message : "Erro ao atualizar status");
+    }
   };
 
   return (
@@ -119,7 +152,7 @@ export function StockPage({}: StockPageProps) {
         <Button
           variant="contained"
           startIcon={<DownloadIcon />}
-          onClick={() => setOpenExportStockModal(true)}
+          onClick={() => {}}
         >
           Exportar
         </Button>
@@ -211,11 +244,9 @@ export function StockPage({}: StockPageProps) {
                         <ActionCell
                           checked={row.ativo}
                           tooltipToggle="Ativar/Desativar item"
-                          onToggle={(_newState) => {}}
+                          onToggle={(newState) => handleToggleStock(row, newState)}
                           tooltipEdit="Editar item"
                           onEdit={() => handleEditStock(row)}
-                          tooltipDelete="Excluir item"
-                          onDelete={() => handleDeleteStock(row)}
                         />
                       ),
                     }
@@ -223,11 +254,11 @@ export function StockPage({}: StockPageProps) {
               )}
               rows={stockData}
               initialRowsPerPage={5}
-              loading={loading}
+              isLoading={loading}
             />
 
             <EditStockModal
-              open={openEditStockModal}
+              open={openEditStockModal && selectedStock !== null}
               onClose={() => setOpenEditStockModal(false)}
               stockItem={selectedStock}
               onSave={handleSaveStock}
@@ -253,7 +284,7 @@ export function StockPage({}: StockPageProps) {
               />
             </Stack>
 
-            <Table columns={movementColumns} rows={movementData} initialRowsPerPage={5} loading={loading} />
+            <Table columns={movementColumns} rows={movementData} initialRowsPerPage={5} isLoading={loading} />
           </React.Fragment>
         )}
       </Card>

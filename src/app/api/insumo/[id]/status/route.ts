@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+async function getHeaders(): Promise<Record<string, string> | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("mennu_token")?.value;
+  const empresaId = cookieStore.get("empresa_id")?.value;
+
+  if (!token || !empresaId) return null;
+
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: token,
+    "empresa-id-x": empresaId,
+  };
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  if (!baseUrl) {
+    return NextResponse.json(
+      { message: "NEXT_PUBLIC_API_URL não está configurado" },
+      { status: 500 },
+    );
+  }
+
+  const headers = await getHeaders();
+  if (!headers) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  const { id } = await params;
+
+  try {
+    const bodyText = await req.text();
+    const response = await fetch(`${baseUrl}/insumo/${id}/status`, {
+      method: "PATCH",
+      headers,
+      body: bodyText || undefined,
+    });
+
+    if (response.status === 204) {
+      return NextResponse.json(
+        { message: "Status atualizado com sucesso" },
+        { status: 200 },
+      );
+    }
+
+    const contentType = response.headers.get("content-type") ?? "";
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      return NextResponse.json(data, { status: response.status });
+    }
+
+    const text = await response.text();
+    return NextResponse.json(
+      { message: text || "Resposta sem conteúdo" },
+      { status: response.status },
+    );
+  } catch (err) {
+    return NextResponse.json({ message: String(err) }, { status: 500 });
+  }
+}

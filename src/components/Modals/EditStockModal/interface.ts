@@ -4,6 +4,6 @@ import { IStock } from "@/Interfaces/Stock/stock";
 export interface EditStockModalProps {
   open: boolean;
   onClose: () => void;
-  stockItem: IStock
+  stockItem: IStock | null;
   onSave: (updatedStock: Partial<IStock>) => void;
 }
