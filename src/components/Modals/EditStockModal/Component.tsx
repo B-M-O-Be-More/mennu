@@ -175,7 +175,7 @@ export default function EditStockModal({
         tipo_padrao: payload.tipo_padrao,
         unidade_medida: payload.unidade_medida,
         ponto_reposicao: String(payload.ponto_reposicao),
-        unidade_id: payload.unidade_id ? String(payload.unidade_id) : null,
+        unidade_id: payload.unidade_id || null,
         quantidade_atual: String(payload.quantidade_atual),
       });
       onClose();

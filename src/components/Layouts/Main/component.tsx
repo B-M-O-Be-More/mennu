@@ -12,7 +12,7 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, logout, isLoadingPages } = useUser();
+  const { isAuthenticated, logout, isLoadingPages, user } = useUser();
   const router = useRouter();
 
   const pathname = usePathname();
@@ -64,10 +64,10 @@ export default function MainLayout({
   const shouldBlockProtectedContent =
     !isLoadingPages && !isAuthenticated && isKnownProtectedRoute;
 
-  const user = {
-    name: "Admin",
-    email: "admin@mennu.io",
-    avatarInitial: "A",
+  const sidebarUser = {
+    name: user?.nome || "Usuário",
+    email: user?.email || "",
+    avatarInitial: user?.nome?.charAt(0)?.toUpperCase() || "U",
   };
 
   return (
@@ -83,7 +83,7 @@ export default function MainLayout({
         <SidebarComponent
           menuItems={menuItems}
           adminMenuItems={adminMenuItems}
-          user={user}
+          user={sidebarUser}
           onLogout={logout}
           logoutIcon={<SairIcon />}
           showAdminSection

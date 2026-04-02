@@ -1,11 +1,6 @@
 "use client";
 
 import React from "react";
-// Native cookie deletion helper — no external dependency needed
-const destroyCookie = (name: string, options?: { path?: string }) => {
-  const path = options?.path ?? "/";
-  document.cookie = `${name}=; Max-Age=0; path=${path}`;
-};
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -89,9 +84,9 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const respData = resp as LoginResponse | IUser | undefined;
     let userData: IUser | undefined;
 
-    if (respData && "data" in respData && respData.data) {
+    if (respData && typeof respData === "object" && "data" in respData && respData.data) {
       userData = respData.data;
-    } else if (respData && !("data" in (respData as IUser))) {
+    } else if (respData && typeof respData === "object" && "id" in respData) {
       userData = respData as IUser;
     }
 
@@ -106,10 +101,6 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const clearSession = React.useCallback(() => {
     setUser(initialUser());
-
-    destroyCookie("mennu_token", { path: "/" });
-    destroyCookie("empresa_id", { path: "/" });
-
     setIsAuthenticated(false);
   }, []);
 

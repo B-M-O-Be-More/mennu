@@ -7,5 +7,5 @@ export interface IStock {
   quantidade_atual: string; // Decimal retornado como string
   ponto_reposicao: string;
   ativo: boolean;
-  unidade_id?: string | null;
+  unidade_id?: number | null;
 }
