@@ -6,62 +6,62 @@ export default function useFetch<T>() {
   const [data, setData] = React.useState<T>();
   const { isLoading, executeAsyncFunction } = useLoading();
 
-  const request = async (
-    url: string,
-    options: Options
-  ): Promise<FetchResponse<T>> => {
-    const params = new URLSearchParams();
+  const request = React.useCallback(
+    async (url: string, options: Options): Promise<FetchResponse<T>> => {
+      const params = new URLSearchParams();
 
-    if (options.params) {
-      Object.entries(options.params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((item) => params.append(`${key}[]`, item));
-        } else {
-          params.append(key, String(value));
-        }
-      });
-    }
-
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(options.headers || {}),
-    };
-
-    const config: RequestInit = {
-      method: options.method,
-      headers,
-    };
-
-    if (options.method !== "GET" && options.body) {
-      config.body = JSON.stringify(options.body);
-    }
-
-    try {
-      const queryString = params.toString();
-    const requestUrl = queryString ? `${url}?${queryString}` : url;
-
-    const res = await executeAsyncFunction(() => fetch(requestUrl, config));
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        return Promise.reject(
-          new Error(errorData.message || "An error occurred")
-        );
+      if (options.params) {
+        Object.entries(options.params).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            value.forEach((item) => params.append(`${key}[]`, item));
+          } else {
+            params.append(key, String(value));
+          }
+        });
       }
 
-      const responseData = await res.json();
-      setData(responseData.data as T);
-      return Promise.resolve({
-        ...responseData,
-        message: responseData.message || null,
-      });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
-      return Promise.reject(new Error(errorMessage));
-    }
-  };
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(options.headers || {}),
+      };
+
+      const config: RequestInit = {
+        method: options.method,
+        headers,
+      };
+
+      if (options.method !== "GET" && options.body) {
+        config.body = JSON.stringify(options.body);
+      }
+
+      try {
+        const queryString = params.toString();
+        const requestUrl = queryString ? `${url}?${queryString}` : url;
+
+        const res = await executeAsyncFunction(() => fetch(requestUrl, config));
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          return Promise.reject(
+            new Error(errorData.message || "An error occurred"),
+          );
+        }
+
+        const responseData = await res.json();
+        setData(responseData.data as T);
+        return Promise.resolve({
+          ...responseData,
+          message: responseData.message || null,
+        });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "An error occurred";
+        return Promise.reject(new Error(errorMessage));
+      }
+    },
+    [executeAsyncFunction],
+  );
 
   return [request, isLoading, data] as const;
 }

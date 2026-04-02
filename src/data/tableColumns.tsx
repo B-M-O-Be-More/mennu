@@ -14,6 +14,15 @@ import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
 import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
+const statusChipSx = {
+  width: 100,
+  justifyContent: "center",
+  "& .MuiChip-label": {
+    width: "100%",
+    textAlign: "center",
+  },
+};
+
 const userColumns: IColumn<IUser>[] = [
   {
     key: "nome",
@@ -47,7 +56,7 @@ const userColumns: IColumn<IUser>[] = [
         label={row.status}
         color={row.status === true ? "success" : "default"}
         size="small"
-        sx={{ minWidth: "100px" }}
+        sx={statusChipSx}
       />
     ),
   },
@@ -75,14 +84,7 @@ const stockColumns: IColumn<IStock>[] = [
         label={row.ativo ? "Ativo" : "Inativo"}
         color={row.ativo ? "success" : "default"}
         size="small"
-        sx={{
-          width: 86,
-          justifyContent: "center",
-          "& .MuiChip-label": {
-            width: "100%",
-            textAlign: "center",
-          },
-        }}
+        sx={statusChipSx}
       />
     ),
   },
@@ -169,7 +171,7 @@ const extraRequestColumns: IColumn<IExtraRequest>[] = [
           label={row.status}
           color={colorMap[row.status]}
           size="small"
-          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+          sx={{ ...statusChipSx, textTransform: "capitalize" }}
         />
       );
     },
@@ -262,7 +264,7 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
           label={row.status}
           color={colorMap[row.status]}
           size="small"
-          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+          sx={{ ...statusChipSx, textTransform: "capitalize" }}
         />
       );
     },
@@ -302,7 +304,7 @@ const menuColumns: IColumn<IMenu>[] = [
         label={row.status}
         color={row.status === "ativo" ? "success" : row.status === "programado" ? "info" : "default"}
         size="small"
-        sx={{ minWidth: "100px", textTransform: "capitalize" }}
+        sx={{ ...statusChipSx, textTransform: "capitalize" }}
       />
     ),
   },
@@ -362,7 +364,7 @@ const consumptionHistoryColumns: IColumn<IConsumptionHistory>[] = [
           label={row.status}
           color={colorMap[row.status]}
           size="medium"
-          sx={{ textTransform: "capitalize" }}
+          sx={{ ...statusChipSx, textTransform: "capitalize" }}
         />
       );
     },
@@ -464,7 +466,7 @@ const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[]
           label={row.status}
           color={colorMap[row.status]}
           size="small"
-          sx={{ minWidth: "100px", textTransform: "capitalize" }}
+          sx={{ ...statusChipSx, textTransform: "capitalize" }}
         />
       );
     },
