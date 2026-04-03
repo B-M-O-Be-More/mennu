@@ -145,7 +145,7 @@ export function StockPage({}: StockPageProps) {
         <Button
           variant="outlined"
           startIcon={<UpdateIcon />}
-          onClick={() => setOpenEditStockModal(true)}
+          onClick={() => openTab === 0 ? loadStockData(debouncedSearch) : loadMovementData()}
         >
           Atualizar
         </Button>
