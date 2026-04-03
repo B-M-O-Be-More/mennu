@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography, Box, Button, Alert } from "@mui/material";
+import { Stack, Typography, Box, Button, Alert, Tooltip } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { DownloadIcon, EstoqueIcon, PaperIcon, PlusIcon, SearchIcon, UpdateIcon } from "../Icons";
 import { StockPageProps } from "./";
@@ -149,13 +149,17 @@ export function StockPage({}: StockPageProps) {
         >
           Atualizar
         </Button>
-        <Button
-          variant="contained"
-          startIcon={<DownloadIcon />}
-          onClick={() => {}}
-        >
-          Exportar
-        </Button>
+        <Tooltip title="Em breve">
+          <span>
+            <Button
+              variant="contained"
+              startIcon={<DownloadIcon />}
+              disabled
+            >
+              Exportar
+            </Button>
+          </span>
+        </Tooltip>
       </PageHeader>
 
       <Stack gap={2} direction="row">
