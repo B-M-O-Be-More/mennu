@@ -1,16 +1,10 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = getApiBaseUrl();
 
 export async function POST() {
-  if (!baseUrl) {
-    return NextResponse.json(
-      { message: "NEXT_PUBLIC_API_URL não está configurado" },
-      { status: 500 },
-    );
-  }
-
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
 

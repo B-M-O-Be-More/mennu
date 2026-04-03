@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = getApiBaseUrl();
 
 export async function POST(req: Request) {
-  if (!baseUrl) {
-    return NextResponse.json(
-      { message: "NEXT_PUBLIC_API_URL não está configurado" },
-      { status: 500 },
-    );
-  }
-
   const body = await req.json();
 
   const authUrl = `${baseUrl}/auth/login`;

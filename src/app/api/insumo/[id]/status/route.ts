@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = getApiBaseUrl();
 
 async function getHeaders(): Promise<Record<string, string> | null> {
   const cookieStore = await cookies();
@@ -22,13 +23,6 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!baseUrl) {
-    return NextResponse.json(
-      { message: "NEXT_PUBLIC_API_URL não está configurado" },
-      { status: 500 },
-    );
-  }
-
   const headers = await getHeaders();
   if (!headers) {
     return NextResponse.json(
