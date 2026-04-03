@@ -1,7 +1,9 @@
 "use client";
 
-import { Box, Button, Checkbox, Link, Stack, Typography } from "@mui/material";
+import React from "react";
+import { Alert, Box, Button, Checkbox, Link, Snackbar, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
+import { useSearchParams } from "next/navigation";
 import { FormLoginProps } from "./interface";
 import Input from "@/components/FormControl/Input";
 import { MailIcon } from "@/components/Icons";
@@ -13,6 +15,14 @@ import { useUser } from "@/context/AuthContext";
 
 export function FormLogin({}: FormLoginProps) {
   const { login, isLoadingLogin } = useUser();
+  const searchParams = useSearchParams();
+  const authError = searchParams.get("authError");
+  const from = searchParams.get("from");
+  const [openAuthSnackbar, setOpenAuthSnackbar] = React.useState(false);
+
+  React.useEffect(() => {
+    setOpenAuthSnackbar(authError === "unauthorized");
+  }, [authError]);
   const {
     register,
     handleSubmit,
@@ -37,6 +47,35 @@ export function FormLogin({}: FormLoginProps) {
       component={"form"}
       onSubmit={handleSubmit(onSubmit)}
     >
+      <Snackbar
+        open={openAuthSnackbar}
+        autoHideDuration={6000}
+        onClose={(_, reason) => {
+          if (reason === "clickaway") return;
+          setOpenAuthSnackbar(false);
+        }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        sx={{ mt: 2, mr: 2 }}
+      >
+        <Alert
+          severity="warning"
+          onClose={() => setOpenAuthSnackbar(false)}
+          sx={{
+            width: "100%",
+            maxWidth: 380,
+            boxShadow: "0 8px 18px rgba(16,24,40,0.10)",
+            borderRadius: 2,
+            "& .MuiAlert-message": {
+              fontSize: 14,
+              lineHeight: 1.35,
+            },
+          }}
+        >
+          Faça login para continuar
+          {from ? ` em ${from}` : ""}.
+        </Alert>
+      </Snackbar>
+
       <Card
         alignItems="center"
         boxShadow={"0 25px 50px -12px rgba(0, 0, 0, 0.25)"}

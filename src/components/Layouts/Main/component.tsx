@@ -1,8 +1,9 @@
 "use client";
 
+import React from "react";
 import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
 import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 
@@ -11,9 +12,11 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, logout } = useUser();
+  const { isAuthenticated, logout, isLoadingPages, user } = useUser();
+  const router = useRouter();
 
   const pathname = usePathname();
+  const previousPathnameRef = React.useRef<string | null>(null);
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
@@ -32,10 +35,39 @@ export default function MainLayout({
     { id: "configuracoes", label: "Configurações", icon: <ConfiguracoesIcon />, path: "/admin/configuracoes" },
   ];
 
-  const user = {
-    name: "Admin",
-    email: "admin@mennu.io",
-    avatarInitial: "A",
+  const protectedRoutes = [...menuItems, ...adminMenuItems].map((item) => item.path);
+  const isKnownProtectedRoute = protectedRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+
+  React.useEffect(() => {
+    const previousPathname = previousPathnameRef.current;
+    const isFirstRender = previousPathname === null;
+    const hasPathChanged = isFirstRender || previousPathname !== pathname;
+
+    previousPathnameRef.current = pathname;
+
+    if (isLoadingPages) return;
+    if (isAuthenticated) return;
+    if (!isKnownProtectedRoute) return;
+    if (!hasPathChanged) return;
+
+    const params = new URLSearchParams({
+      authError: "unauthorized",
+      from: pathname,
+    });
+
+    router.replace(`/?${params.toString()}`);
+  }, [isLoadingPages, isAuthenticated, isKnownProtectedRoute, pathname, router]);
+
+  const shouldShowSidebar = isAuthenticated && isKnownProtectedRoute;
+  const shouldBlockProtectedContent =
+    !isLoadingPages && !isAuthenticated && isKnownProtectedRoute;
+
+  const sidebarUser = {
+    name: user?.nome || "Usuário",
+    email: user?.email || "",
+    avatarInitial: user?.nome?.charAt(0)?.toUpperCase() || "U",
   };
 
   return (
@@ -47,11 +79,11 @@ export default function MainLayout({
         overflow: "hidden",
       }}
     >
-      {isAuthenticated && (
+      {shouldShowSidebar && (
         <SidebarComponent
           menuItems={menuItems}
           adminMenuItems={adminMenuItems}
-          user={user}
+          user={sidebarUser}
           onLogout={logout}
           logoutIcon={<SairIcon />}
           showAdminSection
@@ -63,7 +95,7 @@ export default function MainLayout({
         sx={{
           flex: 1,
           overflowY: "auto",
-          p: isAuthenticated ? 3 : 0,
+          p: shouldShowSidebar ? 3 : 0,
           backgroundColor: (theme) => theme.palette.background.default,
 
           "&::-webkit-scrollbar": {
@@ -74,7 +106,7 @@ export default function MainLayout({
           scrollbarWidth: "none",
         }}
       >
-        {children}
+        {!shouldBlockProtectedContent && children}
       </Box>
 
     </Box>

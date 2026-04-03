@@ -1,29 +1,26 @@
-import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { unidadesMedidaOptions } from "@/data/menuItems";
 import * as yup from "yup";
 
 export const createStockSchema = yup.object({
-  item: yup.string().required("O nome do item é obrigatório"),
-  categoria: yup
-    .string()
-    .required("A categoria é obrigatória")
-    .oneOf(mockTipoUsuario.slice(1).map(u => u.value), "Categoria inválida"),
-  unidadeMedida: yup
+  nome: yup.string().required("O nome do insumo é obrigatório"),
+  categoria: yup.string().optional(),
+  tipo_padrao: yup.string().optional(),
+  unidade_medida: yup
     .string()
     .required("A unidade de medida é obrigatória")
-    .oneOf(mockUnidadesMedida.slice(1).map(u => u.value), "Unidade de medida inválida"),
-  saldo: yup
-    .string()
-    .required("O saldo inicial é obrigatório")
-    .matches(/^\d+$/, "Saldo deve ser numérico"),
-  estoqueMinimo: yup
-    .string()
-    .required("O estoque mínimo é obrigatório")
-    .matches(/^\d+$/, "Estoque mínimo deve ser numérico"),
-  unidade: yup
-    .string()
-    .required("A unidade é obrigatória")
-    .oneOf(mockUnidades.slice(1).map(u => u.value), "Unidade inválida"),
-  status: yup.boolean().required(),
+    .oneOf(
+      unidadesMedidaOptions.slice(1).map((u) => u.value),
+      "Unidade de medida inválida",
+    ),
+  ponto_reposicao: yup
+    .number()
+    .typeError("Ponto de reposição deve ser numérico")
+    .optional(),
+  unidade_id: yup.string().optional(),
+  quantidade_atual: yup
+    .number()
+    .typeError("Quantidade atual deve ser numérica")
+    .required("A quantidade atual é obrigatória"),
 });
 
 export type CreateStockSchemaFormData = yup.InferType<typeof createStockSchema>;

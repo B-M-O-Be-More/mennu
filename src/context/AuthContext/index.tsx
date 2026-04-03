@@ -1,11 +1,6 @@
 "use client";
 
 import React from "react";
-// Native cookie deletion helper — no external dependency needed
-const destroyCookie = (name: string, options?: { path?: string }) => {
-  const path = options?.path ?? "/";
-  document.cookie = `${name}=; Max-Age=0; path=${path}`;
-};
 import { UserContextProps, UserProviderProps } from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
@@ -29,15 +24,54 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [requestValidateToken, isLoadingValidateToken] = useFetch<IUser>();
   const [requestLogout] = useFetch<unknown>();
 
-  const [isLoadingPages, setLoadingPages] = React.useState<boolean>(false);
+  const [isLoadingPages, setLoadingPages] = React.useState<boolean>(true);
   const [user, setUser] = React.useState<IUser>(initialUser());
   const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+  const hasValidatedSessionRef = React.useRef(false);
 
   const router = useRouter();
 
-  const handleUserState = (data: IUser) => {
-    setUser(data);
-  };
+  const normalizeUserData = React.useCallback((data: unknown): IUser => {
+    const parsed = (data ?? {}) as Partial<IUser> & {
+      documento?: string;
+      ativo?: boolean;
+      atualizado_em?: string;
+      tipo_usuario?: string;
+    };
+
+    const rawTipoUsuario = String(parsed.tipo_usuario ?? "funcionario").toLowerCase();
+    const tipoUsuario: IUser["tipo_usuario"] =
+      rawTipoUsuario === "administrador" ||
+      rawTipoUsuario === "gestor" ||
+      rawTipoUsuario === "funcionario"
+        ? rawTipoUsuario
+        : "funcionario";
+
+    return {
+      ...initialUser(),
+      ...parsed,
+      cpf: parsed.cpf ?? parsed.documento ?? "",
+      tipo_usuario: tipoUsuario,
+      status: typeof parsed.status === "boolean" ? parsed.status : Boolean(parsed.ativo),
+      status_acesso:
+        typeof parsed.status_acesso === "boolean"
+          ? parsed.status_acesso
+          : Boolean(parsed.ativo),
+      updated_at: parsed.updated_at ?? parsed.atualizado_em ?? "",
+      token_access: {
+        token: parsed.token_access?.token ?? "",
+        expirado_em: parsed.token_access?.expirado_em ?? "",
+      },
+      ultima_refeicao: parsed.ultima_refeicao ?? null,
+    };
+  }, []);
+
+  const handleUserState = React.useCallback(
+    (data: unknown) => {
+      setUser(normalizeUserData(data));
+    },
+    [normalizeUserData],
+  );
 
   const login = async (formData: LoginSchemaFormData) => {
     const resp = await requestLogin("/api/auth/login", {
@@ -50,9 +84,9 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const respData = resp as LoginResponse | IUser | undefined;
     let userData: IUser | undefined;
 
-    if (respData && "data" in respData && respData.data) {
+    if (respData && typeof respData === "object" && "data" in respData && respData.data) {
       userData = respData.data;
-    } else if (respData && !("data" in (respData as IUser))) {
+    } else if (respData && typeof respData === "object" && "id" in respData) {
       userData = respData as IUser;
     }
 
@@ -67,15 +101,11 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const clearSession = React.useCallback(() => {
     setUser(initialUser());
-
-    // ✅ remove apenas o cookie correto
-    destroyCookie("mennu_token", { path: "/" });
-
     setIsAuthenticated(false);
   }, []);
 
   const handleValidateToken = React.useCallback(async () => {
-    const resp = await requestValidateToken(`/api/auth/active`, {
+    const resp = await requestValidateToken(`/api/auth/ativo`, {
       method: "GET",
     })
       .catch(() => {
@@ -85,11 +115,26 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setLoadingPages(false);
       });
 
-    if (resp && resp.message === "Token ativo") {
-      setIsAuthenticated(true);
-      setUser({ ...resp.data });
+    if (!resp) {
+      return;
     }
-  }, [requestValidateToken, clearSession]);
+
+    const responseData = resp as { data?: IUser } | IUser;
+    const userData = "data" in responseData ? responseData.data : responseData;
+
+    if (userData && typeof userData === "object") {
+      setIsAuthenticated(true);
+      handleUserState(userData);
+    } else {
+      clearSession();
+    }
+  }, [requestValidateToken, clearSession, handleUserState]);
+
+  React.useEffect(() => {
+    if (hasValidatedSessionRef.current) return;
+    hasValidatedSessionRef.current = true;
+    handleValidateToken();
+  }, [handleValidateToken]);
 
   const logout = async () => {
     await requestLogout("/api/auth/logout", {

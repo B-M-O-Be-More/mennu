@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Poppins } from "next/font/google";
 import MainLayout from "@/components/Layouts/Main";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.variable} suppressHydrationWarning>
       <body style={{ height: "100dvh" }} suppressHydrationWarning>
-        <Providers>
-          <MainLayout>
-            {children}
-          </MainLayout>
-        </Providers>
+        <AppRouterCacheProvider options={{ key: "css" }}>
+          <Providers>
+            <MainLayout>
+              {children}
+            </MainLayout>
+          </Providers>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

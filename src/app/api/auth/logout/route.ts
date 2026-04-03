@@ -1,23 +1,17 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = getApiBaseUrl();
 
 export async function POST() {
-  if (!baseUrl) {
-    return NextResponse.json(
-      { message: "NEXT_PUBLIC_API_URL não está configurado" },
-      { status: 500 }
-    );
-  }
-
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
 
   if (!token) {
     return NextResponse.json(
       { message: "Token não encontrado" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -47,11 +41,19 @@ export async function POST() {
       path: "/",
     });
 
+    res.cookies.set("empresa_id", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
     return res;
   } catch {
     return NextResponse.json(
       { message: "Erro ao conectar com o servidor de autenticação" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

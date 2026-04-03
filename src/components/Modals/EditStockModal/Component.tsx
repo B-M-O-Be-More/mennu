@@ -1,13 +1,21 @@
-import React from "react";
-import { Stack, Typography, Box, Button, Switch } from "@mui/material";
-import { mockTipoUsuario, mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import React, { useState } from "react";
+import { Stack, Button, Alert } from "@mui/material";
+import { unidadesMedidaOptions } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { EditStockModalProps } from "./";
-import { useForm } from "react-hook-form";
-import { createStockSchema, CreateStockSchemaFormData } from "@/schemas/stockSchema";
+import { EditStockModalProps } from "./interface";
+import { useForm, type Resolver } from "react-hook-form";
+import { createStockSchema } from "@/schemas/stockSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+type Unidade = {
+  id: number;
+  nome: string;
+};
+
+type StockFormData = yup.Asserts<typeof createStockSchema>;
 
 export default function EditStockModal({
   open,
@@ -15,104 +23,257 @@ export default function EditStockModal({
   stockItem,
   onSave,
 }: EditStockModalProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [unidadesError, setUnidadesError] = useState<string | null>(null);
 
-  const { register,
+  const {
+    register,
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
     reset,
     control,
-  } = useForm<CreateStockSchemaFormData>({
-    resolver: yupResolver(createStockSchema),
-    defaultValues:
-      stockItem,
+  } = useForm<StockFormData>({
+    resolver: yupResolver(createStockSchema) as Resolver<StockFormData>,
+    defaultValues: {
+      nome: "",
+      categoria: "",
+      tipo_padrao: "",
+      unidade_medida: "kg",
+      ponto_reposicao: 0,
+      unidade_id: "",
+      quantidade_atual: 0,
+    },
   });
 
-  const onSubmit = (data: CreateStockSchemaFormData) => {
-    onSave(data);
-    onClose();
-  };
-
   React.useEffect(() => {
-    if (open && stockItem) {
-      reset(stockItem)
-    }
+    if (!open || !stockItem) return;
+
+    reset({
+      nome: stockItem.nome,
+      categoria: stockItem.categoria ?? "",
+      tipo_padrao: stockItem.tipo_padrao ?? "",
+      unidade_medida: stockItem.unidade_medida,
+      ponto_reposicao: Number(stockItem.ponto_reposicao) || 0,
+      unidade_id: "",
+      quantidade_atual: Number(stockItem.quantidade_atual) || 0,
+    });
   }, [open, stockItem, reset]);
 
-  const status = watch("status")
+  React.useEffect(() => {
+    if (!open || !stockItem || unidades.length === 0) return;
+
+    const parsedUnidadeId = Number(stockItem.unidade_id);
+    const hasUnidade = unidades.some((u) => u.id === parsedUnidadeId);
+
+    setValue("unidade_id", hasUnidade ? String(parsedUnidadeId) : "", {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+  }, [open, stockItem, unidades, setValue]);
+
+  React.useEffect(() => {
+    let isCancelled = false;
+
+    const fetchUnidades = async () => {
+      try {
+        const response = await fetch("/api/unidades", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            response.status === 401
+              ? "Sessão expirada. Faça login novamente."
+              : "Erro ao carregar unidades. Tente novamente."
+          );
+        }
+
+        const data = (await response.json()) as { results?: Unidade[] };
+
+        if (!isCancelled) {
+          setUnidades(data.results ?? []);
+          setUnidadesError(null);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setUnidades([]);
+          setUnidadesError(err instanceof Error ? err.message : "Erro ao carregar unidades");
+        }
+      }
+    };
+
+    if (open) {
+      fetchUnidades();
+    } else {
+      setUnidades([]);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [open]);
+
+  const onSubmit = async (data: StockFormData) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const payload: {
+        nome: string;
+        unidade_medida: StockFormData["unidade_medida"];
+        ponto_reposicao: number;
+        quantidade_atual: number;
+        categoria?: string;
+        tipo_padrao?: string;
+        unidade_id?: number;
+      } = {
+        nome: data.nome,
+        unidade_medida: data.unidade_medida,
+        ponto_reposicao: Number(data.ponto_reposicao),
+        quantidade_atual: Number(data.quantidade_atual),
+      };
+
+      const categoria = data.categoria?.trim();
+      const tipoPadrao = data.tipo_padrao?.trim();
+
+      if (categoria) {
+        payload.categoria = categoria;
+      }
+
+      if (tipoPadrao) {
+        payload.tipo_padrao = tipoPadrao;
+      }
+
+      if (
+        data.unidade_id !== undefined &&
+        data.unidade_id !== null &&
+        `${data.unidade_id}`.trim() !== ""
+      ) {
+        const parsedUnidadeId = Number(data.unidade_id);
+        if (Number.isFinite(parsedUnidadeId) && parsedUnidadeId > 0) {
+          payload.unidade_id = parsedUnidadeId;
+        }
+      }
+
+      const response = await fetch(`/api/insumo/${stockItem.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('Já existe um insumo com este nome. Escolha um nome diferente.');
+        }
+        if (response.status === 401) {
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
+        if (response.status === 422) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Dados inválidos. Verifique os campos.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Erro no servidor. Tente novamente mais tarde.');
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao atualizar insumo');
+      }
+
+      // Success
+      onSave?.({
+        nome: payload.nome,
+        categoria: payload.categoria ?? null,
+        tipo_padrao: payload.tipo_padrao ?? null,
+        unidade_medida: payload.unidade_medida,
+        ponto_reposicao: String(payload.ponto_reposicao),
+        unidade_id: payload.unidade_id ?? null,
+        quantidade_atual: String(payload.quantidade_atual),
+      });
+      onClose();
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido';
+      setError(errorMsg);
+      console.error('Erro ao atualizar insumo:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Modal open={open} onClose={onClose} title="Editar Item de Estoque">
+    <Modal open={open} onClose={onClose} title="Editar Insumo">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        {error && <Alert severity="error">{error}</Alert>}
+        {unidadesError && <Alert severity="warning">{unidadesError}</Alert>}
+
         <Input
-          label="Nome do Item"
+          label="Nome do Insumo"
           placeholder="Ex. Arroz Branco"
           optional={false}
-          register={register("item")}
-          error={errors.item?.message}
+          register={register("nome")}
+          error={errors.nome?.message}
         />
         <Stack direction="row" spacing={2}>
-          <Select
-            name="categoria"
-            control={control}
+          <Input
             label="Categoria"
-            optional={false}
-            options={mockTipoUsuario}
+            placeholder="Ex. Alimentos"
+            optional={true}
             register={register("categoria")}
             error={errors.categoria?.message}
           />
 
-          <Select
-            name="unidadeMedida"
-            control={control}
-            label="Unidade de Medida"
-            optional={false}
-            options={mockUnidadesMedida}
-            register={register("unidadeMedida")}
-            error={errors.unidadeMedida?.message}
+          <Input
+            label="Tipo Padrão"
+            placeholder="Ex. Caixa, Saco, Fardo"
+            optional={true}
+            register={register("tipo_padrao")}
+            error={errors.tipo_padrao?.message}
           />
         </Stack>
 
         <Stack direction="row" spacing={2}>
-          <Input
-            label="Saldo"
-            placeholder="0"
+          <Select
+            label="Unidade de Medida"
             optional={false}
-            sx={{ flex: 1 }}
-            register={register("saldo")}
-            error={errors.saldo?.message}
+            options={unidadesMedidaOptions}
+            control={control}
+            name="unidade_medida"
+            error={errors.unidade_medida?.message}
           />
           <Input
-            label="Estoque Mínimo"
+            label="Ponto de Reposição"
             placeholder="0"
-            optional={false}
-            sx={{ flex: 1 }}
-            register={register("estoqueMinimo")}
-            error={errors.estoqueMinimo?.message}
+            optional={true}
+            register={register("ponto_reposicao")}
+            error={errors.ponto_reposicao?.message}
           />
         </Stack>
 
-        <Select
-          name="unidade"
-          control={control}
-          label="Unidade"
-          optional={true}
-          options={mockUnidades}
-          register={register("unidade")}
-          error={errors.unidade?.message}
+        <Input
+          label="Quantidade Atual"
+          type="number"
+          placeholder="0"
+          optional={false}
+          register={register("quantidade_atual")}
+          error={errors.quantidade_atual?.message}
         />
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Box>
-            <Typography color="text.primary">Status do Item</Typography>
-            <Typography color="text.secondary" variant="body2">
-              Itens inativos não aparecem nas movimentações
-            </Typography>
-          </Box>
-          <Switch checked={status} onChange={(e) => setValue("status", e.target.checked)}
-          />
-        </Stack>
+        <Select
+          label="Unidade"
+          optional={true}
+          options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
+          control={control}
+          name="unidade_id"
+          error={errors.unidade_id?.message}
+        />
 
         <Stack direction="row" gap={2}>
           <Button
@@ -125,6 +286,7 @@ export default function EditStockModal({
               color: "text.secondary",
             }}
             onClick={onClose}
+            disabled={loading}
           >
             Cancelar
           </Button>
@@ -135,8 +297,9 @@ export default function EditStockModal({
             }}
             variant="contained"
             type="submit"
+            disabled={loading}
           >
-            Salvar Alterações
+            {loading ? "Atualizando..." : "Salvar Alterações"}
           </Button>
         </Stack>
       </Stack>

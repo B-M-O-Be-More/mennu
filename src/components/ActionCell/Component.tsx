@@ -15,6 +15,7 @@ const ActionCell: React.FC<ActionCellProps> = ({
     <Stack direction="row" alignItems="center" spacing={1} height={"fit-content"} sx={{ ...sxProps }}>
       <Tooltip title={tooltipEdit} arrow>
         <IconButton
+          type="button"
           aria-label="edit"
           size="small"
           onClick={onEdit}

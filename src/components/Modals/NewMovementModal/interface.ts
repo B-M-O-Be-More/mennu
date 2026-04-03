@@ -2,4 +2,5 @@
 export interface NewMovementModalProps {
   open: boolean;
   onClose: () => void;
+  onSave?: () => void;
 }
