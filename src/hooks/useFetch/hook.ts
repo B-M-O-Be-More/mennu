@@ -4,10 +4,12 @@ import { FetchResponse, Options } from "./interface";
 
 export default function useFetch<T>() {
   const [data, setData] = React.useState<T>();
+  const [error, setError] = React.useState<string | null>(null);
   const { isLoading, executeAsyncFunction } = useLoading();
 
   const request = React.useCallback(
     async (url: string, options: Options): Promise<FetchResponse<T>> => {
+      setError(null);
       const params = new URLSearchParams();
 
       if (options.params) {
@@ -43,9 +45,9 @@ export default function useFetch<T>() {
 
         if (!res.ok) {
           const errorData = await res.json();
-          return Promise.reject(
-            new Error(errorData.message || "An error occurred"),
-          );
+          const message = errorData.message || "An error occurred";
+          setError(message);
+          return Promise.reject(new Error(message));
         }
 
         const responseData = await res.json();
@@ -57,11 +59,12 @@ export default function useFetch<T>() {
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error ? error.message : "An error occurred";
+        setError(errorMessage);
         return Promise.reject(new Error(errorMessage));
       }
     },
     [executeAsyncFunction],
   );
 
-  return [request, isLoading, data] as const;
+  return [request, isLoading, data, error] as const;
 }
