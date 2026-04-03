@@ -34,7 +34,7 @@ async function safeJson(response: Response) {
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const headers = await getHeaders();
   if (!headers) {
@@ -44,7 +44,7 @@ export async function PUT(
     );
   }
 
-  const { id } = params;
+  const { id } = await params;
   const body = await req.json();
 
   if (body.quantidade_atual === undefined || body.quantidade_atual === null) {
@@ -75,7 +75,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const headers = await getHeaders();
   if (!headers) {
@@ -85,7 +85,7 @@ export async function DELETE(
     );
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const response = await fetch(`${baseUrl}/insumo/${id}`, {

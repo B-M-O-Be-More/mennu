@@ -104,6 +104,7 @@ export function StockPage({}: StockPageProps) {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ ativo: newState }),
       });
 
       if (!response.ok) {
@@ -127,8 +128,12 @@ export function StockPage({}: StockPageProps) {
         throw new Error(errData.message || "Erro ao atualizar status");
       }
 
+      const responseData = await response.json().catch(() => null);
+      const serverAtivo =
+        responseData && typeof responseData.ativo === "boolean" ? responseData.ativo : newState;
+
       setStockData((prev) =>
-        prev.map((item) => (item.id === stock.id ? { ...item, ativo: newState } : item)),
+        prev.map((item) => (item.id === stock.id ? { ...item, ativo: serverAtivo } : item)),
       );
     } catch (err) {
       if (err instanceof TypeError) {
