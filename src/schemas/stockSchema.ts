@@ -1,4 +1,4 @@
-import { mockUnidades, mockUnidadesMedida } from "@/data/menuItems";
+import { unidadesMedidaOptions } from "@/data/menuItems";
 import * as yup from "yup";
 
 export const createStockSchema = yup.object({
@@ -9,7 +9,7 @@ export const createStockSchema = yup.object({
     .string()
     .required("A unidade de medida é obrigatória")
     .oneOf(
-      mockUnidadesMedida.slice(1).map((u) => u.value),
+      unidadesMedidaOptions.slice(1).map((u) => u.value),
       "Unidade de medida inválida",
     ),
   ponto_reposicao: yup

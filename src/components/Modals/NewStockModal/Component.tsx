@@ -1,6 +1,6 @@
 import { Stack, Button, Alert } from "@mui/material";
 import React from "react";
-import { mockUnidadesMedida } from "../../../data/menuItems";
+import { unidadesMedidaOptions } from "../../../data/menuItems";
 import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -197,7 +197,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             <Select
               label="Unidade de Medida"
               optional={false}
-              options={mockUnidadesMedida}
+              options={unidadesMedidaOptions}
               control={control}
               name="unidade_medida"
               error={errors.unidade_medida?.message}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Stack, Button, Alert } from "@mui/material";
-import { mockUnidadesMedida } from "@/data/menuItems";
+import { unidadesMedidaOptions } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
@@ -223,7 +223,7 @@ export default function EditStockModal({
           <Select
             label="Unidade de Medida"
             optional={false}
-            options={mockUnidadesMedida}
+            options={unidadesMedidaOptions}
             control={control}
             name="unidade_medida"
             error={errors.unidade_medida?.message}

@@ -17,7 +17,7 @@ const mockStatuses = [
   { label: "Inativo", value: "false" },
 ];
 
-const mockUnidadesMedida = [
+const unidadesMedidaOptions = [
   { label: "Selecione uma medida", value: "1" },
   { label: "Quilogramas", value: "kg" },
   { label: "Gramas", value: "g" },
@@ -71,7 +71,7 @@ export {
   mockTipoUsuario,
   mockUnidades,
   mockStatuses,
-  mockUnidadesMedida,
+  unidadesMedidaOptions,
   mockTiposTerminal,
   mockUsers,
   mockExtraRequestTypes,
