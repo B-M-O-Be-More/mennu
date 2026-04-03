@@ -36,11 +36,11 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     resolver: yupResolver(createStockSchema) as Resolver<StockFormData>,
     defaultValues: {
       nome: "",
-      categoria: undefined,
-      tipo_padrao: undefined,
+      categoria: "",
+      tipo_padrao: "",
       unidade_medida: "kg",
       ponto_reposicao: 0,
-      unidade_id: undefined,
+      unidade_id: "",
       quantidade_atual: 0,
     },
   });
@@ -77,7 +77,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
         const hasUnidade = options.some((u) => u.id === currentUnidadeId);
 
         if (!isCancelled && !hasUnidade) {
-          setValue("unidade_id", undefined, {
+          setValue("unidade_id", "", {
             shouldDirty: false,
             shouldTouch: false,
             shouldValidate: false,

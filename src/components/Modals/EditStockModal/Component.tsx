@@ -39,11 +39,11 @@ export default function EditStockModal({
     resolver: yupResolver(createStockSchema) as Resolver<StockFormData>,
     defaultValues: {
       nome: "",
-      categoria: undefined,
-      tipo_padrao: undefined,
+      categoria: "",
+      tipo_padrao: "",
       unidade_medida: "kg",
       ponto_reposicao: 0,
-      unidade_id: undefined,
+      unidade_id: "",
       quantidade_atual: 0,
     },
   });
@@ -53,11 +53,11 @@ export default function EditStockModal({
 
     reset({
       nome: stockItem.nome,
-      categoria: stockItem.categoria ?? undefined,
-      tipo_padrao: stockItem.tipo_padrao ?? undefined,
+      categoria: stockItem.categoria ?? "",
+      tipo_padrao: stockItem.tipo_padrao ?? "",
       unidade_medida: stockItem.unidade_medida,
       ponto_reposicao: Number(stockItem.ponto_reposicao) || 0,
-      unidade_id: undefined,
+      unidade_id: "",
       quantidade_atual: Number(stockItem.quantidade_atual) || 0,
     });
   }, [open, stockItem, reset]);
@@ -68,7 +68,7 @@ export default function EditStockModal({
     const parsedUnidadeId = Number(stockItem.unidade_id);
     const hasUnidade = unidades.some((u) => u.id === parsedUnidadeId);
 
-    setValue("unidade_id", hasUnidade ? parsedUnidadeId : undefined, {
+    setValue("unidade_id", hasUnidade ? String(parsedUnidadeId) : "", {
       shouldDirty: false,
       shouldTouch: false,
       shouldValidate: false,

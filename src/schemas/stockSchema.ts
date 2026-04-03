@@ -16,7 +16,7 @@ export const createStockSchema = yup.object({
     .number()
     .typeError("Ponto de reposição deve ser numérico")
     .optional(),
-  unidade_id: yup.number().typeError("Unidade deve ser um número").optional(),
+  unidade_id: yup.string().optional(),
   quantidade_atual: yup
     .number()
     .typeError("Quantidade atual deve ser numérica")
