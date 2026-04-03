@@ -23,11 +23,6 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [unidadesError, setUnidadesError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const {
     register,
@@ -219,16 +214,14 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             error={errors.quantidade_atual?.message}
           />
 
-          {mounted && (
-            <Select
-              label="Unidade"
-              optional={true}
-              options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
-              control={control}
-              name="unidade_id"
-              error={errors.unidade_id?.message}
-            />
-          )}
+          <Select
+            label="Unidade"
+            optional={true}
+            options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
+            control={control}
+            name="unidade_id"
+            error={errors.unidade_id?.message}
+          />
 
           <Stack direction="row" gap={2}>
             <Button

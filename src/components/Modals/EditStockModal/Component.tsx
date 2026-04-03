@@ -27,7 +27,6 @@ export default function EditStockModal({
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [unidadesError, setUnidadesError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   const {
     register,
@@ -48,10 +47,6 @@ export default function EditStockModal({
       quantidade_atual: 0,
     },
   });
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   React.useEffect(() => {
     if (!open || !stockItem) return;
@@ -246,16 +241,14 @@ export default function EditStockModal({
           error={errors.quantidade_atual?.message}
         />
 
-        {mounted && (
-          <Select
-            label="Unidade"
-            optional={true}
-            options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
-            control={control}
-            name="unidade_id"
-            error={errors.unidade_id?.message}
-          />
-        )}
+        <Select
+          label="Unidade"
+          optional={true}
+          options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
+          control={control}
+          name="unidade_id"
+          error={errors.unidade_id?.message}
+        />
 
         <Stack direction="row" gap={2}>
           <Button
