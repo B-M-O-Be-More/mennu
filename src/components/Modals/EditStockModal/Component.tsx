@@ -121,8 +121,6 @@ export default function EditStockModal({
   }, [open]);
 
   const onSubmit = async (data: StockFormData) => {
-    if (!stockItem?.id) return;
-
     setLoading(true);
     setError(null);
 

@@ -257,12 +257,17 @@ export function StockPage({}: StockPageProps) {
               isLoading={loading}
             />
 
-            <EditStockModal
-              open={openEditStockModal && selectedStock !== null}
-              onClose={() => setOpenEditStockModal(false)}
-              stockItem={selectedStock}
-              onSave={handleSaveStock}
-            />
+            {selectedStock && (
+              <EditStockModal
+                open={openEditStockModal}
+                onClose={() => {
+                  setOpenEditStockModal(false);
+                  setSelectedStock(null);
+                }}
+                stockItem={selectedStock}
+                onSave={handleSaveStock}
+              />
+            )}
           </React.Fragment>
         ) : (
           <React.Fragment>
