@@ -107,15 +107,42 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
     setError(null);
 
     try {
-      const payload = {
+      const payload: {
+        nome: string;
+        unidade_medida: StockFormData["unidade_medida"];
+        ponto_reposicao: number;
+        quantidade_atual: number;
+        categoria?: string;
+        tipo_padrao?: string;
+        unidade_id?: number;
+      } = {
         nome: data.nome,
-        categoria: data.categoria || "",
-        tipo_padrao: data.tipo_padrao || "",
         unidade_medida: data.unidade_medida,
         ponto_reposicao: Number(data.ponto_reposicao),
-        unidade_id: data.unidade_id ? Number(data.unidade_id) : 0,
         quantidade_atual: Number(data.quantidade_atual),
       };
+
+      const categoria = data.categoria?.trim();
+      const tipoPadrao = data.tipo_padrao?.trim();
+
+      if (categoria) {
+        payload.categoria = categoria;
+      }
+
+      if (tipoPadrao) {
+        payload.tipo_padrao = tipoPadrao;
+      }
+
+      if (
+        data.unidade_id !== undefined &&
+        data.unidade_id !== null &&
+        `${data.unidade_id}`.trim() !== ""
+      ) {
+        const parsedUnidadeId = Number(data.unidade_id);
+        if (Number.isFinite(parsedUnidadeId) && parsedUnidadeId > 0) {
+          payload.unidade_id = parsedUnidadeId;
+        }
+      }
       
 
       const response = await fetch('/api/insumo', {
