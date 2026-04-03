@@ -286,6 +286,7 @@ export function StockPage({}: StockPageProps) {
               <NewMovementModal
                 open={openNewMovementModal}
                 onClose={() => setOpenNewMovementModal(false)}
+                onSave={loadMovementData}
               />
             </Stack>
 

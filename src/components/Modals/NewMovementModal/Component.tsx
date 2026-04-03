@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { createMovementSchema, CreateMovementSchemaFormData } from "@/schemas/movementSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
+import { useState } from "react";
 
 const movementTypeItems = [
   { id: 0, label: "Entrada", icon: <ArrowIcon style={{ transform: "rotate(90deg)" }} width={16} height={16} color="#00A63E" /> },
@@ -18,8 +19,10 @@ const movementTypeItems = [
   { id: 3, label: "Ajuste", icon: <EditIcon width={16} height={16} color="#9810FA" /> },
 ];
 
-export default function NewMovementModal({ open, onClose }: NewMovementModalProps) {
+export default function NewMovementModal({ open, onClose, onSave }: NewMovementModalProps) {
   const theme = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -39,9 +42,55 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
     },
   });
 
-  const onSubmit = (data: CreateMovementSchemaFormData) => {
-    console.log("Nova movimentação:", data);
-    onClose();
+  const onSubmit = async (data: CreateMovementSchemaFormData) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const parsedInsumoId = Number(data.item);
+      const payload = {
+        insumo_id: Number.isFinite(parsedInsumoId) ? parsedInsumoId : 0,
+        tipo: data.tipo,
+        quantidade: Number(data.quantidade),
+        motivo: data.responsavel,
+        justificativa: data.justificativa || "",
+        unidade_id: 0,
+      };
+
+      const response = await fetch("/api/movimentacao-estoque", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Sessão expirada. Faça login novamente.");
+        }
+        if (response.status === 403) {
+          throw new Error("Você não tem permissão para registrar movimentações.");
+        }
+        if (response.status === 422) {
+          const errorData = await response.json().catch(() => ({ message: "Dados inválidos." }));
+          throw new Error(errorData.message || "Dados inválidos.");
+        }
+        if (response.status >= 500) {
+          throw new Error("Erro no servidor. Tente novamente mais tarde.");
+        }
+
+        const errorData = await response.json().catch(() => ({ message: "Erro ao registrar movimentação." }));
+        throw new Error(errorData.message || "Erro ao registrar movimentação.");
+      }
+
+      onSave?.();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const selectedTipo = watch("tipo");
@@ -49,6 +98,8 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
   return (
     <Modal open={open} onClose={onClose} title="Nova Movimentação">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        {error && <ClosableAlertBox severity="error" title="Erro" description={error} />}
+
         <Box>
           <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
             Tipo de Movimentação
@@ -151,6 +202,7 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
               "&:hover": { color: "text.primary" },
             }}
             onClick={onClose}
+            disabled={loading}
           >
             Cancelar
           </Button>
@@ -158,8 +210,9 @@ export default function NewMovementModal({ open, onClose }: NewMovementModalProp
             sx={{ flex: 1 }}
             variant="contained"
             type="submit"
+            disabled={loading}
           >
-            Registrar Movimentação
+            {loading ? "Registrando..." : "Registrar Movimentação"}
           </Button>
         </Stack>
       </Stack>
