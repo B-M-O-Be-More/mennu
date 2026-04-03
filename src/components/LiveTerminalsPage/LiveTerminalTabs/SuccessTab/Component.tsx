@@ -18,6 +18,8 @@ const mockUser: IUser = {
   numero_cartao: "CARD-123456",
   unidade: "Sede São Paulo",
   updated_at: "2025-12-04T14:30:22Z",
+  empresa_id: null,
+  feature_flags: [],
   token_access: {
     token: "abcdef1234567890",
     expirado_em: "2026-12-04T14:30:22Z",

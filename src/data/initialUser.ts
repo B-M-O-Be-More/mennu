@@ -18,5 +18,7 @@ export function initialUser(): IUser {
       expirado_em: "",
     },
     ultima_refeicao: null,
+    empresa_id: null,
+    feature_flags: [],
   };
 }

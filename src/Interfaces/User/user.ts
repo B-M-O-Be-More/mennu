@@ -15,4 +15,6 @@ export interface IUser {
     expirado_em: string;
   };
   ultima_refeicao: string | null;
+  empresa_id: number | null;
+  feature_flags: string[];
 }

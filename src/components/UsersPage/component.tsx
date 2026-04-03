@@ -38,6 +38,8 @@ export const mockUsers: IUser[] = [
       token: "abc123",
       expirado_em: "2026-01-06T12:35:00Z",
     },
+    empresa_id: null,
+    feature_flags: [],
   },
   {
     id: 2,
@@ -56,6 +58,8 @@ export const mockUsers: IUser[] = [
       token: "xyz789",
       expirado_em: "2026-01-05T11:50:00Z",
     },
+    empresa_id: null,
+    feature_flags: [],
   },
 ];
 
