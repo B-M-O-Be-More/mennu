@@ -205,7 +205,7 @@ export default function EditStockModal({
 
           <Input
             label="Tipo Padrão"
-            placeholder="Ex. Tipo A"
+            placeholder="Ex. Caixa, Saco, Fardo"
             optional={true}
             register={register("tipo_padrao")}
             error={errors.tipo_padrao?.message}

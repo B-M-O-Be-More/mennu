@@ -144,7 +144,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
         throw new Error(errorData.message || 'Erro ao criar insumo');
       }
 
-      // Sucesso
+      
       reset();
       onClose();
     } catch (err) {
@@ -181,7 +181,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
             />
             <Input
               label="Tipo Padrão"
-              placeholder="Ex. Tipo A"
+              placeholder="Ex. Caixa, Saco, Fardo"
               optional={true}
               register={register("tipo_padrao")}
               error={errors.tipo_padrao?.message}
