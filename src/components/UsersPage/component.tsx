@@ -27,7 +27,7 @@ export const mockUsers: IUser[] = [
     email: "joao.silva@example.com",
     matricula: "12345",
     unidade: "10",
-    tipo_usuario: "administrador",
+    tipo_usuario: "admin",
     status: true,
     ultima_refeicao: "05/01/2026 12:30",
     status_acesso: true,

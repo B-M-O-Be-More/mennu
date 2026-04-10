@@ -1,6 +1,6 @@
 const mockTipoUsuario = [
   { label: "Selecione uma categoria", value: "1" },
-  { label: "Administrador", value: "administrador" },
+  { label: "Administrador", value: "admin" },
   { label: "Gestor", value: "gestor" },
   { label: "Funcionário", value: "funcionario" },
 ];

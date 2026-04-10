@@ -15,6 +15,7 @@ export interface UserContextProps {
 
 export interface UserProviderProps {
   children: React.ReactNode;
+  initialUser?: IUser | null;
 }
 
 export interface LoginAuthenticated {

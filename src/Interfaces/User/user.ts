@@ -4,7 +4,7 @@ export interface IUser {
   email: string;
   cpf?: string;
   matricula: string;
-  tipo_usuario: "administrador" | "gestor" | "funcionario";
+  tipo_usuario: "admin" | "gestor" | "funcionario";
   status: boolean;
   status_acesso: boolean;
   numero_cartao: string;
