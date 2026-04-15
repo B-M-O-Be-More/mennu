@@ -85,9 +85,9 @@ export default function Input({
         variant="outlined"
         type={inputType}
         placeholder={placeholder}
-        {...register}
         value={value}
         onChange={onChange}
+        {...register}
         multiline={multiline}
         minRows={multiline ? minRows : undefined}
         slotProps={{
