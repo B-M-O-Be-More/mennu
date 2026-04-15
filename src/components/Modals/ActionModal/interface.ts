@@ -5,7 +5,7 @@ export interface ActionModalProps {
   subtitle?: string;
   confirmLabel: string;
   cancelLabel?: string;
-  color?: "error" | "warning" | "info" | "success" | "default" | "purple" | "pink";
+  color?: "primary" | "error" | "warning" | "info" | "success" | "default" | "purple" | "pink";
   onConfirm: () => void;
   onCancel?: () => void;
 }

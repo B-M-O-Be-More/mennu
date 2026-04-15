@@ -58,9 +58,7 @@ export interface MealRecordsResponse {
   status: "Servida" | "Pendente" | "Cancelada";
 }
 export interface ManualMealRecordPayload {
-  isManual: true;
-  user: string;
-  mealType: string;
-  dateTime?: string | null;
-  reason: string;
+  usuario_id: number;
+  cardapio_id: number;
+  motivo: string;
 }

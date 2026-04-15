@@ -63,7 +63,7 @@ export function SidebarComponent({
       role="navigation"
       aria-label="Menu principal"
       sx={{
-        width: { xs: 240, sm: 260, lg: 279 },
+        width: { xs: 224, sm: 240, lg: 256 },
         height: "100vh",
         bgcolor: "sidebar.background",
         display: "flex",
@@ -78,8 +78,8 @@ export function SidebarComponent({
       {/* Logo Container */}
       <Box
         sx={{
-          width: { xs: 200, sm: 215, lg: 231 },
-          height: { xs: 56, sm: 60, lg: 64 },
+          width: { xs: 188, sm: 202, lg: 216 },
+          height: { xs: 52, sm: 56, lg: 60 },
           bgcolor: "background.auth",
           borderRadius: 2.05,
           ml: { xs: 2, sm: 2.5, lg: 3 },
@@ -92,7 +92,7 @@ export function SidebarComponent({
           variant="h6"
           component="h1"
           sx={{
-            fontSize: { xs: 20, sm: 22, lg: 24 },
+            fontSize: { xs: 18, sm: 20, lg: 22 },
             fontWeight: 400,
             color: "common.white",
             letterSpacing: "-0.01em",
@@ -132,7 +132,7 @@ export function SidebarComponent({
                 pl: { xs: 2, sm: 2.25, lg: 2.5 },
                 pr: 0,
                 borderRadius: 2.05,
-                height: { xs: 56, sm: 58, lg: 60 },
+                height: { xs: 52, sm: 54, lg: 56 },
                 position: "relative",
                 transition: theme.transitions.create(
                   ["background-color", "color"],
@@ -162,10 +162,10 @@ export function SidebarComponent({
             >
               <ListItemIcon
                 sx={{
-                  minWidth: { xs: 38, sm: 42, lg: 44 },
+                  minWidth: { xs: 34, sm: 38, lg: 40 },
                   "& svg": {
-                    width: { xs: 22, sm: 24, lg: 28 },
-                    height: { xs: 22, sm: 24, lg: 28 },
+                    width: { xs: 20, sm: 22, lg: 24 },
+                    height: { xs: 20, sm: 22, lg: 24 },
                   },
                 }}
               >
@@ -174,7 +174,7 @@ export function SidebarComponent({
               <ListItemText
                 primary={item.label}
                 primaryTypographyProps={{
-                  fontSize: { xs: 15, sm: 16, lg: 18 },
+                  fontSize: { xs: 14, sm: 15, lg: 16 },
                   fontWeight: itemActive ? 600 : 500,
                   color: itemActive ? "sidebar.textActive" : "sidebar.text",
                   letterSpacing: "-0.01em",
@@ -233,7 +233,7 @@ export function SidebarComponent({
                     pl: { xs: 2, sm: 2.25, lg: 2.5 },
                     pr: 0,
                     borderRadius: 2.05,
-                    height: { xs: 56, sm: 58, lg: 60 },
+                    height: { xs: 52, sm: 54, lg: 56 },
                     position: "relative",
                     transition: theme.transitions.create(
                       ["background-color", "color"],
@@ -263,10 +263,10 @@ export function SidebarComponent({
                 >
                   <ListItemIcon
                     sx={{
-                      minWidth: { xs: 38, sm: 42, lg: 44 },
+                      minWidth: { xs: 34, sm: 38, lg: 40 },
                       "& svg": {
-                        width: { xs: 22, sm: 24, lg: 28 },
-                        height: { xs: 22, sm: 24, lg: 28 },
+                        width: { xs: 20, sm: 22, lg: 24 },
+                        height: { xs: 20, sm: 22, lg: 24 },
                       },
                     }}
                   >
@@ -275,7 +275,7 @@ export function SidebarComponent({
                   <ListItemText
                     primary={item.label}
                     primaryTypographyProps={{
-                      fontSize: { xs: 15, sm: 16, lg: 18 },
+                      fontSize: { xs: 14, sm: 15, lg: 16 },
                       fontWeight: itemActive ? 600 : 500,
                       color: itemActive ? "sidebar.textActive" : "sidebar.text",
                       letterSpacing: "-0.01em",
@@ -384,7 +384,7 @@ export function SidebarComponent({
           variant="caption"
           sx={{
             display: "block",
-            fontSize: { xs: 12, sm: 13, lg: 14 },
+            fontSize: { xs: 11, sm: 12, lg: 13 },
             fontWeight: 400,
             color: "sidebar.section",
             textAlign: "center",

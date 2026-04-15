@@ -74,8 +74,8 @@ export default function MainLayout({
     <Box
       sx={{
         display: "flex",
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        minHeight: "100dvh",
         overflow: "hidden",
       }}
     >
@@ -95,7 +95,7 @@ export default function MainLayout({
         sx={{
           flex: 1,
           overflowY: "auto",
-          p: shouldShowSidebar ? 3 : 0,
+          p: shouldShowSidebar ? { xs: 1.5, sm: 2, md: 2.5, lg: 3 } : 0,
           backgroundColor: (theme) => theme.palette.background.default,
 
           "&::-webkit-scrollbar": {

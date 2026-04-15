@@ -10,7 +10,7 @@ import Card from "../Cards/Card";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
 import Select from "../FormControl/Select";
-import { mockStatuses, mockUnidades } from "@/data/menuItems";
+import { mockStatuses } from "@/data/menuItems";
 import { userColumns } from "@/data/tableColumns";
 import Table from "../Tables/Table";
 import EditUserModal from "../Modals/EditUserModal";
@@ -19,6 +19,7 @@ import ActionCell from "../ActionCell";
 import { IUser } from "@/Interfaces/User/user";
 import PageHeader from "../PageHeader";
 import ExportModal from "../Modals/ExportModal";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 
 export const mockUsers: IUser[] = [
   {
@@ -60,6 +61,7 @@ export const mockUsers: IUser[] = [
 ];
 
 export function UsersPage({ }: UsersPageProps) {
+  const { unitOptions } = useUnitFilterOptions();
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
   const [openEditUserModal, setOpenEditUserModal] = React.useState(false);
@@ -72,7 +74,7 @@ export function UsersPage({ }: UsersPageProps) {
   } = useForm<{ userSearch: string; unidade: string; status: string; }>({
     defaultValues: {
       userSearch: "",
-      unidade: mockUnidades[0].value,
+      unidade: "all",
       status: mockStatuses[0].value,
     },
   });
@@ -146,7 +148,7 @@ export function UsersPage({ }: UsersPageProps) {
           />
 
           <Select
-            options={mockUnidades}
+            options={unitOptions}
             register={register("unidade")}
             formControlSx={{ maxWidth: "250px" }}
           />

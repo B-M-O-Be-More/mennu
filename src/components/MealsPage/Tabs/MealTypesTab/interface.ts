@@ -1,2 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-export interface MealTypesTabProps { }
+import { AlertColor } from "@mui/material";
+
+export interface MealTypesTabProps {
+	refreshKey?: number;
+	onNotify?: (message: string, severity?: AlertColor) => void;
+}

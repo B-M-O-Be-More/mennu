@@ -11,15 +11,17 @@ import { MenusTabProps } from "./";
 import { IMenu } from "@/Interfaces/Menu/menu";
 import MenuItemCard from "./MenuItemCard";
 import { menuColumns } from "@/data/tableColumns";
-import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
+import { mockTiposCardapio } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import { mockMenus } from "@/data/menus";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 import { ActionModal } from "@/components/Modals/ActionModal/component";
 import { formatDate } from "@/utils/formatDate";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 
 export function MenusTab({ }: MenusTabProps) {
   const theme = useTheme();
+  const { unitOptions } = useUnitFilterOptions();
 
   const [openDeleteMenuModal, setOpenDeleteMenuModal] = React.useState(false);
   const [openViewMenuModal, setOpenViewMenuModal] = React.useState(false);
@@ -31,7 +33,7 @@ export function MenusTab({ }: MenusTabProps) {
   } = useForm<{ menuSearch: string; unidade: string; tipos: string }>({
     defaultValues: {
       menuSearch: "",
-      unidade: mockUnidades[0].value,
+      unidade: "all",
       tipos: mockTiposCardapio[0].value,
     },
   });
@@ -60,7 +62,7 @@ export function MenusTab({ }: MenusTabProps) {
             register={register("menuSearch")}
           />
           <Select
-            options={mockUnidades}
+            options={unitOptions}
             register={register("unidade")}
             formControlSx={{ maxWidth: "250px" }}
           />

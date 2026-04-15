@@ -16,5 +16,7 @@ export interface InputProps {
   multiline?: boolean;
   minRows?: number;
   disabled?: boolean;
+  value?: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   mask?: string
 }

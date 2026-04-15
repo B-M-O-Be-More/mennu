@@ -34,7 +34,7 @@ export default function SelectG({
           render={({ field }) => {
             const currentValue = field.value ?? "";
             const hasOption = options.some(
-              (opt: { label: string; value: string }) =>
+              (opt: { label: string; value: string; disabled?: boolean }) =>
                 String(opt.value) === String(currentValue),
             );
 
@@ -53,8 +53,12 @@ export default function SelectG({
                 height: "100%",
                 ...selectSx,
               }}>
-              {options.map((opt: { label: string; value: string }) => (
-                <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12 }}>
+              {options.map((opt: { label: string; value: string; disabled?: boolean }, idx: number) => (
+                <MenuItem
+                  key={`${opt.value}-${idx}`}
+                  value={opt.value}
+                  disabled={Boolean(opt.disabled)}
+                  sx={{ fontSize: 12 }}>
                   {opt.label}
                 </MenuItem>
               ))}
@@ -77,8 +81,12 @@ export default function SelectG({
             ...selectSx
           }}
         >
-          {options.map((opt: { label: string; value: string }) => (
-            <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 12 }}>
+          {options.map((opt: { label: string; value: string; disabled?: boolean }, idx: number) => (
+            <MenuItem
+              key={`${opt.value}-${idx}`}
+              value={opt.value}
+              disabled={Boolean(opt.disabled)}
+              sx={{ fontSize: 12 }}>
               {opt.label}
             </MenuItem>
           ))}

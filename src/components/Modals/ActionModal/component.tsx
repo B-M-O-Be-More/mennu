@@ -13,6 +13,20 @@ export function ActionModal({
   onCancel
 }: ActionModalProps) {
   const theme = useTheme();
+  const confirmButtonBgColor =
+    color === "primary"
+      ? theme.palette.primary.main
+      : theme.palette[color].contrastText;
+
+  const confirmButtonHoverColor =
+    color === "primary"
+      ? theme.palette.primary.contrastText
+      : theme.palette.text.primary;
+
+  const confirmButtonHoverBgColor =
+    color === "primary"
+      ? theme.palette.primary.dark
+      : theme.palette[color].contrastText;
 
   return (
     <Dialog
@@ -72,8 +86,11 @@ export function ActionModal({
           sx={{
             flex: 1,
             transition: "all 0.2s ease-in-out",
-            "&:hover": { color: "text.primary" },
-            bgcolor: theme.palette[color].contrastText,
+            "&:hover": {
+              color: confirmButtonHoverColor,
+              bgcolor: confirmButtonHoverBgColor,
+            },
+            bgcolor: confirmButtonBgColor,
             color: theme.palette.primary.contrastText,
           }}
           onClick={onConfirm}

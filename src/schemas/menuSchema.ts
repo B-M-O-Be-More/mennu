@@ -1,5 +1,4 @@
 import { mockTiposRefeicao, mockStatuses, mockTiposCardapio, mockUnidades } from "@/data/menuItems";
-import { mockMenuTypes, mockUsuarios } from "@/data/menus";
 import * as yup from "yup";
 import { Dayjs } from "dayjs";
 
@@ -100,12 +99,12 @@ export const createManualRegisterSchema = yup.object({
   usuario: yup
     .string()
     .required("Usuário é obrigatório")
-    .oneOf(mockUsuarios.slice(1).map(u => u.value), "Usuário inválido"),
+    .notOneOf(["__select__"], "Usuário inválido"),
 
   menu: yup
     .string()
     .required("Cardápio é obrigatório")
-    .oneOf(mockMenuTypes.slice(1).map(m => m.value), "Cardápio inválido"),
+    .notOneOf(["__select__"], "Cardápio inválido"),
 
   motivo: yup
     .string()

@@ -156,6 +156,20 @@ const baseTheme = createTheme({
 
 export const theme = createTheme(baseTheme, {
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          fontSize: "14px",
+          WebkitFontSmoothing: "antialiased",
+          MozOsxFontSmoothing: "grayscale",
+        },
+        body: {
+          fontFamily: typography.fontFamily,
+          backgroundColor: palette.background.default,
+          color: palette.text.primary,
+        },
+      },
+    },
     MuiPickersOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
@@ -183,9 +197,9 @@ export const theme = createTheme(baseTheme, {
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
-          padding: ".8rem 1.5rem",
+          padding: ".7rem 1.25rem",
           transition: "0.2s ease",
-          borderRadius: "1rem",
+          borderRadius: ".875rem",
           border: "0px solid",
           "&:hover": {
             backgroundColor: baseTheme.palette.primary.dark,
@@ -203,9 +217,9 @@ export const theme = createTheme(baseTheme, {
           fontWeight: 500,
           fontFamily: typography.fontFamily,
           height: "fit-content",
-          padding: ".8rem 1.5rem",
+          padding: ".7rem 1.25rem",
           transition: "0.2s ease",
-          borderRadius: "1rem",
+          borderRadius: ".875rem",
           border: "0px solid",
           outlineOffset: "0px",
           outline: "1px solid",

@@ -2,6 +2,7 @@
 
 import { Button, Stack } from "@mui/material";
 import React from "react";
+import { AlertColor } from "@mui/material";
 
 import PageHeader from "../PageHeader";
 import {
@@ -17,12 +18,37 @@ import MealTypesTab from "./Tabs/MealTypesTab";
 import MealRulesTab from "./Tabs/MealRulesTab";
 import MealRecordsTab from "./Tabs/MealRecordsTab";
 import NewMealRecordModal from "../Modals/NewMealRecordModal";
+import Toast from "../Toast";
 
 export function MealsPage() {
   const [activeTab, setActiveTab] = React.useState(0);
   const [openNewTypeModal, setOpenNewTypeModal] = React.useState(false);
   const [openManualRecordModal, setOpenManualRecordModal] =
     React.useState(false);
+  const [mealRecordsRefreshKey, setMealRecordsRefreshKey] = React.useState(0);
+  const [mealTypesRefreshKey, setMealTypesRefreshKey] = React.useState(0);
+  const [toast, setToast] = React.useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+    duration: number;
+  }>({
+    open: false,
+    message: "",
+    severity: "info",
+    duration: 3000,
+  });
+
+  const handleNotify = React.useCallback(
+    (message: string, severity: AlertColor = "info", duration = 3000) => {
+      setToast({ open: true, message, severity, duration });
+    },
+    [],
+  );
+
+  const closeToast = React.useCallback(() => {
+    setToast((prev) => ({ ...prev, open: false }));
+  }, []);
 
   const tabs = [
     { label: "Registros", icon: <PaperIcon height={24} /> },
@@ -65,11 +91,15 @@ export function MealsPage() {
       <NewMealRecordModal
         isOpen={openManualRecordModal}
         onClose={() => setOpenManualRecordModal(false)}
+        onSuccess={() => setMealRecordsRefreshKey((prev) => prev + 1)}
+        onNotify={handleNotify}
       />
 
       <NewMealTypeModal
         open={openNewTypeModal}
         onClose={() => setOpenNewTypeModal(false)}
+        onSuccess={() => setMealTypesRefreshKey((prev) => prev + 1)}
+        onNotify={handleNotify}
       />
 
       <Stack direction={"row"} gap={2}>
@@ -85,9 +115,19 @@ export function MealsPage() {
         ))}
       </Stack>
 
-      {activeTab === 0 && <MealRecordsTab />}
-      {activeTab === 1 && <MealTypesTab />}
+      {activeTab === 0 && <MealRecordsTab refreshKey={mealRecordsRefreshKey} />}
+      {activeTab === 1 && (
+        <MealTypesTab refreshKey={mealTypesRefreshKey} onNotify={handleNotify} />
+      )}
       {activeTab === 2 && <MealRulesTab />}
+
+      <Toast
+        open={toast.open}
+        message={toast.message}
+        severity={toast.severity}
+        autoHideDuration={toast.duration}
+        onClose={closeToast}
+      />
     </Stack>
   );
 }

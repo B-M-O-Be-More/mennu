@@ -16,7 +16,6 @@ export default function Input({
   optional = true,
   placeholder = "Buscar...",
   sx,
-  labelSx,
   icon,
   type = "text",
   error,
@@ -25,11 +24,32 @@ export default function Input({
   minRows = 3,
   description,
   disabled = false,
+  value,
+  onChange,
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
+
+  const startAdornment =
+    type === "password" ? (
+      <InputAdornment position="start">
+        <IconButton
+          onClick={() => setShowPassword((prev) => !prev)}
+          edge="start"
+          size="small"
+          sx={{ color: "text.secondary" }}>
+          {showPassword ? (
+            <EyeIcon />
+          ) : (
+            <LockIcon width={18} height={18} />
+          )}
+        </IconButton>
+      </InputAdornment>
+    ) : icon ? (
+      <InputAdornment position="start">{icon}</InputAdornment>
+    ) : undefined;
 
   return (
     <FormControl fullWidth>
@@ -66,30 +86,14 @@ export default function Input({
         type={inputType}
         placeholder={placeholder}
         {...register}
+        value={value}
+        onChange={onChange}
         multiline={multiline}
         minRows={multiline ? minRows : undefined}
         slotProps={{
           input: {
             disabled,
-            startAdornment: (
-              <InputAdornment position="start">
-                {type === "password" ? (
-                  <IconButton
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    edge="start"
-                    size="small"
-                    sx={{ color: "text.secondary" }}>
-                    {showPassword ? (
-                      <EyeIcon />
-                    ) : (
-                      <LockIcon width={18} height={18} />
-                    )}
-                  </IconButton>
-                ) : (
-                  icon
-                )}
-              </InputAdornment>
-            ),
+            startAdornment,
           },
         }}
         sx={{

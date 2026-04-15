@@ -9,11 +9,12 @@ import { useForm } from "react-hook-form";
 import React from "react";
 import { ReportsTabProps } from ".";
 import { reportsMenuColumns } from "@/data/tableColumns";
-import { mockTiposCardapio, mockUnidades } from "@/data/menuItems";
+import { mockTiposCardapio } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
 import TabButton from "@/components/TabButton";
 import BarChart from "@/components/Charts/BarChart";
 import { mockReportsMenu } from "@/data/menus";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 
 const tabs = [
   { label: "Visão Geral", icon: <TwistedArrowIcon height={24} /> },
@@ -22,6 +23,7 @@ const tabs = [
 
 export function ReportsTab({ }: ReportsTabProps) {
   const theme = useTheme();
+  const { unitOptions } = useUnitFilterOptions();
 
   const [activeTab, setActiveTab] = React.useState(0);
 
@@ -31,7 +33,7 @@ export function ReportsTab({ }: ReportsTabProps) {
   } = useForm<{ menuSearch: string; unidade: string; tipos: string }>({
     defaultValues: {
       menuSearch: "",
-      unidade: mockUnidades[0].value,
+      unidade: "all",
       tipos: mockTiposCardapio[0].value,
     },
   });
@@ -63,6 +65,12 @@ export function ReportsTab({ }: ReportsTabProps) {
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
             register={register("menuSearch")}
+          />
+
+          <Select
+            options={unitOptions}
+            register={register("unidade")}
+            formControlSx={{ maxWidth: "250px" }}
           />
 
           <Select
