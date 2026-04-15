@@ -2,8 +2,16 @@
 
 import { Stack } from "@mui/material";
 import { FormResetPassword } from "@/components/Forms/FormResetPassword";
+import { useSolicitarRecuperacao } from "@/hooks/usePasswordReset/hook";
 
 function ResetPasswordPage() {
+    const { mutateAsync: solicitarRecuperacao } = useSolicitarRecuperacao();
+
+    const handleSubmit = async (email: string) => {
+      // Chama o hook do React Query que fará a integração com a rota POST configurada
+      await solicitarRecuperacao({ email });
+    };
+
     return( 
     <Stack  width={"full"}
       height="100vh"
@@ -11,7 +19,7 @@ function ResetPasswordPage() {
       justifyContent="center"
       alignItems="center"
       padding={"10px"}>
-        <FormResetPassword/>     
+        <FormResetPassword onSubmit={handleSubmit} />     
     </Stack>
     );
 }

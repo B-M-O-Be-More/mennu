@@ -7,8 +7,8 @@ import {
   Stack,
 } from "@mui/material";
 import React from "react";
-import { InputProps } from "./";
-import { EyeIcon, LockIcon } from "@/components/Icons";
+import { InputProps } from "./"; // Importação da sua interface (pode ser "./interface" se preferir)
+import { EyeIcon, EyeOffIcon, LockIcon } from "@/components/Icons";
 
 export default function Input({
   label,
@@ -32,20 +32,29 @@ export default function Input({
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
 
+  const endAdornment =
+    type === "password" ? (
+      <InputAdornment position="end">
+        <IconButton
+          onClick={() => setShowPassword((prev) => !prev)}
+          edge="end"
+          size="small"
+          tabIndex={-1}
+          sx={{ color: "text.secondary" }}
+        >
+          {showPassword ? (
+            <EyeOffIcon width={18} height={18} color="#6B7280" />
+          ) : (
+            <EyeIcon width={18} height={18} color="#6B7280" />
+          )}
+        </IconButton>
+      </InputAdornment>
+    ) : undefined;
+
   const startAdornment =
     type === "password" ? (
       <InputAdornment position="start">
-        <IconButton
-          onClick={() => setShowPassword((prev) => !prev)}
-          edge="start"
-          size="small"
-          sx={{ color: "text.secondary" }}>
-          {showPassword ? (
-            <EyeIcon />
-          ) : (
-            <LockIcon width={18} height={18} />
-          )}
-        </IconButton>
+        <LockIcon width={18} height={18} />
       </InputAdornment>
     ) : icon ? (
       <InputAdornment position="start">{icon}</InputAdornment>
@@ -62,19 +71,22 @@ export default function Input({
               width: 18,
               height: 20,
             },
-          }}>
+          }}
+        >
           {labelIcon}
           <Typography
             variant="body2"
             mb={1}
             color="text.label"
-            fontWeight={400}>
+            fontWeight={400}
+          >
             {label}{" "}
             <Typography
               variant="body2"
               component="span"
               color={!optional ? "primary.main" : "transparent"}
-              sx={{ transition: "all 0.2s ease-in-out" }}>
+              sx={{ transition: "all 0.2s ease-in-out" }}
+            >
               *
             </Typography>
           </Typography>
@@ -94,6 +106,7 @@ export default function Input({
           input: {
             disabled,
             startAdornment,
+            endAdornment,
           },
         }}
         sx={{
@@ -111,10 +124,15 @@ export default function Input({
             "&.Mui-focused fieldset": {
               borderColor: "primary.main",
             },
-            "&.Mui-focused .MuiInputAdornment-root svg": {
+            "&.Mui-focused .MuiInputAdornment-positionStart svg": {
               color: "primary.main",
               transition: "all 0.2s ease",
               transform: "scale(1.2) rotate(12deg)",
+            },
+            // Hack para remover o fundo cinza do Autofill do Navegador
+            "& input:-webkit-autofill": {
+              transition: "background-color 5000s ease-in-out 0s",
+              WebkitTextFillColor: "inherit !important",
             },
           },
           "& .MuiFormHelperText-root.Mui-error": {
@@ -129,7 +147,8 @@ export default function Input({
         variant="caption"
         fontWeight={400}
         color="text.secondary"
-        mt={1}>
+        mt={1}
+      >
         {description}
       </Typography>
     </FormControl>
