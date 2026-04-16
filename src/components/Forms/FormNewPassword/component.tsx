@@ -2,18 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+
+import Input from '@/components/FormControl/Input'; 
 
 interface PasswordRequirement {
   label: string;
@@ -37,15 +31,20 @@ interface Props {
 export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [showNova, setShowNova] = useState(false);
-  const [showConfirmar, setShowConfirmar] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Validações
   const todasRegrasAtendidas = requirements.every((req) => req.test(novaSenha));
   const senhasCoincidem = novaSenha === confirmarSenha && novaSenha.length > 0;
 
-  const novaSenhaError = submitted && !todasRegrasAtendidas;
-  const confirmarSenhaError = submitted && !senhasCoincidem;
+  // Mensagens de Erro passadas direto para o Input
+  const novaSenhaError = submitted && !todasRegrasAtendidas 
+    ? "A senha não atende a todos os requisitos de segurança." 
+    : undefined;
+    
+  const confirmarSenhaError = submitted && !senhasCoincidem 
+    ? "As senhas não coincidem." 
+    : undefined;
 
   const handleSubmit = async () => {
     setSubmitted(true);
@@ -76,7 +75,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         </Link>
       </Box>
 
-      {/* Lock icon */}
+      {/* Lock icon principal */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <Box
           sx={{
@@ -109,79 +108,30 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         Criando uma nova senha para <strong>{emailMascarado}</strong>
       </Typography>
 
-      {/* Nova Senha */}
-      <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.75, color: '#111827' }}>
-        Nova Senha
-      </Typography>
-      <TextField
-        fullWidth
-        type={showNova ? 'text' : 'password'}
-        value={novaSenha}
-        onChange={(e) => setNovaSenha(e.target.value)}
-        error={novaSenhaError}
-        placeholder="Nova senha"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={() => setShowNova((v) => !v)} edge="end" size="small">
-                {showNova ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        sx={{
-          mb: novaSenhaError ? 0.5 : 2,
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            '& fieldset': { borderColor: novaSenhaError ? '#D63B0F' : '#E5E7EB' },
-            '&:hover fieldset': { borderColor: novaSenhaError ? '#D63B0F' : '#9CA3AF' },
-            '&.Mui-focused fieldset': { borderColor: novaSenhaError ? '#D63B0F' : '#7C3AED' },
-          },
-        }}
-      />
+      {/* Campos refatorados Input customizado */}
+      <Box sx={{ mb: 2 }}>
+        <Input
+          label="Nova Senha"
+          type="password"
+          placeholder="Nova senha"
+          value={novaSenha}
+          onChange={(e) => setNovaSenha(e.target.value)}
+          error={novaSenhaError}
+          optional={false}
+        />
+      </Box>
 
-      {novaSenhaError && (
-        <Typography variant="caption" sx={{ color: '#D63B0F', mb: 2, display: 'block' }}>
-          A senha não atende a todos os requisitos de segurança.
-        </Typography>
-      )}
-
-      {/* Confirmar Nova Senha */}
-      <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.75, color: '#111827' }}>
-        Confirmar Nova Senha
-      </Typography>
-      <TextField
-        fullWidth
-        type={showConfirmar ? 'text' : 'password'}
-        value={confirmarSenha}
-        onChange={(e) => setConfirmarSenha(e.target.value)}
-        error={confirmarSenhaError}
-        placeholder="Confirmar nova senha"
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={() => setShowConfirmar((v) => !v)} edge="end" size="small">
-                {showConfirmar ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-        sx={{
-          mb: confirmarSenhaError ? 0.5 : 2,
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            '& fieldset': { borderColor: confirmarSenhaError ? '#D63B0F' : '#E5E7EB' },
-            '&:hover fieldset': { borderColor: confirmarSenhaError ? '#D63B0F' : '#9CA3AF' },
-            '&.Mui-focused fieldset': { borderColor: confirmarSenhaError ? '#D63B0F' : '#7C3AED' },
-          },
-        }}
-      />
-
-      {confirmarSenhaError && (
-        <Typography variant="caption" sx={{ color: '#D63B0F', mb: 2, display: 'block' }}>
-          As senhas não coincidem
-        </Typography>
-      )}
+      <Box sx={{ mb: 3 }}>
+        <Input
+          label="Confirmar Nova Senha"
+          type="password"
+          placeholder="Confirmar nova senha"
+          value={confirmarSenha}
+          onChange={(e) => setConfirmarSenha(e.target.value)}
+          error={confirmarSenhaError}
+          optional={false}
+        />
+      </Box>
 
       {/* Password requirements box */}
       <Box

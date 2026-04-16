@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation'; 
 import { EsqueciSenhaIn, MessageSchema, RedefinirSenhaIn, ValidarTokenOut } from '@/Interfaces/Auth/passwordReset';
 
 export function useSolicitarRecuperacao() {
@@ -89,7 +89,6 @@ export function useValidarToken() {
 
 // 3. Hook para Redefinir a Senha
 export function useRedefinirSenha() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +109,6 @@ export function useRedefinirSenha() {
         throw new Error(body.detail || 'Erro ao redefinir senha');
       }
 
-      router.push('/'); 
       return body as MessageSchema;
     } catch (err: unknown) { 
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao redefinir senha';
@@ -121,7 +119,7 @@ export function useRedefinirSenha() {
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, []); 
 
   return { mutateAsync, isLoading, error };
 }

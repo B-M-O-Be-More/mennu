@@ -7,7 +7,7 @@ import {
   Stack,
 } from "@mui/material";
 import React from "react";
-import { InputProps } from "./"; // Importação da sua interface (pode ser "./interface" se preferir)
+import { InputProps } from "./"; 
 import { EyeIcon, EyeOffIcon, LockIcon } from "@/components/Icons";
 
 export default function Input({
@@ -129,7 +129,7 @@ export default function Input({
               transition: "all 0.2s ease",
               transform: "scale(1.2) rotate(12deg)",
             },
-            // Hack para remover o fundo cinza do Autofill do Navegador
+            
             "& input:-webkit-autofill": {
               transition: "background-color 5000s ease-in-out 0s",
               WebkitTextFillColor: "inherit !important",
