@@ -114,7 +114,6 @@ export function useRedefinirSenha() {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao redefinir senha';
       
       setError(errorMessage);
-      alert(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
