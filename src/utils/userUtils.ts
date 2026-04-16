@@ -1,4 +1,19 @@
 import { IUser } from "@/Interfaces/User/user";
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+
+const ADMIN_MODULES = ["Configurações", "Permissões", "Perfil de Acesso"];
+
+/**
+ * Returns true if the user has access to the admin section.
+ * Checks tipo_usuario first, then falls back to module-level permissions.
+ */
+export function hasAdminAccess(user: IUser): boolean {
+  if (user.tipo_usuario === "admin") return true;
+  if (!user.permissoes?.length) return false;
+  return user.permissoes.some(
+    (p) => ADMIN_MODULES.includes(p.modulo) && p.visualizar
+  );
+}
 
 /**
  * Initial empty user state
@@ -21,6 +36,7 @@ export function initialUser(): IUser {
       expirado_em: "",
     },
     ultima_refeicao: null,
+    permissoes: [],
   };
 }
 
@@ -61,5 +77,8 @@ export function normalizeUserData(data: unknown): IUser {
       expirado_em: parsed.token_access?.expirado_em ?? "",
     },
     ultima_refeicao: parsed.ultima_refeicao ?? null,
+    permissoes: Array.isArray(parsed.permissoes)
+      ? (parsed.permissoes as IProfilePermissionsItems[])
+      : [],
   };
 }

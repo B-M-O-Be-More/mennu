@@ -6,6 +6,7 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
 import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
+import { hasAdminAccess } from "@/utils/userUtils";
 
 export default function MainLayout({
   children,
@@ -86,7 +87,8 @@ export default function MainLayout({
           user={sidebarUser}
           onLogout={logout}
           logoutIcon={<SairIcon />}
-          showAdminSection
+          showAdminSection={hasAdminAccess(user)}
+          logoSrc="/assets/logo.svg"
           activePath={pathname}
         />
       )}

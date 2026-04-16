@@ -10,5 +10,6 @@ export interface SidebarProps {
   logoutIcon?: ReactNode;
   showAdminSection?: boolean;
   activePath?: string;
+  logoSrc?: string;
 }
 

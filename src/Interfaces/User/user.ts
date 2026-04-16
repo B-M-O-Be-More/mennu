@@ -1,3 +1,5 @@
+import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+
 export interface IUser {
   id: number;
   nome: string;
@@ -15,4 +17,5 @@ export interface IUser {
     expirado_em: string;
   };
   ultima_refeicao: string | null;
+  permissoes?: IProfilePermissionsItems[];
 }
