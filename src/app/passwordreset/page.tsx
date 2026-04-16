@@ -8,7 +8,7 @@ function ResetPasswordPage() {
     const { mutateAsync: solicitarRecuperacao } = useSolicitarRecuperacao();
 
     const handleSubmit = async (email: string) => {
-      // Chama o hook do React Query que fará a integração com a rota POST configurada
+      
       await solicitarRecuperacao({ email });
     };
 
