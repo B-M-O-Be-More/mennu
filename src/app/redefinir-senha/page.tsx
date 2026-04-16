@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Box, Typography, CircularProgress, Button, Card, CardContent } from "@mui/material";
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'; // Adicionado ícone de sucesso
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'; 
 import { useRouter } from "next/navigation";
-import Link from "next/link"; // Necessário para o botão de voltar
+import Link from "next/link"; 
 
-// Hooks
+
 import { useValidarToken, useRedefinirSenha } from "@/hooks/usePasswordReset/hook";
-// Componente do Formulário
+
 import { FormNewPassword } from "@/components/Forms/FormNewPassword/component";
 
 export default function RedefinirSenhaPage() {
@@ -38,7 +38,6 @@ export default function RedefinirSenhaPage() {
     }
   };
 
-  // 1. Estado de Carregamento Inicial (Validando Token)
   if (isValidating) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: '#D63B0F', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
@@ -50,7 +49,6 @@ export default function RedefinirSenhaPage() {
     );
   }
 
-  // 2. Estado de Erro (Token Inválido ou Expirado)
   if (error || !data?.valido) {
     return (
       <Box sx={{ minHeight: '100vh', bgcolor: '#D63B0F', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
@@ -71,13 +69,13 @@ export default function RedefinirSenhaPage() {
     );
   }
 
-  // 3. SE SUCESSO = TRUE, RENDERIZA O SEU CARD DE SUCESSO
+ 
   if (sucesso) {
     return (
       <Box
         sx={{
           minHeight: '100vh',
-          backgroundColor: '#D63B0F', // Ajustado para combinar com a cor do projeto
+          backgroundColor: '#D63B0F', 
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -92,7 +90,7 @@ export default function RedefinirSenhaPage() {
             borderRadius: 4,
             px: 2,
             py: 1,
-            boxShadow: "0 2px 10px rgba(0,0,0,0.08)", // Sombra para combinar com o resto do design
+            boxShadow: "0 2px 10px rgba(0,0,0,0.08)", 
           }}
         >
           <CardContent
@@ -106,7 +104,7 @@ export default function RedefinirSenhaPage() {
               pb: 4,
             }}
           >
-            {/* Success icon with light green background */}
+            {}
             <Box
               sx={{
                 width: 56,
@@ -121,7 +119,7 @@ export default function RedefinirSenhaPage() {
               <CheckCircleOutlineIcon sx={{ color: '#2ECC71', fontSize: 32 }} />
             </Box>
 
-            {/* Heading */}
+            {}
             <Typography
               variant="h5"
               fontWeight={700}
@@ -131,15 +129,15 @@ export default function RedefinirSenhaPage() {
               Senha redefinida com sucesso
             </Typography>
 
-            {/* Subtitle */}
+            {}
             <Typography variant="body2" color="text.secondary">
               Já pode entrar novamente
             </Typography>
 
-            {/* CTA Button */}
+            {}
             <Button
               component={Link}
-              href="/" // Link apontando para a raiz do login
+              href="/" 
               variant="contained"
               fullWidth
               sx={{
@@ -165,7 +163,6 @@ export default function RedefinirSenhaPage() {
     );
   }
 
-  // 4. RENDERIZAÇÃO PADRÃO (FORMULÁRIO DE NOVA SENHA)
   return (
     <Box 
       sx={{
