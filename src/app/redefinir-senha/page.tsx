@@ -131,7 +131,7 @@ export default function RedefinirSenhaPage() {
 
             {}
             <Typography variant="body2" color="text.secondary">
-              Já pode entrar novamente
+              Você já pode entrar novamente.
             </Typography>
 
             {}
