@@ -27,11 +27,13 @@ async function safeJson(response: Response) {
       `Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`,
     );
   }
-
   return response.json();
 }
 
-export async function GET(req: NextRequest) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const headers = await getHeaders();
   if (!headers) {
     return NextResponse.json(
@@ -40,15 +42,15 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/terminais/`);
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.append(key, value);
-  });
+  const { id } = await params;
 
   try {
-    const response = await fetch(url.toString(), { headers });
+    const body = await req.json();
+    const response = await fetch(`${baseUrl}/terminais/${id}/`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(body),
+    });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {
@@ -56,7 +58,10 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const headers = await getHeaders();
   if (!headers) {
     return NextResponse.json(
@@ -65,12 +70,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { id } = await params;
+
   try {
-    const body = await req.json();
-    const response = await fetch(`${baseUrl}/terminais/`, {
-      method: "POST",
+    const response = await fetch(`${baseUrl}/terminais/${id}/toggle-status/`, {
+      method: "PATCH",
       headers,
-      body: JSON.stringify(body),
     });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
