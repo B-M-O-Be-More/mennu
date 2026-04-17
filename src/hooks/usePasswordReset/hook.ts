@@ -55,7 +55,8 @@ export function useValidarToken() {
 
     const validate = async () => {
       try {
-        const response = await fetch(`/api/auth/validar-token-redefinicao?token=${token}`);
+        const queryString = new URLSearchParams({ token }).toString();
+        const response = await fetch(`/api/auth/validar-token-redefinicao?${queryString}`);
         const body = await response.json();
 
         if (!response.ok) {
@@ -87,7 +88,7 @@ export function useValidarToken() {
   return { data, isLoading, error, token };
 }
 
-// 3. Hook para Redefinir a Senha
+
 export function useRedefinirSenha() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
