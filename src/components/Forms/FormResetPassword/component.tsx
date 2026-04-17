@@ -18,7 +18,7 @@ import Input from "@/components/FormControl/Input";
 export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) {
   const router = useRouter();
 
-  // Estado que controla se o e-mail foi enviado com sucesso
+  
   const [emailEnviado, setEmailEnviado] = useState<string | null>(null);
 
   const {
@@ -32,14 +32,15 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
 
   const handleFormSubmit = async (data: ResetPasswordSchemaFormData) => {
     try {
+
       if (onSubmit) {
         await onSubmit(data.email);
+        setEmailEnviado(data.email);
       }
-      
-      setEmailEnviado(data.email);
     } catch (error) {
       console.error(error);
       
+      setEmailEnviado(null);
     }
   };
 
@@ -57,7 +58,7 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
       }}
       gap={2}
     >
-      {/* Botão de Voltar permanece igual para ambas as telas */}
+      {}
       <Button
         onClick={() => {
           if (onBack) return onBack();
@@ -83,7 +84,7 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
         Voltar ao login
       </Button>
 
-      {/* RENDERIZAÇÃO CONDICIONAL: Se NÃO enviou o e-mail, mostra o Formulário */}
+      {}
       {!emailEnviado ? (
         <>
           <IconBox
@@ -149,7 +150,7 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
           </Button>
         </>
       ) : (
-        /* RENDERIZAÇÃO CONDICIONAL: Se JÁ enviou o e-mail, mostra o Card de Confirmação */
+        
         <Stack alignItems="center" gap={2} width="100%" mt={1}>
           <IconBox
             icon={<MarkEmailReadOutlined sx={{ color: "#2E7D32", width: 48, height: 48 }} />}
@@ -191,7 +192,6 @@ export function FormResetPassword({ onBack, onSubmit }: FormResetPasswordProps) 
             </Typography>
             . Por favor, verifique sua caixa de entrada ou a pasta de spam.
           </Typography>
-
         </Stack>
       )}
     </Stack>
