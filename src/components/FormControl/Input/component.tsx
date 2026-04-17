@@ -1,3 +1,5 @@
+"use client";
+
 import {
   FormControl,
   Typography,
@@ -7,7 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 import React from "react";
-import { InputProps } from "./"; 
+import { InputProps } from "./interface"; 
 import { EyeIcon, EyeOffIcon, LockIcon } from "@/components/Icons";
 
 export default function Input({
@@ -32,14 +34,21 @@ export default function Input({
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
 
+  
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   const endAdornment =
     type === "password" ? (
       <InputAdornment position="end">
         <IconButton
+          aria-label={showPassword ? "Ocultar senha" : "Exibir senha"}
           onClick={() => setShowPassword((prev) => !prev)}
+          onMouseDown={handleMouseDownPassword}
           edge="end"
           size="small"
-          tabIndex={-1}
+          
           sx={{ color: "text.secondary" }}
         >
           {showPassword ? (
