@@ -1,2 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-export interface FormNewPasswordProps {}
+export interface FormNewPasswordProps {
+  emailMascarado: string;
+  onSubmit: (nova: string, confirma: string) => Promise<void>;
+  loading: boolean;
+}

@@ -9,20 +9,15 @@ import * as yup from 'yup';
 
 import Input from '@/components/FormControl/Input';
 import { newPasswordSchema } from '@/schemas/resetSchema';
+import { FormNewPasswordProps } from './interface';
 
-interface Props {
-  emailMascarado: string;
-  onSubmit: (nova: string, confirma: string) => Promise<void>;
-  loading: boolean;
-}
-
-export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
+export function FormNewPassword({ emailMascarado, onSubmit, loading }: FormNewPasswordProps) {
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  
+ 
   const requirements = useMemo(() => [
     { label: 'Mínimo de 8 caracteres', test: (v: string) => v.length >= 8 },
     { label: 'Pelo menos uma letra maiúscula', test: (v: string) => /[A-Z]/.test(v) },
