@@ -28,7 +28,6 @@ export function useSolicitarRecuperacao() {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao solicitar recuperação';
       
       setError(errorMessage);
-      alert(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
