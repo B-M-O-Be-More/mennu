@@ -1,28 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Box, Typography, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import * as yup from 'yup';
 
 import Input from '@/components/FormControl/Input';
-
-interface PasswordRequirement {
-  label: string;
-  test: (value: string) => boolean;
-}
-
-const requirements: PasswordRequirement[] = [
-  { label: 'Mínimo de 8 caracteres', test: (v) => v.length >= 8 },
-  { label: 'Pelo menos uma letra maiúscula', test: (v) => /[A-Z]/.test(v) },
-  { label: 'Pelo menos uma letra minúscula', test: (v) => /[a-z]/.test(v) },
-  { label: 'Pelo menos um número', test: (v) => /[0-9]/.test(v) },
-  {
-    label: 'Pelo menos um caractere especial (!@#$%^&*)',
-    test: (v) => /[\!\@\#\$\%\^\&\*\(\)\_\+\-\=\[\]\{\}\;\:\'\"\,\.\<\>\/\?\|\\`\~]/.test(v),
-  },
-];
+import { newPasswordSchema } from '@/schemas/resetSchema';
 
 interface Props {
   emailMascarado: string;
@@ -34,26 +20,41 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-
-  const todasRegrasAtendidas = requirements.every((req) => req.test(novaSenha));
-  const senhasCoincidem = novaSenha === confirmarSenha && novaSenha.length > 0;
-
-
-  const novaSenhaError =
-    submitted && !todasRegrasAtendidas
-      ? 'A senha não atende a todos os requisitos de segurança.'
-      : undefined;
-
-  const confirmarSenhaError =
-    submitted && !senhasCoincidem ? 'As senhas não coincidem.' : undefined;
+  
+  const requirements = useMemo(() => [
+    { label: 'Mínimo de 8 caracteres', test: (v: string) => v.length >= 8 },
+    { label: 'Pelo menos uma letra maiúscula', test: (v: string) => /[A-Z]/.test(v) },
+    { label: 'Pelo menos uma letra minúscula', test: (v: string) => /[a-z]/.test(v) },
+    { label: 'Pelo menos um número', test: (v: string) => /[0-9]/.test(v) },
+    {
+      label: 'Pelo menos um caractere especial (!@#$%^&*)',
+      test: (v: string) => /[\!\@\#\$\%\^\&\*\(\)\_\+\-\=\[\]\{\}\;\:\'\"\,\.\<\>\/\?\|\\`\~]/.test(v),
+    },
+  ], []);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault(); // Impede o recarregamento da página
+    event.preventDefault();
     setSubmitted(true);
-    
-    if (todasRegrasAtendidas && senhasCoincidem) {
+    setErrors({});
+
+    try {
+      
+      await newPasswordSchema.validate(
+        { nova_senha: novaSenha, confirmar_senha: confirmarSenha },
+        { abortEarly: false }
+      );
+      
       await onSubmit(novaSenha, confirmarSenha);
+    } catch (err) {
+      if (err instanceof yup.ValidationError) {
+        const validationErrors: { [key: string]: string } = {};
+        err.inner.forEach((error) => {
+          if (error.path) validationErrors[error.path] = error.message;
+        });
+        setErrors(validationErrors);
+      }
     }
   };
 
@@ -69,7 +70,6 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         maxWidth: 480,
       }}
     >
-      {}
       <Box sx={{ mb: 3 }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: 'text.primary' }}>
@@ -81,7 +81,6 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         </Link>
       </Box>
 
-      {}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <Box
           sx={{
@@ -98,7 +97,6 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         </Box>
       </Box>
 
-      {}
       <Typography
         variant="h4"
         sx={{ fontWeight: 700, textAlign: 'center', mb: 1, color: '#111827' }}
@@ -106,12 +104,10 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         Redefinir Senha
       </Typography>
 
-      {}
       <Typography variant="body2" sx={{ textAlign: 'center', color: '#6B7280', mb: 3 }}>
         Criando uma nova senha para <strong>{emailMascarado}</strong>
       </Typography>
 
-      {}
       <Box sx={{ mb: 2 }}>
         <Input
           label="Nova Senha"
@@ -119,7 +115,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
           placeholder="Nova senha"
           value={novaSenha}
           onChange={(e) => setNovaSenha(e.target.value)}
-          error={novaSenhaError}
+          error={submitted ? errors.nova_senha : undefined}
           optional={false}
         />
       </Box>
@@ -131,12 +127,11 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
           placeholder="Confirmar nova senha"
           value={confirmarSenha}
           onChange={(e) => setConfirmarSenha(e.target.value)}
-          error={confirmarSenhaError}
+          error={submitted ? errors.confirmar_senha : undefined}
           optional={false}
         />
       </Box>
 
-      {}
       <Box
         sx={{
           bgcolor: '#F9FAFB',
@@ -149,7 +144,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
           Requisitos da Senha:
         </Typography>
         {requirements.map((req) => {
-          const met = novaSenha.length > 0 && req.test(novaSenha);
+          const met = req.test(novaSenha);
           return (
             <Typography
               key={req.label}
@@ -166,7 +161,6 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         })}
       </Box>
 
-      {/* Submit button */}
       <Button
         type="submit"
         fullWidth
@@ -181,17 +175,8 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
           borderRadius: '10px',
           textTransform: 'none',
           boxShadow: 'none',
-          '&:hover': {
-            bgcolor: '#B83409',
-            boxShadow: 'none',
-          },
-          '&:active': {
-            bgcolor: '#9C2D07',
-          },
-          '&.Mui-disabled': {
-            bgcolor: '#FCA5A5',
-            color: '#fff',
-          },
+          '&:hover': { bgcolor: '#B83409', boxShadow: 'none' },
+          '&.Mui-disabled': { bgcolor: '#FCA5A5', color: '#fff' },
         }}
       >
         {loading ? 'Redefinindo...' : 'Redefinir Senha'}
