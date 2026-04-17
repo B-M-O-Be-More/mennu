@@ -235,6 +235,16 @@ const EyeIcon = ({ color = "currentColor", width = 24, height = 24, className, s
   </svg>
 );
 
+export const EyeOffIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
+  <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+    {/* Desenho do Olho Base */}
+    <path d="M2.7493 16.4645C2.63817 16.1651 2.63817 15.8358 2.7493 15.5365C3.83156 12.9123 5.66865 10.6685 8.02766 9.08968C10.3867 7.51082 13.1614 6.66797 16 6.66797C18.8386 6.66797 21.6133 7.51082 23.9723 9.08968C26.3313 10.6685 28.1684 12.9123 29.2506 15.5365C29.3617 15.8358 29.3617 16.1651 29.2506 16.4645C28.1684 19.0887 26.3313 21.3324 23.9723 22.9113C21.6133 24.4901 18.8386 25.333 16 25.333C13.1614 25.333 10.3867 24.4901 8.02766 22.9113C5.66865 21.3324 3.83156 19.0887 2.7493 16.4645Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 20C18.2091 20 20 18.2091 20 16C20 13.7909 18.2091 12 16 12C13.7909 12 12 13.7909 12 16C12 18.2091 13.7909 20 16 20Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Linha Transversal (A Tarja) */}
+    <path d="M4 4L28 28" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const ErrorOutlineIcon = ({ color = "currentColor", width = 24, height = 24, className, style }: SVGIconProps) => (
   <svg width={width} height={height} className={className} style={{ display: "block", flexShrink: 0, ...style }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
     <path d="M15.9998 29.3327C23.3636 29.3327 29.3332 23.3631 29.3332 15.9993C29.3332 8.63555 23.3636 2.66602 15.9998 2.66602C8.63604 2.66602 2.6665 8.63555 2.6665 15.9993C2.6665 23.3631 8.63604 29.3327 15.9998 29.3327Z" stroke={color} strokeWidth="2.66667" strokeLinecap="round" strokeLinejoin="round" />
