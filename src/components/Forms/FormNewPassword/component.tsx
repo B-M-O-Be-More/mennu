@@ -6,8 +6,7 @@ import { Box, Typography, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-
-import Input from '@/components/FormControl/Input'; 
+import Input from '@/components/FormControl/Input';
 
 interface PasswordRequirement {
   label: string;
@@ -19,7 +18,10 @@ const requirements: PasswordRequirement[] = [
   { label: 'Pelo menos uma letra maiúscula', test: (v) => /[A-Z]/.test(v) },
   { label: 'Pelo menos uma letra minúscula', test: (v) => /[a-z]/.test(v) },
   { label: 'Pelo menos um número', test: (v) => /[0-9]/.test(v) },
-  { label: 'Pelo menos um caractere especial (!@#$%^&*)', test: (v) => /[\!\@\#\$\%\^\&\*\(\)\_\+\-\=\[\]\{\}\;\:\'\"\,\.\<\>\/\?\|\\`\~]/.test(v) },
+  {
+    label: 'Pelo menos um caractere especial (!@#$%^&*)',
+    test: (v) => /[\!\@\#\$\%\^\&\*\(\)\_\+\-\=\[\]\{\}\;\:\'\"\,\.\<\>\/\?\|\\`\~]/.test(v),
+  },
 ];
 
 interface Props {
@@ -33,21 +35,23 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  // Validações
+
   const todasRegrasAtendidas = requirements.every((req) => req.test(novaSenha));
   const senhasCoincidem = novaSenha === confirmarSenha && novaSenha.length > 0;
 
-  // Mensagens de Erro passadas direto para o Input
-  const novaSenhaError = submitted && !todasRegrasAtendidas 
-    ? "A senha não atende a todos os requisitos de segurança." 
-    : undefined;
-    
-  const confirmarSenhaError = submitted && !senhasCoincidem 
-    ? "As senhas não coincidem." 
-    : undefined;
 
-  const handleSubmit = async () => {
+  const novaSenhaError =
+    submitted && !todasRegrasAtendidas
+      ? 'A senha não atende a todos os requisitos de segurança.'
+      : undefined;
+
+  const confirmarSenhaError =
+    submitted && !senhasCoincidem ? 'As senhas não coincidem.' : undefined;
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault(); // Impede o recarregamento da página
     setSubmitted(true);
+    
     if (todasRegrasAtendidas && senhasCoincidem) {
       await onSubmit(novaSenha, confirmarSenha);
     }
@@ -55,6 +59,8 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
 
   return (
     <Box
+      component="form"
+      onSubmit={handleSubmit}
       sx={{
         bgcolor: '#FFFFFF',
         borderRadius: '16px',
@@ -63,7 +69,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         maxWidth: 480,
       }}
     >
-      {/* Back link */}
+      {}
       <Box sx={{ mb: 3 }}>
         <Link href="/" style={{ textDecoration: 'none' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: 'text.primary' }}>
@@ -75,7 +81,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         </Link>
       </Box>
 
-      {/* Lock icon principal */}
+      {}
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <Box
           sx={{
@@ -92,7 +98,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         </Box>
       </Box>
 
-      {/* Title */}
+      {}
       <Typography
         variant="h4"
         sx={{ fontWeight: 700, textAlign: 'center', mb: 1, color: '#111827' }}
@@ -100,15 +106,12 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         Redefinir Senha
       </Typography>
 
-      {/* Subtitle */}
-      <Typography
-        variant="body2"
-        sx={{ textAlign: 'center', color: '#6B7280', mb: 3 }}
-      >
+      {}
+      <Typography variant="body2" sx={{ textAlign: 'center', color: '#6B7280', mb: 3 }}>
         Criando uma nova senha para <strong>{emailMascarado}</strong>
       </Typography>
 
-      {/* Campos refatorados Input customizado */}
+      {}
       <Box sx={{ mb: 2 }}>
         <Input
           label="Nova Senha"
@@ -133,7 +136,7 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
         />
       </Box>
 
-      {/* Password requirements box */}
+      {}
       <Box
         sx={{
           bgcolor: '#F9FAFB',
@@ -165,9 +168,9 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
 
       {/* Submit button */}
       <Button
+        type="submit"
         fullWidth
         variant="contained"
-        onClick={handleSubmit}
         disabled={loading}
         sx={{
           bgcolor: '#D63B0F',
@@ -186,9 +189,9 @@ export function FormNewPassword({ emailMascarado, onSubmit, loading }: Props) {
             bgcolor: '#9C2D07',
           },
           '&.Mui-disabled': {
-             bgcolor: '#FCA5A5', 
-             color: '#fff' 
-          }
+            bgcolor: '#FCA5A5',
+            color: '#fff',
+          },
         }}
       >
         {loading ? 'Redefinindo...' : 'Redefinir Senha'}
