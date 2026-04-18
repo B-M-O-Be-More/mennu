@@ -2,4 +2,5 @@
 export interface NewUnitModalProps {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }

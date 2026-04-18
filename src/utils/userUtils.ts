@@ -52,7 +52,7 @@ export function normalizeUserData(data: unknown): IUser {
   };
 
   const rawTipoUsuario = String(parsed.tipo_usuario ?? "funcionario").toLowerCase();
-  
+
   // Normalization logic for role names
   let tipoUsuario: IUser["tipo_usuario"] = "funcionario";
   if (rawTipoUsuario === "admin" || rawTipoUsuario === "administrador") {

@@ -13,10 +13,12 @@ interface AutocompleteUserProps {
   error?: string;
   label?: string;
   disabled?: boolean;
+  valueKey?: "id" | "nome";
+  defaultInputValue?: string;
 }
 
-export function AutocompleteUser({ name, control, error, label, disabled }: AutocompleteUserProps) {
-  const [inputValue, setInputValue] = React.useState("");
+export function AutocompleteUser({ name, control, error, label, disabled, valueKey = "id", defaultInputValue = "" }: AutocompleteUserProps) {
+  const [inputValue, setInputValue] = React.useState(defaultInputValue);
   const [options, setOptions] = React.useState<UserOption[]>([]);
   const [loading, setLoading] = React.useState(false);
   const fetchTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -25,7 +27,7 @@ export function AutocompleteUser({ name, control, error, label, disabled }: Auto
     setLoading(true);
     try {
       const url = search.trim()
-        ? `/api/usuarios?busca=${encodeURIComponent(search)}`
+        ? `/api/usuarios?search=${encodeURIComponent(search)}`
         : "/api/usuarios";
       const res = await fetch(url);
       if (!res.ok) throw new Error("Erro ao buscar usuários");
@@ -34,7 +36,7 @@ export function AutocompleteUser({ name, control, error, label, disabled }: Auto
       setOptions(
         users.map((u: any) => ({
           label: u.matricula ? `${u.nome ?? `Usuário ${u.id}`} (${u.matricula})` : (u.nome ?? `Usuário ${u.id}`),
-          value: String(u.id),
+          value: valueKey === "nome" ? (u.nome ?? String(u.id)) : String(u.id),
         }))
       );
     } catch {
@@ -42,7 +44,7 @@ export function AutocompleteUser({ name, control, error, label, disabled }: Auto
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [valueKey]);
 
   React.useEffect(() => {
     if (fetchTimeout.current) clearTimeout(fetchTimeout.current);

@@ -11,35 +11,33 @@ async function getHeaders(): Promise<Record<string, string> | null> {
 
   if (!token || !empresaId) return null;
 
-  const headers: Record<string, string> = {
+  return {
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: token,
     "empresa-id-x": empresaId,
   };
-
-  return headers;
 }
 
 async function safeJson(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     const text = await response.text();
-    throw new Error(
-      `Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`,
-    );
+    throw new Error(`Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`);
   }
   return response.json();
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const headers = await getHeaders();
   if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
 
+  const { id } = await params;
+
   try {
     const body = await req.json();
-    const response = await fetch(`${baseUrl}/unidade/`, {
-      method: "POST",
+    const response = await fetch(`${baseUrl}/unidade/${id}`, {
+      method: "PUT",
       headers,
       body: JSON.stringify(body),
     });
@@ -50,23 +48,18 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const headers = await getHeaders();
-  if (!headers) {
-    return NextResponse.json(
-      { message: "Autenticação necessária" },
-      { status: 401 },
-    );
-  }
+  if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
 
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search");
-
-  const url = new URL(`${baseUrl}/unidade/`);
-  if (search) url.searchParams.append("search", search);
+  const { id } = await params;
 
   try {
-    const response = await fetch(url.toString(), { headers });
+    const response = await fetch(`${baseUrl}/unidade/${id}`, {
+      method: "DELETE",
+      headers,
+    });
+    if (response.status === 204) return new NextResponse(null, { status: 204 });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {

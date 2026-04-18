@@ -10,7 +10,7 @@ import { createTerminalSchema, CreateTerminalSchemaFormData } from "@/schemas/te
 import Card from "@/components/Cards/Card";
 import { AlertIcon } from "@/components/Icons";
 
-export default function NewTerminalModal({ open, onClose }: NewTerminalModalProps) {
+export default function NewTerminalModal({ open, onClose, onSuccess }: NewTerminalModalProps) {
   const {
     handleSubmit,
     register,
@@ -31,7 +31,9 @@ export default function NewTerminalModal({ open, onClose }: NewTerminalModalProp
   });
 
   const onSubmit = (data: CreateTerminalSchemaFormData) => {
-    console.log("Novo terminal:", data); onClose();
+    console.log("Novo terminal:", data);
+    onSuccess?.();
+    onClose();
   };
 
   return (

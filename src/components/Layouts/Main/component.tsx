@@ -76,7 +76,7 @@ export default function MainLayout({
       sx={{
         display: "flex",
         width: "100%",
-        minHeight: "100dvh",
+        height: "100dvh",
         overflow: "hidden",
       }}
     >

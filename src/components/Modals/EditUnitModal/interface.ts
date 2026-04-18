@@ -5,5 +5,5 @@ export interface EditUnitModalProps {
   open: boolean;
   onClose: () => void;
   unitItem: IUnit | null;
-  onSave: (updatedUnit: Partial<IUnit>) => void;
+  onSave: () => void;
 }

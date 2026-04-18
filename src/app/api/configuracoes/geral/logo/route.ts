@@ -4,21 +4,17 @@ import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
 const baseUrl = getApiBaseUrl();
 
-async function getHeaders(): Promise<Record<string, string> | null> {
+async function getAuthHeaders(): Promise<Record<string, string> | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
   const empresaId = cookieStore.get("empresa_id")?.value;
 
   if (!token || !empresaId) return null;
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
+  return {
     Authorization: token,
     "empresa-id-x": empresaId,
   };
-
-  return headers;
 }
 
 async function safeJson(response: Response) {
@@ -33,15 +29,21 @@ async function safeJson(response: Response) {
 }
 
 export async function POST(req: NextRequest) {
-  const headers = await getHeaders();
-  if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
+  const headers = await getAuthHeaders();
+  if (!headers) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  const formData = await req.formData();
 
   try {
-    const body = await req.json();
-    const response = await fetch(`${baseUrl}/unidade/`, {
+    const response = await fetch(`${baseUrl}/configuracoes/geral/logo/`, {
       method: "POST",
       headers,
-      body: JSON.stringify(body),
+      body: formData,
     });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
@@ -50,8 +52,8 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  const headers = await getHeaders();
+export async function DELETE() {
+  const headers = await getAuthHeaders();
   if (!headers) {
     return NextResponse.json(
       { message: "Autenticação necessária" },
@@ -59,14 +61,16 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search");
-
-  const url = new URL(`${baseUrl}/unidade/`);
-  if (search) url.searchParams.append("search", search);
-
   try {
-    const response = await fetch(url.toString(), { headers });
+    const response = await fetch(`${baseUrl}/configuracoes/geral/logo/`, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (response.ok) {
+      return NextResponse.json({ message: "Logo removido com sucesso" });
+    }
+
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {

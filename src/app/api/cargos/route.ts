@@ -11,14 +11,12 @@ async function getHeaders(): Promise<Record<string, string> | null> {
 
   if (!token || !empresaId) return null;
 
-  const headers: Record<string, string> = {
+  return {
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: token,
     "empresa-id-x": empresaId,
   };
-
-  return headers;
 }
 
 async function safeJson(response: Response) {
@@ -32,24 +30,6 @@ async function safeJson(response: Response) {
   return response.json();
 }
 
-export async function POST(req: NextRequest) {
-  const headers = await getHeaders();
-  if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
-
-  try {
-    const body = await req.json();
-    const response = await fetch(`${baseUrl}/unidade/`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
-    const data = await safeJson(response);
-    return NextResponse.json(data, { status: response.status });
-  } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
-  }
-}
-
 export async function GET(req: NextRequest) {
   const headers = await getHeaders();
   if (!headers) {
@@ -60,13 +40,37 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const search = searchParams.get("search");
-
-  const url = new URL(`${baseUrl}/unidade/`);
-  if (search) url.searchParams.append("search", search);
+  const url = new URL(`${baseUrl}/cargos/`);
+  searchParams.forEach((value, key) => {
+    url.searchParams.append(key, value);
+  });
 
   try {
     const response = await fetch(url.toString(), { headers });
+    const data = await safeJson(response);
+    return NextResponse.json(data, { status: response.status });
+  } catch (err) {
+    return NextResponse.json({ message: String(err) }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const headers = await getHeaders();
+  if (!headers) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  const body = await req.json();
+
+  try {
+    const response = await fetch(`${baseUrl}/cargos/`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {
