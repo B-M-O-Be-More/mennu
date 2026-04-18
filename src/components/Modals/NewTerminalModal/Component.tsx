@@ -7,7 +7,6 @@ import Select from "@/components/FormControl/Select";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createTerminalSchema, CreateTerminalSchemaFormData } from "@/schemas/terminalSchema";
-import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useLoading } from "@/hooks/useLoading/hook";
 import { AlertIcon } from "@/components/Icons";
 
@@ -18,13 +17,34 @@ const TIPOS_TERMINAL = [
   { label: "Validador", value: "VALIDADOR" },
 ];
 
+interface ApiUnit {
+  id?: number | null;
+  nome?: string;
+}
+
+function normalizeUnits(payload: unknown): { label: string; value: string }[] {
+  const source =
+    payload &&
+    typeof payload === "object" &&
+    Array.isArray((payload as { results?: unknown }).results)
+      ? ((payload as { results: ApiUnit[] }).results ?? [])
+      : Array.isArray(payload)
+        ? (payload as ApiUnit[])
+        : [];
+
+  return source
+    .filter((u) => Number.isInteger(u.id) && !!u.nome)
+    .map((u) => ({ label: String(u.nome), value: String(u.id) }));
+}
+
 export default function NewTerminalModal({ open, onClose, onSuccess }: NewTerminalModalProps) {
-  const { unitOptions } = useUnitFilterOptions();
   const { isLoading, executeAsyncFunction } = useLoading();
+  const [unitOptions, setUnitOptions] = React.useState<{ label: string; value: string }[]>([]);
   const [serviceToken, setServiceToken] = React.useState<string | null>(null);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const {
+    control,
     handleSubmit,
     register,
     reset,
@@ -35,7 +55,12 @@ export default function NewTerminalModal({ open, onClose, onSuccess }: NewTermin
   });
 
   React.useEffect(() => {
-    if (!open) {
+    if (open) {
+      fetch("/api/unidades")
+        .then((r) => r.json())
+        .then((payload) => setUnitOptions(normalizeUnits(payload)))
+        .catch(() => setUnitOptions([]));
+    } else {
       reset();
       setServiceToken(null);
       setSubmitError(null);
@@ -64,8 +89,6 @@ export default function NewTerminalModal({ open, onClose, onSuccess }: NewTermin
       setSubmitError(err instanceof Error ? err.message : "Erro ao criar terminal");
     }
   };
-
-  const unitSelectOptions = unitOptions.filter((o) => o.value !== "all");
 
   return (
     <Modal open={open} onClose={onClose} title="Novo Terminal">
@@ -109,15 +132,17 @@ export default function NewTerminalModal({ open, onClose, onSuccess }: NewTermin
           <Stack direction="row" spacing={2}>
             <Select
               label="Unidade"
-              options={unitSelectOptions}
-              register={register("unidade_id", { valueAsNumber: true })}
+              options={unitOptions}
+              control={control}
+              name="unidade_id"
               error={errors.unidade_id?.message}
             />
 
             <Select
               label="Tipo"
               options={TIPOS_TERMINAL}
-              register={register("tipo")}
+              control={control}
+              name="tipo"
               error={errors.tipo?.message}
             />
           </Stack>

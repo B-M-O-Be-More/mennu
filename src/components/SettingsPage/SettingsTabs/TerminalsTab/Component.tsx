@@ -16,7 +16,6 @@ import ActionCell from "@/components/ActionCell";
 import NewTerminalModal from "@/components/Modals/NewTerminalModal";
 import EditTerminalModal from "@/components/Modals/EditTerminalModal/Component";
 import { ITerminal } from "@/Interfaces/Terminal/terminal";
-import useFetch from "@/hooks/useFetch/hook";
 
 type ApiTerminal = {
   id: number;
@@ -28,20 +27,17 @@ type ApiTerminal = {
   ultima_sincronizacao?: string;
 };
 
-type ApiListResponse = {
-  results?: ApiTerminal[];
-  data?: ApiTerminal[] | { results?: ApiTerminal[] };
-};
-
 function normalizeTerminalList(payload: unknown): ApiTerminal[] {
   if (Array.isArray(payload)) return payload as ApiTerminal[];
-  const p = payload as ApiListResponse | null;
-  if (!p) return [];
-  if (Array.isArray(p.results)) return p.results;
+  if (!payload || typeof payload !== "object") return [];
+  const p = payload as Record<string, unknown>;
+  if (Array.isArray(p.results)) return p.results as ApiTerminal[];
   if (p.data) {
-    if (Array.isArray(p.data)) return p.data;
-    const d = p.data as { results?: ApiTerminal[] };
-    if (Array.isArray(d.results)) return d.results;
+    if (Array.isArray(p.data)) return p.data as ApiTerminal[];
+    if (typeof p.data === "object" && p.data !== null) {
+      const d = p.data as Record<string, unknown>;
+      if (Array.isArray(d.results)) return d.results as ApiTerminal[];
+    }
   }
   return [];
 }
@@ -64,18 +60,15 @@ export default function TerminalsTab({}: TerminalsTabProps) {
   const [openNewTerminalModal, setOpenNewTerminalModal] = React.useState(false);
   const [openEditTerminalModal, setOpenEditTerminalModal] = React.useState(false);
   const [selectedTerminal, setSelectedTerminal] = React.useState<ITerminal>({} as ITerminal);
+  const [terminals, setTerminals] = React.useState<ITerminal[]>([]);
   const [refreshKey, setRefreshKey] = React.useState(0);
 
-  const [request, , rawData] = useFetch<unknown>();
-
   React.useEffect(() => {
-    request("/api/terminais/", { method: "GET" });
-  }, [request, refreshKey]);
-
-  const terminals = React.useMemo(
-    () => normalizeTerminalList(rawData).map(mapApiToTerminal),
-    [rawData],
-  );
+    fetch("/api/terminais/")
+      .then((r) => r.json())
+      .then((payload) => setTerminals(normalizeTerminalList(payload).map(mapApiToTerminal)))
+      .catch(() => setTerminals([]));
+  }, [refreshKey]);
 
   const getStatusColor = (
     status: ITerminal["status"],
