@@ -46,6 +46,7 @@ export default function EditUnitModal({ open, onClose, unitItem, onSave }: EditU
           nome: data.nome,
           endereco: data.endereco || null,
           ativo: data.ativo,
+          responsavel: data.responsavel ? Number(data.responsavel) : null,
           horario_abertura: data.horarioAbertura ? `${data.horarioAbertura}:00` : null,
           horario_fechamento: data.horarioFechamento ? `${data.horarioFechamento}:00` : null,
         }),
@@ -88,7 +89,7 @@ export default function EditUnitModal({ open, onClose, unitItem, onSave }: EditU
             control={control}
             label="Responsável"
             error={errors.responsavel?.message}
-            valueKey="nome"
+            valueKey="id"
             defaultInputValue={unitItem?.responsavel ?? ""}
           />
 

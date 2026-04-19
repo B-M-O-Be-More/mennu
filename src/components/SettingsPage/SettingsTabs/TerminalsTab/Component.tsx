@@ -1,12 +1,12 @@
-import { Box, Button, Chip, CircularProgress, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, Chip, CircularProgress, IconButton, Stack, Switch, Tooltip, Typography, useTheme } from "@mui/material";
 import { TerminalsTabProps } from "./interface";
-import { AlertIcon, CircledCheckIcon, ClockIcon, NoWifiIcon, PlusIcon, TerminalIcon, WifiIcon } from "@/components/Icons";
+import { AlertIcon, CircledCheckIcon, ClockIcon, EditIcon, NoWifiIcon, PlusIcon, TerminalIcon, TrashIcon } from "@/components/Icons";
 import React from "react";
 import Card from "@/components/Cards/Card";
 import IconBox from "@/components/Cards/IconBox";
-import ActionCell from "@/components/ActionCell";
 import NewTerminalModal from "@/components/Modals/NewTerminalModal";
 import EditTerminalModal from "@/components/Modals/EditTerminalModal/Component";
+import ConfirmDeleteModal from "@/components/Modals/ConfirmDeleteModal";
 import { ITerminal } from "@/Interfaces/Terminal/terminal";
 import useFetch from "@/hooks/useFetch/hook";
 
@@ -57,7 +57,9 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
   const [refreshKey, setRefreshKey] = React.useState(0);
   const [openNewTerminalModal, setOpenNewTerminalModal] = React.useState(false);
   const [openEditTerminalModal, setOpenEditTerminalModal] = React.useState(false);
+  const [openConfirmDelete, setOpenConfirmDelete] = React.useState(false);
   const [selectedTerminal, setSelectedTerminal] = React.useState<ITerminal>({} as ITerminal);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const [requestTerminais, isLoading] = useFetch<PaginatedTerminais>();
 
@@ -69,6 +71,23 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
       })
       .catch(() => setTerminals([]));
   }, [refreshKey]);
+
+  const handleToggle = async (terminal: ITerminal) => {
+    await fetch(`/api/terminais/${terminal.id}/toggle-status`, { method: "PATCH" });
+    setRefreshKey((k) => k + 1);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedTerminal?.id) return;
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/terminais/${selectedTerminal.id}/`, { method: "DELETE" });
+      setOpenConfirmDelete(false);
+      setRefreshKey((k) => k + 1);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const stats = React.useMemo(() => ({
     online: terminals.filter((t) => t.status === "online").length,
@@ -95,7 +114,7 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
-      case "online": return <WifiIcon color={theme.palette.success.contrastText} width={16} height={16} />;
+      case "online": return <CircledCheckIcon color={theme.palette.success.contrastText} width={16} height={16} />;
       case "offline": return <NoWifiIcon color={theme.palette.default.contrastText} width={16} height={16} />;
       case "desatualizado": return <AlertIcon color={theme.palette.warning.contrastText} width={16} height={16} />;
     }
@@ -174,17 +193,37 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
                 {terminal.status === "desatualizado" && (
                   <Chip label={"Revisar Configurações"} size="small" color="warning" />
                 )}
-                <ActionCell
-                  checked={terminal.ativo}
-                  tooltipToggle="Ativar/Desativar terminal"
-                  onToggle={() => { }}
-                  tooltipEdit="Editar terminal"
-                  onEdit={() => {
-                    setSelectedTerminal(terminal);
-                    setOpenEditTerminalModal(true);
-                  }}
-                  sxProps={{ ml: "auto" }}
-                />
+                <Tooltip title="Editar terminal" arrow>
+                  <IconButton
+                    size="small"
+                    sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, color: "text.secondary" }}
+                    onClick={() => {
+                      setSelectedTerminal(terminal);
+                      setOpenEditTerminalModal(true);
+                    }}
+                  >
+                    <EditIcon width={20} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Excluir terminal" arrow>
+                  <IconButton
+                    size="small"
+                    sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, color: "error.contrastText" }}
+                    onClick={() => {
+                      setSelectedTerminal(terminal);
+                      setOpenConfirmDelete(true);
+                    }}
+                  >
+                    <TrashIcon width={20} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Ativar/Desativar terminal" arrow>
+                  <Switch
+                    checked={terminal.ativo}
+                    onChange={() => handleToggle(terminal)}
+                    size="medium"
+                  />
+                </Tooltip>
               </Stack>
             </Stack>
             {(terminal.refeicoesPermitidas.length > 0 || terminal.categoriasPermitidas.length > 0) && (
@@ -216,11 +255,22 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
         onClose={() => setOpenNewTerminalModal(false)}
         onSuccess={() => setRefreshKey((k) => k + 1)}
       />
-      <EditTerminalModal
-        open={openEditTerminalModal}
-        onClose={() => setOpenEditTerminalModal(false)}
-        terminal={selectedTerminal}
-        onSave={() => setRefreshKey((k) => k + 1)}
+      {openEditTerminalModal && (
+        <EditTerminalModal
+          key={selectedTerminal.id}
+          open={openEditTerminalModal}
+          onClose={() => setOpenEditTerminalModal(false)}
+          terminal={selectedTerminal}
+          onSave={() => setRefreshKey((k) => k + 1)}
+        />
+      )}
+      <ConfirmDeleteModal
+        open={openConfirmDelete}
+        onClose={() => setOpenConfirmDelete(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir terminal"
+        description={`Tem certeza que deseja excluir o terminal "${selectedTerminal?.nome}"? Esta ação não pode ser desfeita.`}
+        isLoading={isDeleting}
       />
     </>
   );

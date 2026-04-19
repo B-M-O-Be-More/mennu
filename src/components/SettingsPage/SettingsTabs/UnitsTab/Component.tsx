@@ -6,6 +6,7 @@ import React from "react";
 import NewUnitModal from "@/components/Modals/NewUnitModal";
 import EditUnitModal from "@/components/Modals/EditUnitModal";
 import UnitPoliciesModal from "@/components/Modals/UnitPoliciesModal/Component";
+import ConfirmDeleteModal from "@/components/Modals/ConfirmDeleteModal";
 import { IUnit } from "@/Interfaces/Unit/unit";
 import useFetch from "@/hooks/useFetch/hook";
 
@@ -51,7 +52,9 @@ export default function UnitsTab({ }: UnitsTabProps) {
   const [openNewUnitModal, setOpenNewUnitModal] = React.useState(false);
   const [openEditUnitModal, setOpenEditUnitModal] = React.useState(false);
   const [openUnitPoliciesModal, setOpenUnitPoliciesModal] = React.useState(false);
+  const [openConfirmDelete, setOpenConfirmDelete] = React.useState(false);
   const [selectedUnit, setSelectedUnit] = React.useState<IUnit | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   const [requestUnidades, isLoading] = useFetch<PaginatedUnidades>();
 
@@ -65,6 +68,19 @@ export default function UnitsTab({ }: UnitsTabProps) {
   }, [refreshKey]);
 
   const refresh = () => setRefreshKey((k) => k + 1);
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedUnit?.id) return;
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/unidades/${selectedUnit.id}`, { method: "DELETE" });
+      setOpenConfirmDelete(false);
+      setSelectedUnit(null);
+      refresh();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <>
@@ -149,6 +165,10 @@ export default function UnitsTab({ }: UnitsTabProps) {
                     aria-label="delete"
                     size="medium"
                     sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, height: 'fit-content', color: 'error.contrastText' }}
+                    onClick={() => {
+                      setSelectedUnit(unit);
+                      setOpenConfirmDelete(true);
+                    }}
                   >
                     <TrashIcon width={22} height={22} />
                   </IconButton>
@@ -175,6 +195,17 @@ export default function UnitsTab({ }: UnitsTabProps) {
         onClose={() => setOpenUnitPoliciesModal(false)}
         unitItem={selectedUnit}
         onSave={() => { }}
+      />
+      <ConfirmDeleteModal
+        open={openConfirmDelete}
+        onClose={() => {
+          setOpenConfirmDelete(false);
+          setSelectedUnit(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir unidade"
+        description={`Tem certeza que deseja excluir a unidade "${selectedUnit?.nome}"? Esta ação não pode ser desfeita.`}
+        isLoading={isDeleting}
       />
     </>
   );

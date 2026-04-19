@@ -23,52 +23,22 @@ async function safeJson(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     const text = await response.text();
-    throw new Error(
-      `Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`,
-    );
+    throw new Error(`Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`);
   }
-
   return response.json();
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const headers = await getHeaders();
-  if (!headers) {
-    return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
-  }
+  if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
 
   try {
-    const body = await req.json();
-    const response = await fetch(`${baseUrl}/terminais/`, {
-      method: "POST",
+    const response = await fetch(`${baseUrl}/terminais/${id}/toggle-status/`, {
+      method: "PATCH",
       headers,
-      body: JSON.stringify(body),
     });
-    const data = await safeJson(response);
-    return NextResponse.json(data, { status: response.status });
-  } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
-  }
-}
-
-export async function GET(req: NextRequest) {
-  const headers = await getHeaders();
-  if (!headers) {
-    return NextResponse.json(
-      { message: "Autenticação necessária" },
-      { status: 401 },
-    );
-  }
-
-  const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/terminais/`);
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.append(key, value);
-  });
-
-  try {
-    const response = await fetch(url.toString(), { headers });
+    if (response.status === 204) return new NextResponse(null, { status: 204 });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {

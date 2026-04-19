@@ -91,7 +91,7 @@ export default function GeneralTab({ }: GeneralTabProps) {
   const handleLogoSave = async (file: File) => {
     setValue("image", fileToFileList(file));
     const formData = new FormData();
-    formData.append("logo", file);
+    formData.append("arquivo", file);
 
     try {
       const response = await fetch("/api/configuracoes/geral/logo/", { method: "POST", body: formData });

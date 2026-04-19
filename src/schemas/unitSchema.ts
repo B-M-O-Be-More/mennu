@@ -37,7 +37,7 @@ export type CreatePolicySchemaFormData = yup.InferType<typeof createPolicySchema
 export const createUnitSchema = yup.object({
   nome: yup.string().required("O nome da unidade é obrigatório"),
   endereco: yup.string().required("O endereço é obrigatório"),
-  responsavel: yup.string().required("O responsável é obrigatório"),
+  responsavel: yup.string().optional().default(""),
   ativo: yup.boolean().required(),
   horarioAbertura: yup.string()
     .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: "Formato HH:mm inválido", excludeEmptyString: true })
