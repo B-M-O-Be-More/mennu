@@ -5,19 +5,132 @@ import {
   Stack,
   Typography,
   Divider,
-  Button,
+  ButtonBase,
   Avatar,
   useTheme,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Theme,
 } from "@mui/material";
 import * as React from "react";
 import NextLink from "next/link";
+import Image from "next/image";
 import { SidebarProps } from "./interface";
+import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+// ─── Sub-componentes internos ────────────────────────────────────────────────
+
+interface NavItemProps {
+  item: SidebarMenuItem;
+  active: boolean;
+  theme: Theme;
+  renderIcon: (icon: React.ReactNode, active: boolean) => React.ReactNode;
+}
+
+function NavItem({ item, active, theme, renderIcon }: NavItemProps) {
+  return (
+    <ListItemButton
+      component={NextLink}
+      href={item.path}
+      onClick={item.onClick}
+      selected={active}
+      aria-current={active ? "page" : undefined}
+      aria-label={item.label}
+      sx={{
+        pl: { xs: 2, sm: 2.25, lg: 2.5 },
+        pr: 0,
+        borderRadius: 2.05,
+        height: { xs: 52, sm: 54, lg: 56 },
+        position: "relative",
+        transition: theme.transitions.create(["background-color", "color"], {
+          duration: theme.transitions.duration.shorter,
+        }),
+        "&.Mui-selected": {
+          bgcolor: "sidebar.bgActive",
+          "&:hover": { bgcolor: "sidebar.bgActiveHover" },
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            left: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: 4,
+            height: 32,
+            borderRadius: "0 4px 4px 0",
+            bgcolor: "sidebar.indicator",
+          },
+        },
+        "&:hover": { bgcolor: "sidebar.bgHover" },
+      }}
+    >
+      <ListItemIcon
+        sx={{
+          minWidth: { xs: 34, sm: 38, lg: 40 },
+          "& svg": {
+            width: { xs: 20, sm: 22, lg: 24 },
+            height: { xs: 20, sm: 22, lg: 24 },
+          },
+        }}
+      >
+        {renderIcon(item.icon, active)}
+      </ListItemIcon>
+      <ListItemText
+        primary={item.label}
+        slotProps={{
+          primary: {
+            fontSize: { xs: 14, sm: 15, lg: 16 },
+            fontWeight: active ? 600 : 500,
+            color: active ? "sidebar.textActive" : "sidebar.text",
+            letterSpacing: "-0.01em",
+          },
+        }}
+      />
+    </ListItemButton>
+  );
+}
+
+interface SidebarLogoProps {
+  logoSrc?: string;
+}
+
+function SidebarLogo({ logoSrc }: SidebarLogoProps) {
+  if (logoSrc) {
+    return (
+      <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
+        <Image
+          src={logoSrc}
+          alt="Logo"
+          fill
+          style={{ objectFit: "contain" }}
+          priority
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Typography
+      variant="h6"
+      component="h1"
+      sx={{
+        fontSize: { xs: 18, sm: 20, lg: 22 },
+        fontWeight: 400,
+        color: "common.white",
+        letterSpacing: "-0.01em",
+      }}
+    >
+      Mennu
+    </Typography>
+  );
+}
+
+// ─── Componente principal ────────────────────────────────────────────────────
 
 export function SidebarComponent({
   menuItems,
@@ -27,25 +140,21 @@ export function SidebarComponent({
   logoutIcon,
   showAdminSection = false,
   activePath,
+  logoSrc,
 }: SidebarProps) {
   const theme = useTheme();
   const sidebarColors = (theme.palette as any).sidebar;
 
-  // Lógica de item ativo com suporte a rotas aninhadas
   const isActive = React.useCallback(
     (path: string) => {
       if (!activePath) return false;
       if (activePath === path) return true;
-      // Para rotas aninhadas: /cardapios/criar deve ativar /cardapios
-      if (path !== "/dashboard" && activePath.startsWith(path + "/")) {
-        return true;
-      }
+      if (path !== "/dashboard" && activePath.startsWith(path + "/")) return true;
       return false;
     },
     [activePath]
   );
 
-  // Renderizar ícone com cor apropriada
   const renderIcon = React.useCallback(
     (icon: React.ReactNode, active: boolean) => (
       <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
@@ -56,6 +165,22 @@ export function SidebarComponent({
     ),
     [sidebarColors]
   );
+
+  const [menuAnchor, setMenuAnchor] = React.useState<HTMLElement | null>(null);
+  const menuOpen = Boolean(menuAnchor);
+
+  const handleOpenMenu = (e: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchor(e.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    handleCloseMenu();
+    onLogout?.();
+  };
 
   return (
     <Box
@@ -75,7 +200,7 @@ export function SidebarComponent({
         borderColor: "sidebar.divider",
       }}
     >
-      {/* Logo Container */}
+      {/* Logo */}
       <Box
         sx={{
           width: { xs: 188, sm: 202, lg: 216 },
@@ -86,23 +211,13 @@ export function SidebarComponent({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          overflow: "hidden",
         }}
       >
-        <Typography
-          variant="h6"
-          component="h1"
-          sx={{
-            fontSize: { xs: 18, sm: 20, lg: 22 },
-            fontWeight: 400,
-            color: "common.white",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          Mennu
-        </Typography>
+        <SidebarLogo logoSrc={logoSrc} />
       </Box>
 
-      {/* Navigation Items */}
+      {/* Navegação */}
       <List
         component="div"
         disablePadding
@@ -112,87 +227,22 @@ export function SidebarComponent({
           flex: 1,
           overflowY: "auto",
           minHeight: 0,
-          "& > *:not(:last-child)": {
-            mb: 0.5,
-          },
+          "& > *:not(:last-child)": { mb: 0.5 },
         }}
       >
-        {menuItems.map((item) => {
-          const itemActive = isActive(item.path);
-          return (
-            <ListItemButton
-              key={item.id}
-              component={NextLink}
-              href={item.path}
-              onClick={item.onClick}
-              selected={itemActive}
-              aria-current={itemActive ? "page" : undefined}
-              aria-label={item.label}
-              sx={{
-                pl: { xs: 2, sm: 2.25, lg: 2.5 },
-                pr: 0,
-                borderRadius: 2.05,
-                height: { xs: 52, sm: 54, lg: 56 },
-                position: "relative",
-                transition: theme.transitions.create(
-                  ["background-color", "color"],
-                  { duration: theme.transitions.duration.shorter }
-                ),
-                "&.Mui-selected": {
-                  bgcolor: "sidebar.bgActive",
-                  "&:hover": {
-                    bgcolor: "sidebar.bgActiveHover",
-                  },
-                  "&::before": {
-                    content: '""',
-                    position: "absolute",
-                    left: 0,
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    width: 4,
-                    height: 32,
-                    borderRadius: "0 4px 4px 0",
-                    bgcolor: "sidebar.indicator",
-                  },
-                },
-                "&:hover": {
-                  bgcolor: "sidebar.bgHover",
-                },
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: { xs: 34, sm: 38, lg: 40 },
-                  "& svg": {
-                    width: { xs: 20, sm: 22, lg: 24 },
-                    height: { xs: 20, sm: 22, lg: 24 },
-                  },
-                }}
-              >
-                {renderIcon(item.icon, itemActive)}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  fontSize: { xs: 14, sm: 15, lg: 16 },
-                  fontWeight: itemActive ? 600 : 500,
-                  color: itemActive ? "sidebar.textActive" : "sidebar.text",
-                  letterSpacing: "-0.01em",
-                }}
-              />
-            </ListItemButton>
-          );
-        })}
+        {menuItems.map((item) => (
+          <NavItem
+            key={item.id}
+            item={item}
+            active={isActive(item.path)}
+            theme={theme}
+            renderIcon={renderIcon}
+          />
+        ))}
 
-        <Divider
-          component="li"
-          sx={{
-            my: 2,
-            borderColor: "sidebar.divider",
-          }}
-        />
+        <Divider component="li" sx={{ my: 2, borderColor: "sidebar.divider" }} />
 
-        {/* Administration Section */}
+        {/* Seção administrativa — visível apenas com permissão */}
         {showAdminSection && (
           <>
             <Box
@@ -217,185 +267,138 @@ export function SidebarComponent({
               </Typography>
             </Box>
 
-            {adminMenuItems.map((item) => {
-              const itemActive = isActive(item.path);
-
-              return (
-                <ListItemButton
-                  key={item.id}
-                  component={NextLink}
-                  href={item.path}
-                  onClick={item.onClick}
-                  selected={itemActive}
-                  aria-current={itemActive ? "page" : undefined}
-                  aria-label={item.label}
-                  sx={{
-                    pl: { xs: 2, sm: 2.25, lg: 2.5 },
-                    pr: 0,
-                    borderRadius: 2.05,
-                    height: { xs: 52, sm: 54, lg: 56 },
-                    position: "relative",
-                    transition: theme.transitions.create(
-                      ["background-color", "color"],
-                      { duration: theme.transitions.duration.shorter }
-                    ),
-                    "&.Mui-selected": {
-                      bgcolor: "sidebar.bgActive",
-                      "&:hover": {
-                        bgcolor: "sidebar.bgActiveHover",
-                      },
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        left: 0,
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        width: 4,
-                        height: 32,
-                        borderRadius: "0 4px 4px 0",
-                        bgcolor: "sidebar.indicator",
-                      },
-                    },
-                    "&:hover": {
-                      bgcolor: "sidebar.bgHover",
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: { xs: 34, sm: 38, lg: 40 },
-                      "& svg": {
-                        width: { xs: 20, sm: 22, lg: 24 },
-                        height: { xs: 20, sm: 22, lg: 24 },
-                      },
-                    }}
-                  >
-                    {renderIcon(item.icon, itemActive)}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: { xs: 14, sm: 15, lg: 16 },
-                      fontWeight: itemActive ? 600 : 500,
-                      color: itemActive ? "sidebar.textActive" : "sidebar.text",
-                      letterSpacing: "-0.01em",
-                    }}
-                  />
-                </ListItemButton>
-              );
-            })}
+            {adminMenuItems.map((item) => (
+              <NavItem
+                key={item.id}
+                item={item}
+                active={isActive(item.path)}
+                theme={theme}
+                renderIcon={renderIcon}
+              />
+            ))}
           </>
         )}
       </List>
 
-      {/* User Profile Section */}
+      {/* Perfil do usuário */}
       <Box
         role="contentinfo"
         aria-label="Perfil do usuário"
         sx={{
-          p: { xs: "1.25rem 1rem 1rem", sm: "1.375rem 1.25rem 1.25rem", lg: "1.5625rem 1.5rem 1.5rem" },
+          p: {
+            xs: "1.25rem 1rem 1rem",
+            sm: "1.375rem 1.25rem 1.25rem",
+            lg: "1.5625rem 1.5rem 1.5rem",
+          },
           borderTop: 1,
           borderColor: "sidebar.divider",
         }}
       >
-        <Stack
-          direction="row"
-          spacing={2}
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <Avatar
-            sx={{
-              width: { xs: 48, sm: 52, lg: 56 },
-              height: { xs: 48, sm: 52, lg: 56 },
-              bgcolor: "background.auth",
-              fontSize: { xs: 18, sm: 19, lg: 20 },
-              fontWeight: 400,
-            }}
-          >
-            {user.avatarInitial || user.name.charAt(0).toUpperCase()}
-          </Avatar>
-          <Stack spacing={0.25}>
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: { xs: 15, sm: 16, lg: 18 },
-                fontWeight: 400,
-                color: "sidebar.userNameColor",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {user.name}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                fontSize: { xs: 12, sm: 13, lg: 14 },
-                fontWeight: 400,
-                color: "sidebar.userEmailColor",
-                letterSpacing: "0.01em",
-              }}
-            >
-              {user.email}
-            </Typography>
-          </Stack>
-        </Stack>
-
-        <Button
-          onClick={onLogout}
-          fullWidth
-          aria-label="Sair da aplicação"
-          startIcon={renderIcon(logoutIcon, false)}
+        <ButtonBase
+          onClick={handleOpenMenu}
+          aria-label="Opções do perfil"
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
           sx={{
-            height: { xs: 48, sm: 50, lg: 52 },
+            width: "100%",
             borderRadius: 2.05,
-            justifyContent: "flex-start",
-            pl: { xs: 1.75, sm: 1.875, lg: 2 },
-            textTransform: "none",
-            bgcolor: "transparent",
+            p: { xs: 0.75, sm: 0.875, lg: 1 },
             transition: theme.transitions.create("background-color", {
               duration: theme.transitions.duration.shorter,
             }),
-            "&:hover": {
-              bgcolor: "sidebar.bgHover",
-            },
-            "& .MuiButton-startIcon": {
-              mr: { xs: 1.5, sm: 1.75, lg: 2 },
-              "& svg": {
-                width: { xs: 18, sm: 20, lg: 24 },
-                height: { xs: 18, sm: 20, lg: 24 },
+            "&:hover": { bgcolor: "sidebar.bgHover" },
+          }}
+        >
+          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: "100%" }}>
+            <Avatar
+              sx={{
+                width: { xs: 40, sm: 44, lg: 48 },
+                height: { xs: 40, sm: 44, lg: 48 },
+                bgcolor: "background.auth",
+                fontSize: { xs: 16, sm: 17, lg: 18 },
+                fontWeight: 400,
+                flexShrink: 0,
+              }}
+            >
+              {user.avatarInitial || user.name.charAt(0).toUpperCase()}
+            </Avatar>
+            <Stack spacing={0.25} sx={{ minWidth: 0, flex: 1, textAlign: "left" }}>
+              <Typography
+                noWrap
+                sx={{
+                  fontSize: { xs: 14, sm: 15, lg: 16 },
+                  fontWeight: 500,
+                  color: "sidebar.userNameColor",
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.name}
+              </Typography>
+              <Typography
+                noWrap
+                title={user.email}
+                sx={{
+                  fontSize: { xs: 11, sm: 11, lg: 12 },
+                  fontWeight: 400,
+                  color: "sidebar.userEmailColor",
+                  letterSpacing: "0.01em",
+                  lineHeight: 1.3,
+                }}
+              >
+                {user.email}
+              </Typography>
+            </Stack>
+          </Stack>
+        </ButtonBase>
+
+        {/* Menu de ações do perfil */}
+        <Menu
+          anchorEl={menuAnchor}
+          open={menuOpen}
+          onClose={handleCloseMenu}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+          slotProps={{
+            paper: {
+              elevation: 3,
+              sx: {
+                minWidth: { xs: 188, sm: 202, lg: 216 },
+                borderRadius: 2.05,
+                mt: -1,
               },
             },
           }}
         >
-          <Typography
+          <MenuItem
+            onClick={handleLogout}
             sx={{
-              fontSize: { xs: 15, sm: 16, lg: 18 },
-              fontWeight: 500,
-              color: "sidebar.text",
-              letterSpacing: "-0.01em",
+              gap: 1.5,
+              py: { xs: 1.25, lg: 1.5 },
+              px: { xs: 1.5, lg: 2 },
+              borderRadius: 1.5,
+              mx: 0.5,
+              my: 0.5,
+              "&:hover": { bgcolor: "sidebar.bgHover" },
             }}
           >
-            Sair
-          </Typography>
-        </Button>
+            <Box sx={{ display: "flex", alignItems: "center", "& svg": { width: 20, height: 20 } }}>
+              {renderIcon(logoutIcon, false)}
+            </Box>
+            <Typography
+              sx={{
+                fontSize: { xs: 14, sm: 15, lg: 16 },
+                fontWeight: 500,
+                color: "sidebar.text",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Sair
+            </Typography>
+          </MenuItem>
+        </Menu>
 
-        <Typography
-          variant="caption"
-          sx={{
-            display: "block",
-            fontSize: { xs: 11, sm: 12, lg: 13 },
-            fontWeight: 400,
-            color: "sidebar.section",
-            textAlign: "center",
-            mt: 2,
-            letterSpacing: "0.01em",
-          }}
-        >
-          Mennu — Gestão Inteligente
-        </Typography>
       </Box>
     </Box>
   );
 }
-
