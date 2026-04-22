@@ -22,7 +22,7 @@ export async function GET() {
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: token,
-      ...(empresaId ? { "empresa-id-x": empresaId } : {}),
+      ...(empresaId ? { "Empresa-id-x": empresaId } : {}),
     },
   });
 

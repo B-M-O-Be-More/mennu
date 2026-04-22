@@ -13,7 +13,7 @@ async function getAuthHeaders(): Promise<Record<string, string> | null> {
 
   return {
     Authorization: token,
-    "empresa-id-x": empresaId,
+    "Empresa-id-x": empresaId,
   };
 }
 

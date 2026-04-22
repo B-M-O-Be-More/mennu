@@ -15,7 +15,7 @@ async function getHeaders(): Promise<Record<string, string> | null> {
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: token,
-    "empresa-id-x": empresaId,
+    "Empresa-id-x": empresaId,
   };
 }
 

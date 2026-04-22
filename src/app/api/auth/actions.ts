@@ -21,7 +21,7 @@ export async function getServerUser(): Promise<IUser | null> {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: token,
-        ...(empresaId ? { "empresa-id-x": empresaId } : {}),
+        ...(empresaId ? { "Empresa-id-x": empresaId } : {}),
       },
       cache: "no-store",
     });
@@ -32,10 +32,10 @@ export async function getServerUser(): Promise<IUser | null> {
     const userData = data?.data || data;
 
     if (userData && typeof userData === "object") {
-        const normalized = normalizeUserData(userData);
-        // Strict check: if marked as inactive, don't return user
-        if (!normalized.status || !normalized.status_acesso) return null;
-        return normalized;
+      const normalized = normalizeUserData(userData);
+      // Strict check: if marked as inactive, don't return user
+      if (!normalized.status || !normalized.status_acesso) return null;
+      return normalized;
     }
 
     return null;
