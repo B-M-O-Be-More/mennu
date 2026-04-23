@@ -2,9 +2,9 @@
 
 import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
-import { EyeIcon, FilterIcon, SearchIcon, TrashIcon } from "@/components/Icons";
+import { EyeIcon, SearchIcon, TrashIcon } from "@/components/Icons";
 import Table from "@/components/Tables/Table";
-import { Button, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
+import { IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { MenusTabProps } from "./interface";
@@ -233,14 +233,6 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
             defaultValue="all"
             formControlSx={{ maxWidth: "250px" }}
           />
-          <Button
-            variant="outlined"
-            startIcon={<FilterIcon />}
-            sx={{ fontWeight: "400", minWidth: "120px" }}
-            onClick={() => { }}
-          >
-            Filtrar
-          </Button>
         </Stack>
 
         <Stack
