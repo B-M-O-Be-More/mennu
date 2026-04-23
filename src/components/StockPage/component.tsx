@@ -28,7 +28,9 @@ export function StockPage({}: StockPageProps) {
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
 
   const [selectedStock, setSelectedStock] = React.useState<IStock | null>(null);
-  const [stockData, setStockData] = useState<IStock[]>([]);
+  
+  
+  const [stockData, setStockData] = useState<IStock[]>([]); 
   const [movementData, setMovementData] = useState<IMovement[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,14 +40,14 @@ export function StockPage({}: StockPageProps) {
   });
 
   const searchTerm = watch("itemSearch");
-  const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedSearch = useDebounce(searchTerm, 300); 
 
-  const loadStockData = async (search?: string) => {
+  
+  const loadStockData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const url = search ? `/api/insumo?search=${encodeURIComponent(search)}` : "/api/insumo";
-      const response = await fetch(url);
+      const response = await fetch("/api/insumo");
       if (!response.ok) {
         const errData = await response.json();
         throw new Error(`Erro ${response.status}: ${errData.message}`);
@@ -77,13 +79,26 @@ export function StockPage({}: StockPageProps) {
     }
   };
 
+  
   useEffect(() => {
     if (openTab === 0) {
-      loadStockData(debouncedSearch);
+      loadStockData();
     } else {
       loadMovementData();
     }
-  }, [openTab, debouncedSearch]);
+  }, [openTab]);
+
+  
+  const filteredStockData = React.useMemo(() => {
+    if (!debouncedSearch) return stockData;
+    
+    const searchLower = debouncedSearch.toLowerCase();
+    
+    return stockData.filter((item) => {
+      const jsonString = JSON.stringify(item).toLowerCase();
+      return jsonString.includes(searchLower);
+    });
+  }, [stockData, debouncedSearch]);
 
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
@@ -91,7 +106,7 @@ export function StockPage({}: StockPageProps) {
   };
 
   const handleSaveStock = () => {
-    loadStockData(debouncedSearch);
+    loadStockData();
   };
 
   const handleToggleStock = async (stock: IStock, newState: boolean) => {
@@ -108,21 +123,11 @@ export function StockPage({}: StockPageProps) {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error("Sessão expirada. Faça login novamente.");
-        }
-        if (response.status === 403) {
-          throw new Error("Você não tem permissão para alterar o status deste insumo.");
-        }
-        if (response.status === 404) {
-          throw new Error("Insumo não encontrado.");
-        }
-        if (response.status === 409) {
-          throw new Error("Não foi possível alterar o status deste insumo no momento.");
-        }
-        if (response.status >= 500) {
-          throw new Error("Erro no servidor ao alterar status. Tente novamente.");
-        }
+        if (response.status === 401) throw new Error("Sessão expirada. Faça login novamente.");
+        if (response.status === 403) throw new Error("Você não tem permissão para alterar o status deste insumo.");
+        if (response.status === 404) throw new Error("Insumo não encontrado.");
+        if (response.status === 409) throw new Error("Não foi possível alterar o status deste insumo no momento.");
+        if (response.status >= 500) throw new Error("Erro no servidor ao alterar status. Tente novamente.");
 
         const errData = await response.json().catch(() => ({ message: "Erro ao atualizar status" }));
         throw new Error(errData.message || "Erro ao atualizar status");
@@ -150,7 +155,7 @@ export function StockPage({}: StockPageProps) {
         <Button
           variant="outlined"
           startIcon={<UpdateIcon />}
-          onClick={() => openTab === 0 ? loadStockData(debouncedSearch) : loadMovementData()}
+          onClick={() => openTab === 0 ? loadStockData() : loadMovementData()}
         >
           Atualizar
         </Button>
@@ -238,7 +243,7 @@ export function StockPage({}: StockPageProps) {
                   open={openNewStockModal}
                   onClose={() => {
                     setOpenNewStockModal(false);
-                    loadStockData(debouncedSearch);
+                    loadStockData();
                   }}
                 />
               </Stack>
@@ -261,7 +266,8 @@ export function StockPage({}: StockPageProps) {
                     }
                   : col
               )}
-              rows={stockData}
+              
+              rows={filteredStockData} 
               initialRowsPerPage={5}
               isLoading={loading}
             />

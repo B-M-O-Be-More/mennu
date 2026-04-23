@@ -19,12 +19,12 @@ import { formatDate } from "@/utils/formatDate";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 
-
 export function MenusTab({ periodFilter }: MenusTabProps) {
   const theme = useTheme();
   const { unitOptions } = useUnitFilterOptions();
 
-  const [cardapios, setCardapios] = React.useState<IMenu[]>([]);
+  
+  const [fetchedCardapios, setFetchedCardapios] = React.useState<IMenu[]>([]);
   const [isLoadingCardapios, setIsLoadingCardapios] = React.useState(false);
   const [cardapiosError, setCardapiosError] = React.useState<string | null>(null);
   const [mealTypeOptions, setMealTypeOptions] = React.useState<
@@ -158,11 +158,6 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
         ) {
           params.set("tipo_refeicao", String(tipoRefeicao));
         }
-
-        if (debouncedMenuSearch) {
-          params.set("unidade_nome", debouncedMenuSearch);
-        }
-
         
         if (periodFilter?.start) {
           params.set("data_refeicao_after", periodFilter.start.format("YYYY-MM-DD"));
@@ -170,6 +165,8 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
         if (periodFilter?.end) {
           params.set("data_refeicao_before", periodFilter.end.format("YYYY-MM-DD"));
         }
+
+        
 
         const queryString = params.toString() ? `?${params.toString()}` : "";
         const response = await fetch(`/api/cardapio${queryString}`);
@@ -191,17 +188,33 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
               : Array.isArray(payload?.data?.results)
                 ? payload.data.results
                 : [];
-        setCardapios(apiItems.map(normalizeCardapio));
+        
+        
+        setFetchedCardapios(apiItems.map(normalizeCardapio));
       } catch (err) {
         setCardapiosError(err instanceof Error ? err.message : "Erro ao buscar cardápios");
-        setCardapios([]);
+        setFetchedCardapios([]);
       } finally {
         setIsLoadingCardapios(false);
       }
     };
 
     loadCardapios();
-  }, [debouncedMenuSearch, unidade, tipos, normalizeCardapio, periodFilter]); 
+    
+  }, [unidade, tipos, normalizeCardapio, periodFilter]); 
+
+  
+  const cardapiosFiltrados = React.useMemo(() => {
+    if (!debouncedMenuSearch) return fetchedCardapios;
+    
+    const termoBusca = debouncedMenuSearch.toLowerCase();
+    
+    return fetchedCardapios.filter((item) => {
+      
+      const jsonString = JSON.stringify(item).toLowerCase();
+      return jsonString.includes(termoBusca);
+    });
+  }, [fetchedCardapios, debouncedMenuSearch]);
 
   return (
     <React.Fragment>
@@ -240,7 +253,8 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
           direction={{ xs: "column", sm: "row" }}
           sx={{ overflowX: "auto", paddingBottom: 1, marginBottom: -1 }}
         >
-          {cardapios.map((item, i) => (
+          {}
+          {cardapiosFiltrados.map((item, i) => (
             <MenuItemCard
               key={`${item.id}-${i}`}
               item={item}
@@ -296,7 +310,8 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
               }
               : col
           )}
-          rows={cardapios}
+          
+          rows={cardapiosFiltrados}
           initialRowsPerPage={5}
           isLoading={isLoadingCardapios}
         />
