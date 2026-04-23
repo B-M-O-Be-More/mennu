@@ -7,7 +7,7 @@ import Table from "@/components/Tables/Table";
 import { Button, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
-import { MenusTabProps } from "./";
+import { MenusTabProps } from "./interface";
 import { Cardapio, StatusCardapio } from "@/types/cardapio";
 import { IMenu, IMenuItems } from "@/Interfaces/Menu/menu";
 import MenuItemCard from "./MenuItemCard";
@@ -19,7 +19,8 @@ import { formatDate } from "@/utils/formatDate";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 
-export function MenusTab({ }: MenusTabProps) {
+
+export function MenusTab({ periodFilter }: MenusTabProps) {
   const theme = useTheme();
   const { unitOptions } = useUnitFilterOptions();
 
@@ -69,7 +70,7 @@ export function MenusTab({ }: MenusTabProps) {
             .filter((item) => item.value),
         ]);
       } catch {
-        // ignore load failure and keep default option
+        
       }
     }
 
@@ -162,6 +163,14 @@ export function MenusTab({ }: MenusTabProps) {
           params.set("unidade_nome", debouncedMenuSearch);
         }
 
+        
+        if (periodFilter?.start) {
+          params.set("data_refeicao_after", periodFilter.start.format("YYYY-MM-DD"));
+        }
+        if (periodFilter?.end) {
+          params.set("data_refeicao_before", periodFilter.end.format("YYYY-MM-DD"));
+        }
+
         const queryString = params.toString() ? `?${params.toString()}` : "";
         const response = await fetch(`/api/cardapio${queryString}`);
 
@@ -192,7 +201,7 @@ export function MenusTab({ }: MenusTabProps) {
     };
 
     loadCardapios();
-  }, [debouncedMenuSearch, unidade, tipos, normalizeCardapio]);
+  }, [debouncedMenuSearch, unidade, tipos, normalizeCardapio, periodFilter]); 
 
   return (
     <React.Fragment>

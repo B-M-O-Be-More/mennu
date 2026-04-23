@@ -5,6 +5,7 @@ import { MenuPageProps } from "./";
 import PageHeader from "../PageHeader";
 import { CalendarIcon, CookHatIcon, CopyIcon, MarkedCalendarIcon, PaperIcon, PlusIcon, StatsIcon } from "../Icons";
 import React from "react";
+import type { Dayjs } from "dayjs";
 import TabButton from "../TabButton";
 import MenusTab from "./Tabs/MenusTab";
 import ItemsTab from "./Tabs/ItemsTab";
@@ -14,6 +15,8 @@ import NewMenuModal from "../Modals/NewMenuModal";
 import NewMenuItemModal from "../Modals/NewMenuItemModal";
 import NewManualRegisterModal from "../Modals/NewManualRegisterModal";
 
+import MenuPeriodModal from "../Modals/MenuPeriodModal";
+
 const tabs = [
   { label: "Cardápios", icon: <CalendarIcon height={24} /> },
   { label: "Itens", icon: <CookHatIcon height={24} /> },
@@ -21,15 +24,35 @@ const tabs = [
   { label: "Relatórios", icon: <StatsIcon height={24} /> },
 ];
 
+type PeriodFilter = { start: Dayjs; end: Dayjs } | null;
+
 export function MenuPage({ }: MenuPageProps) {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const [openCreateMenuModal, setOpenCreateMenuModal] = React.useState(false);
-  const [openCopyMenuModal, setOpenCopyMenuModal] = React.useState(false);
   const [openMenuPeriodModal, setOpenMenuPeriodModal] = React.useState(false);
 
   const [openCreateMenuItemModal, setOpenCreateMenuItemModal] = React.useState(false);
   const [openManualRegisterModal, setOpenManualRegisterModal] = React.useState(false);
+
+ 
+  const [periodFilter, setPeriodFilter] = React.useState<PeriodFilter>(null);
+
+  const handleApplyPeriodFilter = (data: { start: Dayjs | null; end: Dayjs | null }) => {
+    if (!data.start || !data.end) {
+      setPeriodFilter(null);
+      return;
+    }
+
+    setPeriodFilter({
+      start: data.start,
+      end: data.end,
+    });
+  };
+
+  const handleCopyMenu = () => {
+    console.log("Copiar");
+  };
 
   return (
     <Stack gap={2}>
@@ -43,7 +66,7 @@ export function MenuPage({ }: MenuPageProps) {
             <Button
               variant="outlined"
               startIcon={<CopyIcon />}
-              onClick={() => setOpenCopyMenuModal(true)}
+              onClick={handleCopyMenu}
             >
               Copiar
             </Button>
@@ -66,6 +89,13 @@ export function MenuPage({ }: MenuPageProps) {
             <NewMenuModal
               open={openCreateMenuModal}
               onClose={() => setOpenCreateMenuModal(false)}
+            />
+
+            {}
+            <MenuPeriodModal
+              open={openMenuPeriodModal}
+              onClose={() => setOpenMenuPeriodModal(false)}
+              onApply={handleApplyPeriodFilter}
             />
           </React.Fragment>
         }
@@ -136,7 +166,8 @@ export function MenuPage({ }: MenuPageProps) {
         ))}
       </Stack>
 
-      {activeTab === 0 && <MenusTab />}
+      {}
+      {activeTab === 0 && <MenusTab periodFilter={periodFilter} />}
       {activeTab === 1 && <ItemsTab />}
       {activeTab === 2 && <ConsumptionTab />}
       {activeTab === 3 && <ReportsTab />}
