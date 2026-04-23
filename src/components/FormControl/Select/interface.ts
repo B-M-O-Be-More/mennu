@@ -10,4 +10,5 @@ export interface SelectGProps {
   name?: string;
   control?: Control<any>;
   register?: UseFormRegisterReturn;
+  defaultValue?: string;
 }
