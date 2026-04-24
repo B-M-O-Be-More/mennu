@@ -41,7 +41,7 @@ export default function SelectG({
             return (
             <Select
               {...field}
-              value={hasOption ? currentValue : ""}
+              value={hasOption ? String(currentValue) : ""}
               sx={{
                 width: "100%",
                 fontSize: 14,

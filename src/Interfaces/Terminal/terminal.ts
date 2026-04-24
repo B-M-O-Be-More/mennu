@@ -1,12 +1,11 @@
 export interface ITerminal {
   id: string;
   nome: string;
-  codigo: string;
   unidade: string;
+  unidadeId?: number;
   tipo: string;
-  status: "online" | "offline" | "desatualizado";
+  status: "ONLINE" | "OFFLINE" | "DESATUALIZADO" | "ERRO" | "MANUTENCAO";
   ultimaSync?: string;
-  refeicoesPermitidas: string[];
-  categoriasPermitidas: string[];
+  refeicoesPermitidas?: string[];
   ativo: boolean;
 }
