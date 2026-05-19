@@ -47,7 +47,14 @@ export function StockPage({}: StockPageProps) {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/insumo");
+      const params = new URLSearchParams();
+      const trimmedSearch = debouncedSearch?.trim();
+      if (trimmedSearch) {
+        params.set("search", trimmedSearch);
+      }
+      const url = params.toString() ? `/api/insumo?${params.toString()}` : "/api/insumo";
+
+      const response = await fetch(url);
       if (!response.ok) {
         const errData = await response.json();
         throw new Error(`Erro ${response.status}: ${errData.message}`);
@@ -86,19 +93,7 @@ export function StockPage({}: StockPageProps) {
     } else {
       loadMovementData();
     }
-  }, [openTab]);
-
-  
-  const filteredStockData = React.useMemo(() => {
-    if (!debouncedSearch) return stockData;
-    
-    const searchLower = debouncedSearch.toLowerCase();
-    
-    return stockData.filter((item) => {
-      const jsonString = JSON.stringify(item).toLowerCase();
-      return jsonString.includes(searchLower);
-    });
-  }, [stockData, debouncedSearch]);
+  }, [openTab, debouncedSearch]);
 
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
@@ -267,7 +262,7 @@ export function StockPage({}: StockPageProps) {
                   : col
               )}
               
-              rows={filteredStockData} 
+              rows={stockData} 
               initialRowsPerPage={5}
               isLoading={loading}
             />
