@@ -100,7 +100,7 @@ export function MenuPage({}: MenuPageProps) {
             <Button
               variant="outlined"
               startIcon={<CopyIcon />}
-              onClick={() => console.log("Copiar")}
+              onClick={() => {}}
             >
               Copiar
             </Button>
@@ -223,7 +223,7 @@ export function MenuPage({}: MenuPageProps) {
             <Button
               variant="contained"
               startIcon={<PlusIcon />}
-              onClick={() => console.log("Exportar CSV")}
+              onClick={() => {}}
             >
               Exportar CSV
             </Button>
