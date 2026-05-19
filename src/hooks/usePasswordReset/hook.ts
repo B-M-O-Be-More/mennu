@@ -1,6 +1,44 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation'; 
+import { useSearchParams } from 'next/navigation';
 import { EsqueciSenhaIn, MessageSchema, RedefinirSenhaIn, ValidarTokenOut } from '@/Interfaces/Auth/passwordReset';
+
+type ApiPayload = Record<string, unknown> | null;
+
+async function readResponseBody(response: Response): Promise<ApiPayload> {
+  if (response.status === 204) {
+    return null;
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    return (await response.json()) as Record<string, unknown>;
+  }
+
+  const text = await response.text();
+
+  if (!text.trim()) {
+    return null;
+  }
+
+  return { message: text };
+}
+
+function getErrorMessage(body: ApiPayload, fallback: string) {
+  if (!body) {
+    return fallback;
+  }
+
+  if (typeof body.detail === 'string' && body.detail.trim()) {
+    return body.detail;
+  }
+
+  if (typeof body.message === 'string' && body.message.trim()) {
+    return body.message;
+  }
+
+  return fallback;
+}
 
 export function useSolicitarRecuperacao() {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,7 +47,7 @@ export function useSolicitarRecuperacao() {
   const mutateAsync = useCallback(async (data: EsqueciSenhaIn) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/esqueci-senha', {
         method: 'POST',
@@ -17,16 +55,18 @@ export function useSolicitarRecuperacao() {
         body: JSON.stringify(data),
       });
 
-      const body = await response.json();
-      
+      const body = await readResponseBody(response);
+
       if (!response.ok) {
-        throw new Error(body.detail || 'Erro na requisição');
+        throw new Error(getErrorMessage(body, 'Erro na requisição'));
       }
 
-      return body as MessageSchema;
-    } catch (err: unknown) { 
+      return (body ?? {
+        detail: 'Se o e-mail estiver cadastrado, enviaremos as instruções de recuperação.',
+      }) as MessageSchema;
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao solicitar recuperação';
-      
+
       setError(errorMessage);
       throw err;
     } finally {
@@ -48,7 +88,7 @@ export function useValidarToken() {
   useEffect(() => {
     if (!token) return;
 
-    let isMounted = true; 
+    let isMounted = true;
     setIsLoading(true);
     setError(null);
 
@@ -56,16 +96,16 @@ export function useValidarToken() {
       try {
         const queryString = new URLSearchParams({ token }).toString();
         const response = await fetch(`/api/auth/validar-token-redefinicao?${queryString}`);
-        const body = await response.json();
+        const body = await readResponseBody(response);
 
         if (!response.ok) {
-          throw new Error(body.detail || 'Erro ao validar token');
+          throw new Error(getErrorMessage(body, 'Erro ao validar token'));
         }
 
         if (isMounted) {
           setData(body as ValidarTokenOut);
         }
-      } catch (err: unknown) { 
+      } catch (err: unknown) {
         if (isMounted) {
           const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao validar token';
           setError(errorMessage);
@@ -87,7 +127,6 @@ export function useValidarToken() {
   return { data, isLoading, error, token };
 }
 
-
 export function useRedefinirSenha() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +134,7 @@ export function useRedefinirSenha() {
   const mutateAsync = useCallback(async (data: RedefinirSenhaIn) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/auth/redefinir-senha', {
         method: 'POST',
@@ -103,22 +142,24 @@ export function useRedefinirSenha() {
         body: JSON.stringify(data),
       });
 
-      const body = await response.json();
-      
+      const body = await readResponseBody(response);
+
       if (!response.ok) {
-        throw new Error(body.detail || 'Erro ao redefinir senha');
+        throw new Error(getErrorMessage(body, 'Erro ao redefinir senha'));
       }
 
-      return body as MessageSchema;
-    } catch (err: unknown) { 
+      return (body ?? {
+        detail: 'Senha redefinida com sucesso.',
+      }) as MessageSchema;
+    } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao redefinir senha';
-      
+
       setError(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }, []); 
+  }, []);
 
   return { mutateAsync, isLoading, error };
 }
