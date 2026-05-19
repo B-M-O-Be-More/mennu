@@ -25,8 +25,8 @@ export async function getCardapios(filters: Record<string, string> = {}) {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-API-Key": token,
-      "Empresa-id": empresaId,
+      Authorization: token,
+      "empresa-id-x": empresaId,
     },
     next: { revalidate: 60 },
   });
