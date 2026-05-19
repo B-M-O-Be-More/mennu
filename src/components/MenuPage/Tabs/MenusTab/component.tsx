@@ -15,7 +15,7 @@ import { menuColumns } from "@/data/tableColumns";
 import Select from "@/components/FormControl/Select";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 import { ActionModal } from "@/components/Modals/ActionModal/component";
-import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDateOnly";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 
@@ -159,14 +159,19 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
           params.set("tipo_refeicao", String(tipoRefeicao));
         }
         
-        if (periodFilter?.start) {
+        if (
+          periodFilter?.start &&
+          periodFilter?.end &&
+          !periodFilter.start.isAfter(periodFilter.end)
+        ) {
           params.set("data_refeicao_after", periodFilter.start.format("YYYY-MM-DD"));
-        }
-        if (periodFilter?.end) {
           params.set("data_refeicao_before", periodFilter.end.format("YYYY-MM-DD"));
         }
 
-        
+        const search = debouncedMenuSearch.trim();
+        if (search) {
+          params.set("search", search);
+        }
 
         const queryString = params.toString() ? `?${params.toString()}` : "";
         const response = await fetch(`/api/cardapio${queryString}`);
@@ -201,20 +206,7 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
 
     loadCardapios();
     
-  }, [unidade, tipos, normalizeCardapio, periodFilter]); 
-
-  
-  const cardapiosFiltrados = React.useMemo(() => {
-    if (!debouncedMenuSearch) return fetchedCardapios;
-    
-    const termoBusca = debouncedMenuSearch.toLowerCase();
-    
-    return fetchedCardapios.filter((item) => {
-      
-      const jsonString = JSON.stringify(item).toLowerCase();
-      return jsonString.includes(termoBusca);
-    });
-  }, [fetchedCardapios, debouncedMenuSearch]);
+  }, [unidade, tipos, normalizeCardapio, periodFilter, debouncedMenuSearch]); 
 
   return (
     <React.Fragment>
@@ -254,7 +246,7 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
           sx={{ overflowX: "auto", paddingBottom: 1, marginBottom: -1 }}
         >
           {}
-          {cardapiosFiltrados.map((item, i) => (
+          {fetchedCardapios.map((item, i) => (
             <MenuItemCard
               key={`${item.id}-${i}`}
               item={item}
@@ -311,7 +303,7 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
               : col
           )}
           
-          rows={cardapiosFiltrados}
+          rows={fetchedCardapios}
           initialRowsPerPage={5}
           isLoading={isLoadingCardapios}
         />
@@ -338,7 +330,7 @@ export function MenusTab({ periodFilter }: MenusTabProps) {
             onCancel={() => setOpenDeleteMenuModal(false)}
             onConfirm={() => console.log("Menu deleted:", selectedMenu)}
             title="Tem certeza?"
-            subtitle={`Essa ação irá deletar o cardápio da data "${formatDate(new Date(selectedMenu.data), "dd/MM/yyyy")}", deseja continuar?`}
+            subtitle={`Essa ação irá deletar o cardápio da data "${formatDateOnly(selectedMenu.data)}", deseja continuar?`}
             confirmLabel="Confirmar"
             cancelLabel="Cancelar"
             color="error"

@@ -40,7 +40,7 @@ export function MenuPage({}: MenuPageProps) {
   const [openManualRegisterModal, setOpenManualRegisterModal] = React.useState(false);
   const [periodFilter, setPeriodFilter] = React.useState<PeriodFilter>(null);
 
-  const { control, reset } = useForm<PeriodFormFields>({
+  const { control, reset, setValue } = useForm<PeriodFormFields>({
     defaultValues: { start: null, end: null },
   });
 
@@ -48,12 +48,18 @@ export function MenuPage({}: MenuPageProps) {
   const end = useWatch({ control, name: "end" });
 
   React.useEffect(() => {
+    if (start && end && start.isAfter(end)) {
+      setValue("end", null);
+      setPeriodFilter(null);
+      return;
+    }
+
     if (start && end) {
       setPeriodFilter({ start, end });
     } else {
       setPeriodFilter(null);
     }
-  }, [start, end]);
+  }, [start, end, setValue]);
 
   const handleClearPeriod = () => {
     reset({ start: null, end: null });

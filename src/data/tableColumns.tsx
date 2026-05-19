@@ -7,6 +7,7 @@ import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDateOnly";
 import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
 import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
@@ -277,7 +278,7 @@ const menuColumns: IColumn<IMenu>[] = [
     label: "Data",
     render: (row) => (
       <Typography variant="body2">
-        {formatDate(new Date(row.data), "dd/MM/yyyy")}
+        {formatDateOnly(row.data)}
       </Typography>
     ),
   },

@@ -1,5 +1,5 @@
-import { Dayjs } from 'dayjs';
+import type { PeriodFilter } from "@/components/MenuPage/interface";
 
 export interface MenusTabProps {
-  periodFilter?: { start: Dayjs | null; end: Dayjs | null } | null;
+  periodFilter?: PeriodFilter;
 }
