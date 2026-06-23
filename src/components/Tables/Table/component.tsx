@@ -61,7 +61,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export default function TableG<T extends Record<string, any>>({
+export default function TableG<T extends object>({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25, 50],
@@ -71,10 +71,24 @@ export default function TableG<T extends Record<string, any>>({
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
 
+  React.useEffect(() => {
+    setPage(0);
+  }, [rows]);
+
+  React.useEffect(() => {
+    const lastPage =
+      rowsPerPage > 0 ? Math.max(0, Math.ceil(rows.length / rowsPerPage) - 1) : 0;
+
+    setPage((currentPage) => Math.min(currentPage, lastPage));
+  }, [rows.length, rowsPerPage]);
+
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const handleChangePage = (_: any, newPage: number) => setPage(newPage);
+  const handleChangePage = (
+    _: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number,
+  ) => setPage(newPage);
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -133,7 +147,7 @@ export default function TableG<T extends Record<string, any>>({
                     <TableCell key={String(col.key)} align={col.align || "left"}>
                       {col.render
                         ? col.render(row, absoluteIndex)
-                        : row[col.key]}
+                        : (row as unknown as Record<PropertyKey, React.ReactNode>)[col.key]}
                     </TableCell>
                   ))}
                 </TableRow>
