@@ -11,8 +11,9 @@ import Link from "next/link";
 import { useValidarToken, useRedefinirSenha } from "@/hooks/usePasswordReset/hook";
 
 import { FormNewPassword } from "@/components/Forms/FormNewPassword/component";
+import { Suspense } from "react";
 
-export default function RedefinirSenhaPage() {
+function RedefinirSenhaContent() {
   const router = useRouter();
   
   const { data, isLoading: isValidating, error, token } = useValidarToken();
@@ -180,5 +181,17 @@ export default function RedefinirSenhaPage() {
         loading={isSubmitting}
       />
     </Box>
+  );
+}
+
+export default function RedefinirSenhaPage() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ minHeight: '100vh', bgcolor: '#D63B0F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress sx={{ color: '#FFFFFF' }} />
+      </Box>
+    }>
+      <RedefinirSenhaContent />
+    </Suspense>
   );
 }

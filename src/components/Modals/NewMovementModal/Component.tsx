@@ -4,7 +4,7 @@ import { NewMovementModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { ArrowIcon, CircledCheckIcon, EditIcon, TrashIcon } from "@/components/Icons";
+import { ArrowIcon, CircledCheckIcon, EditIcon, TrashIcon, AlertIcon } from "@/components/Icons";
 import { Card } from "@/components/Cards/Card/Component";
 import { useForm } from "react-hook-form";
 import { createMovementSchema, CreateMovementSchemaFormData } from "@/schemas/movementSchema";
@@ -98,7 +98,7 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
   return (
     <Modal open={open} onClose={onClose} title="Nova Movimentação">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        {error && <ClosableAlertBox severity="error" title="Erro" description={error} />}
+        {error && <ClosableAlertBox severity="error" icon={<AlertIcon color={theme.palette.error.contrastText} />} title="Erro" description={error} />}
 
         <Box>
           <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
