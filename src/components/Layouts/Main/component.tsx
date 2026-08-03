@@ -6,7 +6,7 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
 import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
-import { hasAdminAccess } from "@/utils/userUtils";
+import { hasAdminAccess, hasModulePermission } from "@/utils/userUtils";
 
 export default function MainLayout({
   children,
@@ -36,19 +36,26 @@ export default function MainLayout({
     { id: "configuracoes", label: "Configurações", icon: <ConfiguracoesIcon />, path: "/admin/configuracoes" },
   ];
 
+  const visibleMenuItems = menuItems.filter(
+    (item) => item.id !== "terminal" || hasModulePermission(user, "Terminal"),
+  );
+
   const protectedRoutes = [...menuItems, ...adminMenuItems].map((item) => item.path);
   const isKnownProtectedRoute = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
   React.useEffect(() => {
-    const previousPathname = previousPathnameRef.current;
-    const isFirstRender = previousPathname === null;
-    const hasPathChanged = isFirstRender || previousPathname !== pathname;
+    // Não carimba previousPathnameRef enquanto isLoadingPages ainda não
+    // resolveu — senão, quando o loading termina e descobre que o usuário
+    // não está autenticado, o pathname "já mudou" nesse ref (foi carimbado
+    // no render anterior, ainda em loading) e o redirect nunca dispara.
+    if (isLoadingPages) return;
 
+    const previousPathname = previousPathnameRef.current;
+    const hasPathChanged = previousPathname === null || previousPathname !== pathname;
     previousPathnameRef.current = pathname;
 
-    if (isLoadingPages) return;
     if (isAuthenticated) return;
     if (!isKnownProtectedRoute) return;
     if (!hasPathChanged) return;
@@ -61,7 +68,19 @@ export default function MainLayout({
     router.replace(`/?${params.toString()}`);
   }, [isLoadingPages, isAuthenticated, isKnownProtectedRoute, pathname, router]);
 
-  const shouldShowSidebar = isAuthenticated && isKnownProtectedRoute;
+  const isKioskRoute = pathname.startsWith("/terminal/");
+  const shouldShowSidebar = isAuthenticated && isKnownProtectedRoute && !isKioskRoute;
+
+  React.useEffect(() => {
+    // Sai da tela cheia sempre que a rota atual não for mais kiosk — cobre
+    // o botão de voltar, o botão nativo do navegador, qualquer navegação.
+    // Não depende de mount/unmount do componente do kiosk (isso rodava em
+    // duplicidade no Strict Mode do dev e fazia a tela cheia entrar e sair
+    // na hora).
+    if (!isKioskRoute && document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, [isKioskRoute]);
   const shouldBlockProtectedContent =
     !isLoadingPages && !isAuthenticated && isKnownProtectedRoute;
 
@@ -82,7 +101,7 @@ export default function MainLayout({
     >
       {shouldShowSidebar && (
         <SidebarComponent
-          menuItems={menuItems}
+          menuItems={visibleMenuItems}
           adminMenuItems={adminMenuItems}
           user={sidebarUser}
           onLogout={logout}

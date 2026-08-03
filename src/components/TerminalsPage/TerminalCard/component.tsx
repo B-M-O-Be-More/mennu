@@ -18,7 +18,11 @@ export default function TerminalCard({ terminal }: TerminalCardProps) {
     if (!status) {
       e.preventDefault();
       setOpenToast(true);
+      return;
     }
+    // Precisa ser síncrono dentro do gesto de clique — a Fullscreen API
+    // rejeita chamadas fora de um gesto direto do usuário.
+    document.documentElement.requestFullscreen?.().catch(() => {});
   };
 
   return (
@@ -57,7 +61,7 @@ export default function TerminalCard({ terminal }: TerminalCardProps) {
                 {terminal.nome}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                {terminal.codigo}
+                {terminal.unidadeNome}
               </Typography>
             </Box>
           </Stack>
@@ -76,7 +80,7 @@ export default function TerminalCard({ terminal }: TerminalCardProps) {
 
       <Toast
         open={openToast}
-        message={`O terminal "${terminal.nome}" (${terminal.codigo}) está offline.`}
+        message={`O terminal "${terminal.nome}" (${terminal.unidadeNome}) está offline.`}
         severity="error"
         onClose={() => setOpenToast(false)}
       />

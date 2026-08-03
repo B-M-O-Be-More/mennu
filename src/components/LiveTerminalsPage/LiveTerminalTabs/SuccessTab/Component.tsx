@@ -3,29 +3,9 @@ import { SuccessTabProps } from "./";
 import IconBox from "@/components/Cards/IconBox/Component";
 import { CircledCheckIcon } from "@/components/Icons";
 import React from "react";
-import { IUser } from "@/Interfaces/User/user";
 import { formatDate } from "@/utils/formatDate";
 
-const mockUser: IUser = {
-  id: 6905,
-  nome: "João da Silva",
-  email: "joao.silva@example.com",
-  cpf: "123.456.789-00",
-  matricula: "USR-6905",
-  tipo_usuario: "funcionario",
-  status: true,
-  status_acesso: true,
-  numero_cartao: "CARD-123456",
-  unidade: "Sede São Paulo",
-  updated_at: "2025-12-04T14:30:22Z",
-  token_access: {
-    token: "abcdef1234567890",
-    expirado_em: "2026-12-04T14:30:22Z",
-  },
-  ultima_refeicao: null,
-}
-
-export default function SuccessTab({ setTab }: SuccessTabProps) {
+export default function SuccessTab({ setTab, accessResult }: SuccessTabProps) {
   const theme = useTheme();
 
   const [count, setCount] = React.useState(3);
@@ -79,7 +59,7 @@ export default function SuccessTab({ setTab }: SuccessTabProps) {
               <Typography variant="caption" color="default.contrastText">
                 Usuário
               </Typography>
-              <Typography>{mockUser.nome}</Typography>
+              <Typography>{accessResult?.usuarioNome ?? "—"}</Typography>
             </Stack>
           </Grid>
 
@@ -88,7 +68,7 @@ export default function SuccessTab({ setTab }: SuccessTabProps) {
               <Typography variant="caption" color="default.contrastText">
                 ID
               </Typography>
-              <Typography>{mockUser.matricula}</Typography>
+              <Typography>{accessResult?.usuarioMatricula ?? "—"}</Typography>
             </Stack>
           </Grid>
 
@@ -98,7 +78,8 @@ export default function SuccessTab({ setTab }: SuccessTabProps) {
                 Terminal
               </Typography>
               <Typography>
-                Terminal Térreo - Entrada Principal • Sede São Paulo
+                {accessResult?.terminalNome ?? "—"}
+                {accessResult?.unidadeNome ? ` • ${accessResult.unidadeNome}` : ""}
               </Typography>
             </Stack>
           </Grid>
@@ -117,7 +98,11 @@ export default function SuccessTab({ setTab }: SuccessTabProps) {
               <Typography variant="caption" color="default.contrastText">
                 Data/Hora
               </Typography>
-              <Typography>{formatDate(new Date(mockUser.updated_at), "dd/MM/yyyy, hh:mm:ss")}</Typography>
+              <Typography>
+                {accessResult?.timestamp
+                  ? formatDate(new Date(accessResult.timestamp), "dd/MM/yyyy, hh:mm:ss")
+                  : "—"}
+              </Typography>
             </Stack>
           </Grid>
         </Grid>

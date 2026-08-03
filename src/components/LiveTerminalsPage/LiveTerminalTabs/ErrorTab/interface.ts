@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+import { ITerminalAccessResult } from "@/Interfaces/Terminal/terminal";
+
 export interface ErrorTabProps {
   setTab: (tabIndex: number) => void;
+  accessResult?: ITerminalAccessResult;
 }

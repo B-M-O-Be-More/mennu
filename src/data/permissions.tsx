@@ -49,6 +49,13 @@ export const profilePermissionsMock: IProfilePermissions[] = [
         criar: false,
         editar: false,
         excluir: false,
+      },
+      {
+        modulo: "Terminal",
+        visualizar: false,
+        criar: false,
+        editar: false,
+        excluir: false,
       }
     ]
   },
@@ -96,6 +103,13 @@ export const profilePermissionsMock: IProfilePermissions[] = [
       },
       {
         modulo: "Perfil de Acesso",
+        visualizar: true,
+        criar: true,
+        editar: true,
+        excluir: true,
+      },
+      {
+        modulo: "Terminal",
         visualizar: true,
         criar: true,
         editar: true,
@@ -151,6 +165,13 @@ export const profilePermissionsMock: IProfilePermissions[] = [
         criar: false,
         editar: false,
         excluir: false,
+      },
+      {
+        modulo: "Terminal",
+        visualizar: true,
+        criar: false,
+        editar: false,
+        excluir: false,
       }
     ]
   },
@@ -199,6 +220,13 @@ export const profilePermissionsMock: IProfilePermissions[] = [
       {
         modulo: "Perfil de Acesso",
         visualizar: false,
+        criar: false,
+        editar: false,
+        excluir: false,
+      },
+      {
+        modulo: "Terminal",
+        visualizar: true,
         criar: false,
         editar: false,
         excluir: false,

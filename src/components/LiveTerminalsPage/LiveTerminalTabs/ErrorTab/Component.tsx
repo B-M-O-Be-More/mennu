@@ -4,7 +4,7 @@ import IconBox from "@/components/Cards/IconBox/Component";
 import { CircledXIcon } from "@/components/Icons";
 import React from "react";
 
-export default function ErrorTab({ setTab }: ErrorTabProps) {
+export default function ErrorTab({ setTab, accessResult }: ErrorTabProps) {
   const theme = useTheme();
 
   const [count, setCount] = React.useState(3);
@@ -47,7 +47,7 @@ export default function ErrorTab({ setTab }: ErrorTabProps) {
           Acesso Negado
         </Typography>
         <Typography variant="body2" color="text.secondary" textAlign="center">
-          Cartão não autorizado. Entre em contato com o RH.
+          {accessResult?.message ?? "Cartão não autorizado. Entre em contato com o RH."}
         </Typography>
 
         <Typography variant="body2" color="text.secondary" textAlign={"center"}>
