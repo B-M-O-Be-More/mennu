@@ -14,7 +14,7 @@ import { MenuItemCardProps } from "./";
 import React from "react";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 import EditMenuModal from "@/components/Modals/EditMenuModal";
-import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDateOnly";
 
 const MenuItemCard = ({ item }: MenuItemCardProps) => {
   const theme = useTheme();
@@ -40,7 +40,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
         />
         <Box>
           <Typography variant="body2">
-            {formatDate(new Date(item.data), "dd/MM/yyyy")}
+            {formatDateOnly(item.data)}
           </Typography>
           <Typography
             variant="caption"

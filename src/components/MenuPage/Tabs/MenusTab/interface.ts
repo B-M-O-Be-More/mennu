@@ -1,2 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-export interface MenusTabProps { }
+import type { PeriodFilter } from "@/components/MenuPage/interface";
+
+export interface MenusTabProps {
+  periodFilter?: PeriodFilter;
+}

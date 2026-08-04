@@ -13,6 +13,7 @@ export default function SelectG({
   name,
   control,
   register,
+  defaultValue = "",
 }: SelectGProps) {
   return (
     <FormControl fullWidth sx={{ ...formControlSx }}>
@@ -69,6 +70,7 @@ export default function SelectG({
       ) : (
         <Select
           {...register}
+          defaultValue={defaultValue}
           sx={{
             width: "100%",
             fontSize: 14,

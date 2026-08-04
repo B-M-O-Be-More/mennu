@@ -2,7 +2,7 @@ import { Box, Button, Chip, Grid, Stack, Typography, useTheme } from "@mui/mater
 import Modal from "../Modal";
 import { ViewMenuModalProps } from "./";
 import { ClockIcon, RefeicoesIcon } from "@/components/Icons";
-import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDateOnly";
 
 const categoriaColorMap: Record<string, "success" | "info" | "purple" | "pink" | "orange"> =
 {
@@ -45,7 +45,7 @@ export function ViewMenuModal({
               Data:
             </Typography>
             <Typography>
-              {formatDate(new Date(data.data), "dd/MM/yyyy")}
+              {formatDateOnly(data.data)}
             </Typography>
           </Grid>
 

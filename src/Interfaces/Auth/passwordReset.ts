@@ -9,9 +9,10 @@ export interface RedefinirSenhaIn {
   confirmar_senha: string;
 }
 
-// Tipos de Saída (Responses)
+// Tipos de Saida (Responses)
 export interface MessageSchema {
-  detail: string;
+  detail?: string;
+  message?: string;
 }
 
 export interface ValidarTokenOut {
