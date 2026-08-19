@@ -25,7 +25,8 @@ export default function DatePickerG({
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
         adapterLocale="pt-br"
-        localeText={brLocaleText}>
+        localeText={brLocaleText}
+      >
         <Controller
           name={name}
           control={control}
