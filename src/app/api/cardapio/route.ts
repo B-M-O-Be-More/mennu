@@ -55,3 +55,28 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: String(err) }, { status: 500 });
   }
 }
+
+export async function POST(req: NextRequest) {
+  const headers = await getHeaders();
+  if (!headers) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  const body = await req.json();
+
+  try {
+    const response = await fetch(`${baseUrl}/cardapio/`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+
+    const data = await safeJson(response);
+    return NextResponse.json(data, { status: response.status });
+  } catch (err) {
+    return NextResponse.json({ message: String(err) }, { status: 500 });
+  }
+}
