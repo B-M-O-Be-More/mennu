@@ -139,8 +139,6 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
   const [selectedRequest, setSelectedRequest] = React.useState<IExtraRequest>({} as IExtraRequest);
   const [reviewAction, setReviewAction] = React.useState<"aprovar" | "reprovar" | null>(null);
 
-  console.log(_openExportExtraRequestModal)
-
   const { register, control } = useForm<{ search: string, user: string, unit: string, status: string }>({
     defaultValues: {
       search: "",
