@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "./getApiBaseUrl";
 
 export function getWsBaseUrl(): string {
-  return getApiBaseUrl().replace(/^http/, "ws");
+  const httpRoot = getApiBaseUrl().replace(/\/api\/?$/, "");
+  return httpRoot.replace(/^http/, "ws");
 }

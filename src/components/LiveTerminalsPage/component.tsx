@@ -4,7 +4,7 @@ import { Stack, Typography, useTheme, Box, Button, Alert } from "@mui/material";
 import { LiveTerminalsPageProps } from "./";
 import { ClockIcon, NoWifiIcon, WifiIcon } from "../Icons";
 import { formatDate } from "@/utils/formatDate";
-import { ErrorTab, MainTab, SuccessTab } from "./LiveTerminalTabs/";
+import { BlockedTab, ErrorTab, MainTab, SuccessTab } from "./LiveTerminalTabs/";
 import NextLink from "next/link";
 import { useParams } from "next/navigation";
 import { ITerminal, ITerminalAccessResult, mapApiTerminalToUi, TerminalStatus } from "@/Interfaces/Terminal/terminal";
@@ -92,7 +92,7 @@ export function LiveTerminalsPage({ }: LiveTerminalsPageProps) {
     [terminalId],
   );
 
-  useTerminalSocket({ onEvent: handleSocketEvent });
+  const { connected } = useTerminalSocket({ onEvent: handleSocketEvent });
 
   const isConectado = terminal?.status === "online";
 
@@ -148,7 +148,13 @@ export function LiveTerminalsPage({ }: LiveTerminalsPageProps) {
         </Box>
       )}
 
-      {tab === 0 && <MainTab />}
+      {!connected && (
+        <Box px={{ xs: 2, md: 6 }}>
+          <Alert severity="warning">Conexão em tempo real indisponível. Tentando reconectar...</Alert>
+        </Box>
+      )}
+
+      {tab === 0 && (terminal && terminal.status !== "online" ? <BlockedTab status={terminal.status} /> : <MainTab />)}
       {tab === 1 && <SuccessTab setTab={setTab} accessResult={accessResult} />}
       {tab === 2 && <ErrorTab setTab={setTab} accessResult={accessResult} />}
 
