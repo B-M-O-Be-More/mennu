@@ -1,10 +1,20 @@
 import { Control, UseFormRegisterReturn } from "react-hook-form";
 
+export interface SelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
 export interface SelectGProps {
   label?: string;
+  labelIcon?: React.ReactNode;
   optional?: boolean;
-  options: { label: string; value: string; disabled?: boolean }[];
+  options: SelectOption[];
   error?: string;
+  description?: string;
+  icon?: React.ReactNode;
+  disabled?: boolean;
   formControlSx?: object;
   selectSx?: object;
   name?: string;

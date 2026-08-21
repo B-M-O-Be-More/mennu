@@ -19,7 +19,6 @@ const mockWeekDays = [
 ];
 
 export function PeriodStep({
-  register,
   errors,
   trigger,
   setCurrentStep,
@@ -51,7 +50,8 @@ export function PeriodStep({
           <Select
             label="Tipo de Intervalo"
             options={mockTiposIntervalo}
-            register={register("tipoIntervalo")}
+            name="tipoIntervalo"
+            control={control}
             error={errors.tipoIntervalo?.message}
           />
         </Grid>

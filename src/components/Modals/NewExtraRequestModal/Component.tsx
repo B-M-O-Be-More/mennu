@@ -16,6 +16,7 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
   const {
     handleSubmit,
     register,
+    control,
     formState: { errors },
   } = useForm<CreateExtraRequestFormData>({
     resolver: yupResolver(createExtraRequestSchema),
@@ -38,7 +39,8 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
         <Select
           label="Usuário"
           options={mockUsers}
-          register={register("usuario")}
+          name="usuario"
+          control={control}
           error={errors.usuario?.message}
           optional={false}
         />
@@ -46,7 +48,8 @@ export default function NewExtraRequestModal({ open, onClose }: NewExtraRequestM
         <Select
           label="Tipo de Solicitação"
           options={mockExtraRequestTypes}
-          register={register("tipo")}
+          name="tipo"
+          control={control}
           error={errors.tipo?.message}
           optional={false}
         />

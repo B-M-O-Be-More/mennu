@@ -107,7 +107,6 @@ export default function EditMenuModal({
         {
           currentStep === 0 && (
             <PeriodStep
-              register={register}
               errors={errors}
               trigger={trigger}
               setCurrentStep={setCurrentStep}

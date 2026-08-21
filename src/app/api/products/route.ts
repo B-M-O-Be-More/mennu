@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
 export async function GET(request: Request) {
+  const baseUrl = getApiBaseUrl();
   const cookiesState = await cookies();
 
   

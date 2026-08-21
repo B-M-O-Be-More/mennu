@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = getApiBaseUrl();
-
 async function getHeaders(): Promise<Record<string, string> | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
@@ -23,6 +21,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
     return NextResponse.json(

@@ -13,6 +13,7 @@ import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
 import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+import dayjs from "dayjs";
 
 const statusChipSx = {
   width: 100,
@@ -247,7 +248,7 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
   {
     key: "horario",
     label: "Horário",
-    render: (row) => formatDateTime(row.horario),
+    render: (row) => dayjs(row.horario).format("HH:mm"),
   },
   { key: "terminal", label: "Terminal" },
   {
@@ -341,14 +342,14 @@ const consumptionHistoryColumns: IColumn<IConsumptionHistory>[] = [
     key: "data",
     label: "Data",
     render: (row) => (
-      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+      <Typography variant="body2">{dayjs(row.horario).format("DD/MM/YYYY")}</Typography>
     ),
   },
   {
     key: "horario",
     label: "Horário",
     render: (row) => (
-      <Typography variant="body2">{formatDate(new Date(row.horario), "HH:mm")}</Typography>
+      <Typography variant="body2">{dayjs(row.horario).format("HH:mm")}</Typography>
     ),
   },
   {

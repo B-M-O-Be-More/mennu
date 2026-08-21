@@ -76,33 +76,30 @@ export default function EditUserModal({
 
         <Stack direction="row" spacing={2}>
           <Select
-            name="categoria"
-            control={control}
             label="Categoria"
             optional={false}
             options={mockTipoUsuario}
-            register={register("tipo_usuario")}
+            name="tipo_usuario"
+            control={control}
             error={errors.tipo_usuario?.message}
           />
 
           <Select
-            name="unidade"
-            control={control}
             label="Unidade"
             optional={false}
             options={mockUnidades}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             error={errors.unidade?.message}
           />
         </Stack>
 
         <Select
-          name="status"
-          control={control}
           label="Status"
           optional={true}
           options={mockStatuses}
-          register={register("status")}
+          name="status"
+          control={control}
           error={errors.status?.message}
         />
 

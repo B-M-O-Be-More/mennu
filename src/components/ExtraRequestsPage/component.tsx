@@ -139,7 +139,7 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
   const [selectedRequest, setSelectedRequest] = React.useState<IExtraRequest>({} as IExtraRequest);
   const [reviewAction, setReviewAction] = React.useState<"aprovar" | "reprovar" | null>(null);
 
-  const { register } = useForm<{ search: string, user: string, unit: string, status: string }>({
+  const { register, control } = useForm<{ search: string, user: string, unit: string, status: string }>({
     defaultValues: {
       search: "",
       user: mockUsers[0].value,
@@ -235,19 +235,22 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
           <Select
             label="Usuário"
             options={mockUsers}
-            register={register("user")}
+            name="user"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
           <Select
             label="Unidade"
             options={mockUnidades}
-            register={register("unit")}
+            name="unit"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
           <Select
             label="Status"
             options={mockStatuses}
-            register={register("status")}
+            name="status"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
         </Stack>

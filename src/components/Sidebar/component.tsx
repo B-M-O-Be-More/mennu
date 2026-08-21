@@ -189,7 +189,10 @@ export function SidebarComponent({
       aria-label="Menu principal"
       sx={{
         width: { xs: 224, sm: 240, lg: 256 },
-        height: "100vh",
+        flexShrink: 0,
+        height: "100%",
+        maxHeight: "100dvh",
+        overflow: "hidden",
         bgcolor: "sidebar.background",
         display: "flex",
         flexDirection: "column",
@@ -205,6 +208,7 @@ export function SidebarComponent({
         sx={{
           width: { xs: 188, sm: 202, lg: 216 },
           height: { xs: 52, sm: 56, lg: 60 },
+          flexShrink: 0,
           bgcolor: "background.auth",
           borderRadius: 2.05,
           ml: { xs: 2, sm: 2.5, lg: 3 },
@@ -226,7 +230,14 @@ export function SidebarComponent({
           px: { xs: 1.5, sm: 1.75, lg: 2 },
           flex: 1,
           overflowY: "auto",
+          overscrollBehavior: "contain",
           minHeight: 0,
+          "&::-webkit-scrollbar": { width: 6 },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: 3,
+            backgroundColor: "sidebar.divider",
+          },
+          scrollbarWidth: "thin",
           "& > *:not(:last-child)": { mb: 0.5 },
         }}
       >
@@ -290,6 +301,7 @@ export function SidebarComponent({
             sm: "1.375rem 1.25rem 1.25rem",
             lg: "1.5625rem 1.5rem 1.5rem",
           },
+          flexShrink: 0,
           borderTop: 1,
           borderColor: "sidebar.divider",
         }}

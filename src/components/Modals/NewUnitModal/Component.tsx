@@ -12,6 +12,7 @@ export default function NewUnitModal({ open, onClose }: NewUnitModalProps) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors }
   } = useForm<CreateUnitSchemaFormData>({
     resolver: yupResolver(createUnitSchema),
@@ -73,7 +74,8 @@ export default function NewUnitModal({ open, onClose }: NewUnitModalProps) {
           label="Status"
           optional={true}
           options={mockStatuses}
-          register={register("status")}
+          name="status"
+          control={control}
           error={errors.status?.message}
         />
 

@@ -3,8 +3,6 @@ import { cookies } from "next/headers";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 import { getWsBaseUrl } from "@/app/api/_shared/getWsBaseUrl";
 
-const baseUrl = getApiBaseUrl();
-
 async function getHeaders(): Promise<Record<string, string> | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("mennu_token")?.value;
@@ -21,6 +19,7 @@ async function getHeaders(): Promise<Record<string, string> | null> {
 }
 
 export async function POST(req: NextRequest) {
+  const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
     return NextResponse.json(

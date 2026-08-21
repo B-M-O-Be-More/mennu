@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { unstable_rethrow } from "next/navigation";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 import { normalizeUserData } from "@/utils/userUtils";
 import { IUser } from "@/Interfaces/User/user";
@@ -40,6 +41,7 @@ export async function getServerUser(): Promise<IUser | null> {
 
     return null;
   } catch (error) {
+    unstable_rethrow(error);
     console.error("Error fetching user on server:", error);
     return null;
   }

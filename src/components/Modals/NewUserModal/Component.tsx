@@ -16,6 +16,7 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
   const {
     handleSubmit,
     register,
+    control,
     formState: { errors },
   } = useForm<CreateUserSchemaFormData>({
     resolver: yupResolver(createUserSchema),
@@ -73,14 +74,16 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           <Select
             label="Categoria"
             options={mockTipoUsuario}
-            register={register("tipo_usuario")}
+            name="tipo_usuario"
+            control={control}
             error={errors.tipo_usuario?.message}
           />
 
           <Select
             label="Unidade"
             options={mockUnidades}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             error={errors.unidade?.message}
           />
         </Stack>
@@ -89,7 +92,8 @@ export default function NewUserModal({ open, onClose }: NewUserModalProps) {
           <Select
             label="Status"
             options={mockStatuses}
-            register={register("status")}
+            name="status"
+            control={control}
             error={errors.status?.message}
           />
 

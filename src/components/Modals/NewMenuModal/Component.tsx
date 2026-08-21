@@ -94,7 +94,6 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
         {
           currentStep === 0 && (
             <PeriodStep
-              register={register}
               errors={errors}
               trigger={trigger}
               onClose={onClose}

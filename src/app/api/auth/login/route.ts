@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 
-const baseUrl = getApiBaseUrl();
-
 export async function POST(req: Request) {
+  const baseUrl = getApiBaseUrl();
   const body = await req.json();
 
   const authUrl = `${baseUrl}/auth/login`;
