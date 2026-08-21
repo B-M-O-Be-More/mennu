@@ -269,7 +269,10 @@ export default function EditStockModal({
         <Select
           label="Unidade"
           optional={true}
-          options={unidades.map((u) => ({ label: u.nome, value: String(u.id) }))}
+          options={[
+            { label: "Selecione uma unidade", value: "" },
+            ...unidades.map((u) => ({ label: u.nome, value: String(u.id) })),
+          ]}
           control={control}
           name="unidade_id"
           error={errors.unidade_id?.message}

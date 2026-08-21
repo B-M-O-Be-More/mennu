@@ -24,7 +24,8 @@ export function BasicInfoStep({
           <Select
             label="Unidade"
             options={mockUnidades}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             error={errors.unidade?.message}
           />
         </Grid>
@@ -33,7 +34,8 @@ export function BasicInfoStep({
           <Select
             label="Tipo de Refeição"
             options={mockTiposCardapio}
-            register={register("tipo")}
+            name="tipo"
+            control={control}
             error={errors.tipo?.message}
           />
         </Grid>
@@ -42,7 +44,8 @@ export function BasicInfoStep({
           <Select
             label="Status"
             options={mockStatuses}
-            register={register("status")}
+            name="status"
+            control={control}
             error={errors.status?.message}
           />
         </Grid>

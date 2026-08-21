@@ -133,6 +133,9 @@ export default function Input({
             "&.Mui-focused fieldset": {
               borderColor: "primary.main",
             },
+            "&.Mui-error fieldset": {
+              borderColor: "error.contrastText",
+            },
             "&.Mui-focused .MuiInputAdornment-positionStart svg": {
               color: "primary.main",
               transition: "all 0.2s ease",

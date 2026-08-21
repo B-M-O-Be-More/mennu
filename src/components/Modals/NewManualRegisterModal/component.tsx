@@ -283,7 +283,6 @@ export function NewManualRegisterModal({ open, onClose }: NewManualRegisterModal
           name="usuario"
           control={control}
           error={errors.usuario?.message}
-          selectSx={{ maxHeight: 320, overflowY: "auto" }}
         />
 
         <Select

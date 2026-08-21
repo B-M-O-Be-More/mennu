@@ -15,6 +15,7 @@ import { mockMenuItems } from "@/data/menus";
 export function ItemsTab({ }: ItemsTabProps) {
   const {
     register,
+    control,
     watch
   } = useForm<{ menuSearch: string; tipos: string }>({
     defaultValues: {
@@ -41,7 +42,8 @@ export function ItemsTab({ }: ItemsTabProps) {
 
         <Select
           options={mockTiposCardapio}
-          register={register("tipos")}
+          name="tipos"
+          control={control}
           formControlSx={{ maxWidth: "250px" }}
         />
 

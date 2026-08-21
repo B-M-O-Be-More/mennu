@@ -110,6 +110,7 @@ export function ConsumptionTab({ }: ConsumptionTabProps) {
 
   const {
     register,
+    control,
     watch,
   } = useForm<{ menuSearch: string; unidade: string; tipos: string }>({
     defaultValues: {
@@ -269,13 +270,15 @@ export function ConsumptionTab({ }: ConsumptionTabProps) {
           />
           <Select
             options={unitOptions}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
 
           <Select
             options={mealTypeOptions}
-            register={register("tipos")}
+            name="tipos"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
           <Button

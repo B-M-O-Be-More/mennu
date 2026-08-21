@@ -225,12 +225,14 @@ export function MealRecordsTab({ refreshKey = 0 }: MealRecordsTabProps) {
         <Select
           options={unitFilterOptions}
           formControlSx={{ maxWidth: "18%" }}
-          register={register("unit")}
+          name="unit"
+          control={control}
         />
         <Select
           options={statusOptions}
           formControlSx={{ maxWidth: "18%" }}
-          register={register("status")}
+          name="status"
+          control={control}
         />
 
         <Button

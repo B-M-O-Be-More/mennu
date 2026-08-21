@@ -95,7 +95,7 @@ export default function MainLayout({
       sx={{
         display: "flex",
         width: "100%",
-        minHeight: "100dvh",
+        height: "100dvh",
         overflow: "hidden",
       }}
     >
@@ -115,6 +115,8 @@ export default function MainLayout({
         component="main"
         sx={{
           flex: 1,
+          minWidth: 0,
+          height: "100%",
           overflowY: "auto",
           p: shouldShowSidebar ? { xs: 1.5, sm: 2, md: 2.5, lg: 3 } : 0,
           backgroundColor: (theme) => theme.palette.background.default,

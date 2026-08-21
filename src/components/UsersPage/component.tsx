@@ -70,6 +70,7 @@ export function UsersPage({ }: UsersPageProps) {
 
   const {
     register,
+    control,
     watch
   } = useForm<{ userSearch: string; unidade: string; status: string; }>({
     defaultValues: {
@@ -149,13 +150,15 @@ export function UsersPage({ }: UsersPageProps) {
 
           <Select
             options={unitOptions}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
 
           <Select
             options={mockStatuses}
-            register={register("status")}
+            name="status"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
 

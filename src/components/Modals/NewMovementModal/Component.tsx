@@ -27,6 +27,7 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     setValue,
     watch,
@@ -144,7 +145,8 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
           label="Item"
           optional={false}
           options={mockTipoUsuario}
-          register={register("item")}
+          name="item"
+          control={control}
           error={errors.item?.message}
         />
 

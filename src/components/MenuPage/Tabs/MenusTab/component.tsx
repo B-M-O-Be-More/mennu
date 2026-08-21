@@ -29,6 +29,7 @@ export function MenusTab({ }: MenusTabProps) {
 
   const {
     register,
+    control,
     watch
   } = useForm<{ menuSearch: string; unidade: string; tipos: string }>({
     defaultValues: {
@@ -63,13 +64,15 @@ export function MenusTab({ }: MenusTabProps) {
           />
           <Select
             options={unitOptions}
-            register={register("unidade")}
+            name="unidade"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
 
           <Select
             options={mockTiposCardapio}
-            register={register("tipos")}
+            name="tipos"
+            control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
           <Button

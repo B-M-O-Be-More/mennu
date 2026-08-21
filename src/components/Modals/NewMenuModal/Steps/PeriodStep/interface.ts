@@ -1,8 +1,7 @@
 import { CreateMenuSchemaFormData } from "@/schemas/menuSchema";
-import { FieldErrors, UseFormRegister, UseFormTrigger, Control, UseFormSetValue } from "react-hook-form";
+import { FieldErrors, UseFormTrigger, Control, UseFormSetValue } from "react-hook-form";
 
 export interface PeriodStepProps {
-  register: UseFormRegister<CreateMenuSchemaFormData>;
   errors: FieldErrors<CreateMenuSchemaFormData>;
   trigger: UseFormTrigger<CreateMenuSchemaFormData>;
   onClose: () => void;
