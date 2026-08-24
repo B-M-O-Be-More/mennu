@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography, Box, Button, Avatar, } from "@mui/material";
+import { Stack, Typography, Box, Button, Alert } from "@mui/material";
 import { UsersPageProps } from "./";
 import React from "react";
 import { CSVIcon, DownloadIcon, FileIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
@@ -13,60 +13,36 @@ import Select from "../FormControl/Select";
 import { mockStatuses } from "@/data/menuItems";
 import { userColumns } from "@/data/tableColumns";
 import Table from "../Tables/Table";
-import EditUserModal from "../Modals/EditUserModal";
 import { useForm } from "react-hook-form";
 import ActionCell from "../ActionCell";
-import { IUser } from "@/Interfaces/User/user";
+import { IUsuarioListItem } from "@/Interfaces/User/user";
 import PageHeader from "../PageHeader";
 import ExportModal from "../Modals/ExportModal";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
+import { useDebounce } from "@/hooks/useDebounce/hook";
 
-export const mockUsers: IUser[] = [
-  {
-    id: 1,
-    nome: "João Silva",
-    email: "joao.silva@example.com",
-    matricula: "12345",
-    unidade: "10",
-    tipo_usuario: "admin",
-    status: true,
-    ultima_refeicao: "05/01/2026 12:30",
-    status_acesso: true,
-    cpf: "123.456.789-00",
-    numero_cartao: "1234567890",
-    updated_at: "2026-01-05T12:35:00Z",
-    token_access: {
-      token: "abc123",
-      expirado_em: "2026-01-06T12:35:00Z",
-    },
-  },
-  {
-    id: 2,
-    nome: "Maria Souza",
-    email: "maria.souza@example.com",
-    matricula: "67890",
-    unidade: "8",
-    tipo_usuario: "funcionario",
-    status: false,
-    ultima_refeicao: "04/01/2026 11:45",
-    status_acesso: false,
-    cpf: "987.654.321-00",
-    numero_cartao: "0987654321",
-    updated_at: "2026-01-04T11:50:00Z",
-    token_access: {
-      token: "xyz789",
-      expirado_em: "2026-01-05T11:50:00Z",
-    },
-  },
-];
+interface PaginationMetadados {
+  total_pages?: number;
+}
+
+interface UsuariosPagePayload {
+  results?: unknown;
+  metadados?: PaginationMetadados;
+}
+
+interface CargoListPayload {
+  results?: { total_usuarios?: number }[];
+}
 
 export function UsersPage({ }: UsersPageProps) {
   const { unitOptions } = useUnitFilterOptions();
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
-  const [openEditUserModal, setOpenEditUserModal] = React.useState(false);
 
-  const [selectedUser, setSelectedUser] = React.useState<IUser>({} as IUser);
+  const [users, setUsers] = React.useState<IUsuarioListItem[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [adminCount, setAdminCount] = React.useState(0);
 
   const {
     register,
@@ -80,11 +56,116 @@ export function UsersPage({ }: UsersPageProps) {
     },
   });
 
-  const filters = watch()
+  const filters = watch();
+  const debouncedSearch = useDebounce(filters.userSearch, 500);
+
+  const loadUsers = React.useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const baseParams = new URLSearchParams();
+      if (debouncedSearch) baseParams.set("search", debouncedSearch);
+      if (filters.unidade && filters.unidade !== "all") {
+        baseParams.set("unidade_id", filters.unidade);
+      }
+      if (filters.status && filters.status !== mockStatuses[0].value) {
+        baseParams.set("is_active", filters.status);
+      }
+      baseParams.set("page_size", "200");
+
+      const allResults: IUsuarioListItem[] = [];
+      let page = 1;
+      let totalPages = 1;
+
+      do {
+        const params = new URLSearchParams(baseParams);
+        params.set("page", String(page));
+
+        const response = await fetch(`/api/usuarios?${params.toString()}`);
+        if (!response.ok) {
+          const errData = await response
+            .json()
+            .catch(() => ({ message: "Erro ao carregar usuários" }));
+          throw new Error(errData.message ?? "Erro ao carregar usuários");
+        }
+
+        const payload: UsuariosPagePayload = await response.json();
+        const results = Array.isArray(payload.results)
+          ? (payload.results as IUsuarioListItem[])
+          : [];
+
+        allResults.push(...results);
+        totalPages = payload.metadados?.total_pages ?? 1;
+        page += 1;
+      } while (page <= totalPages);
+
+      setUsers(allResults);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar usuários");
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearch, filters.unidade, filters.status]);
 
   React.useEffect(() => {
-    console.log(filters);
-  }, [filters]);
+    loadUsers();
+  }, [loadUsers]);
+
+  React.useEffect(() => {
+    const loadAdminCount = async () => {
+      try {
+        const response = await fetch("/api/cargos?nome=Administrador");
+        if (!response.ok) return;
+
+        const payload: CargoListPayload = await response.json();
+        const total = (payload.results ?? []).reduce(
+          (sum, cargo) => sum + (cargo.total_usuarios ?? 0),
+          0,
+        );
+        setAdminCount(total);
+      } catch {
+        setAdminCount(0);
+      }
+    };
+
+    loadAdminCount();
+  }, []);
+
+  const handleToggleUser = async (user: IUsuarioListItem, newState: boolean) => {
+    try {
+      const response = await fetch(`/api/usuarios/${user.id}/status`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao alterar status do usuário");
+      }
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === user.id ? { ...u, is_active: newState } : u)),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao alterar status do usuário");
+    }
+  };
+
+  const totalUsers = users.length;
+  const activeUsers = users.filter((u) => u.is_active).length;
+  const inactiveUsers = totalUsers - activeUsers;
+
+  const cardValues: Record<string, number> = {
+    "Total Usuários": totalUsers,
+    "Usuários Ativos": activeUsers,
+    "Total Inativos": inactiveUsers,
+    "Administradores": adminCount,
+  };
+
+  const statCards = cardsUsers.map((card) => ({
+    ...card,
+    value: cardValues[card.title] ?? card.value,
+  }));
 
   return (
     <Stack gap={2}>
@@ -138,6 +219,7 @@ export function UsersPage({ }: UsersPageProps) {
       <NewUserModal
         open={openCreateUserModal}
         onClose={() => setOpenCreateUserModal(false)}
+        onCreated={loadUsers}
       />
 
       <Card>
@@ -166,7 +248,7 @@ export function UsersPage({ }: UsersPageProps) {
             variant="outlined"
             startIcon={<FilterIcon />}
             sx={{ fontWeight: "400", minWidth: "120px" }}
-            onClick={() => { }}
+            onClick={() => loadUsers()}
           >
             Filtrar
           </Button>
@@ -177,7 +259,7 @@ export function UsersPage({ }: UsersPageProps) {
           gap={2}
           gridTemplateColumns="repeat(auto-fit, minmax(240px, 1fr))"
         >
-          {cardsUsers.map((card, i) => (
+          {statCards.map((card, i) => (
             <Card key={i} flexDirection="row" alignItems="center" gap={2} paddingY={1.5}>
               <IconBox
                 icon={card.icon}
@@ -197,36 +279,28 @@ export function UsersPage({ }: UsersPageProps) {
           ))}
         </Box>
 
+        {error && <Alert severity="error">{error}</Alert>}
+
         <Table
           columns={userColumns.map(col =>
             col.key === "acoes"
               ? {
                 ...col,
-                render: (row: IUser) => (
+                render: (row: IUsuarioListItem) => (
                   <ActionCell
-                    checked={true}
+                    checked={row.is_active}
                     tooltipToggle="Ativar/Desativar usuário"
-                    onToggle={(newState) => { console.log("Switch:", newState); }}
+                    onToggle={(newState) => handleToggleUser(row, newState)}
                     tooltipEdit="Editar usuário"
-                    onEdit={() => {
-                      setSelectedUser(row);
-                      setOpenEditUserModal(true);
-                    }}
                   />
                 ),
               }
               : col
           )}
-          rows={mockUsers}
+          rows={users}
           initialRowsPerPage={5}
+          isLoading={loading}
         />
-        <EditUserModal
-          open={openEditUserModal}
-          onClose={() => setOpenEditUserModal(false)}
-          user={selectedUser}
-          onSave={() => { }}
-        />
-
       </Card>
     </Stack>
 

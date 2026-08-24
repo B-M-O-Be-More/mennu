@@ -19,3 +19,15 @@ export interface IUser {
   ultima_refeicao: string | null;
   permissoes?: IProfilePermissionsItems[];
 }
+
+export interface IUsuarioListItem {
+  id: number;
+  nome: string | null;
+  documento: string;
+  matricula: string | null;
+  categoria_usuario: string;
+  is_active: boolean;
+  criado_em: string;
+  unidade: { id: number; nome: string };
+  numero_cartao: string | null;
+}

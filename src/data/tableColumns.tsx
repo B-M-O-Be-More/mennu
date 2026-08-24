@@ -2,7 +2,7 @@ import { IColumn } from "@/components/Tables/Table";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
-import { IUser } from "@/Interfaces/User/user";
+import { IUsuarioListItem } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
@@ -24,45 +24,54 @@ const statusChipSx = {
   },
 };
 
-const userColumns: IColumn<IUser>[] = [
+const userColumns: IColumn<IUsuarioListItem>[] = [
   {
     key: "nome",
     label: "Nome",
-    render: (row) => (
-      <Stack direction="row" alignItems="center">
-        <Avatar
-          sx={{
-            bgcolor: "primary.main",
-            mr: 1,
-            width: 32,
-            height: 32,
-            fontSize: 14,
-          }}>
-          {row.nome
-            .split(" ")
-            .map((n) => n[0])
-            .join("")}
-        </Avatar>
-        <Typography variant="body2">{row.nome}</Typography>
-      </Stack>
-    ),
+    render: (row) => {
+      const displayName = row.nome?.trim() || row.documento;
+      return (
+        <Stack direction="row" alignItems="center">
+          <Avatar
+            sx={{
+              bgcolor: "primary.main",
+              mr: 1,
+              width: 32,
+              height: 32,
+              fontSize: 14,
+            }}>
+            {displayName
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </Avatar>
+          <Typography variant="body2">{displayName}</Typography>
+        </Stack>
+      );
+    },
   },
   { key: "matricula", label: "Matrícula" },
-  { key: "unidade", label: "Unidade", align: "right" },
+  {
+    key: "unidade",
+    label: "Unidade",
+    align: "right",
+    render: (row) => <>{row.unidade.nome}</>,
+  },
   {
     key: "status",
     label: "Status",
     render: (row) => (
       <Chip
-        label={row.status}
-        color={row.status === true ? "success" : "default"}
+        label={row.is_active ? "Ativo" : "Inativo"}
+        color={row.is_active ? "success" : "default"}
         size="small"
         sx={statusChipSx}
       />
     ),
   },
-  { key: "tipo_usuario", label: "Tipo de Acesso" },
-  { key: "ultima_refeicao", label: "Última Refeição" },
+  { key: "categoria_usuario", label: "Categoria" },
   {
     key: "acoes",
     label: "Ações",

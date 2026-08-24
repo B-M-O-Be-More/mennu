@@ -54,3 +54,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: String(err) }, { status: 500 });
   }
 }
+
+export async function POST(req: NextRequest) {
+  const baseUrl = getApiBaseUrl();
+  const headers = await getHeaders();
+  if (!headers) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  try {
+    const bodyText = await req.text();
+    const response = await fetch(`${baseUrl}/usuarios`, {
+      method: "POST",
+      headers,
+      body: bodyText || undefined,
+    });
+    const data = await safeJson(response);
+    return NextResponse.json(data, { status: response.status });
+  } catch (err) {
+    return NextResponse.json({ message: String(err) }, { status: 500 });
+  }
+}

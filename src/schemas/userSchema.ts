@@ -1,4 +1,5 @@
-import { mockTipoUsuario, mockStatuses, mockUnidades } from "@/data/menuItems";
+import { mockStatuses } from "@/data/menuItems";
+import { CATEGORIA_USUARIO_OPTIONS } from "@/Interfaces/Terminal/terminal";
 import * as yup from "yup";
 
 export const createUserSchema = yup.object({
@@ -7,34 +8,59 @@ export const createUserSchema = yup.object({
     .required("O nome é obrigatório")
     .min(3, "O nome deve ter pelo menos 3 caracteres"),
 
-  cpf: yup
+  documento: yup
     .string()
-    .required("O CPF é obrigatório")
-    .matches(/^\d{11}$/, "O CPF deve conter exatamente 11 dígitos"),
+    .required("O documento é obrigatório")
+    .test(
+      "documento-length",
+      "O documento (CPF) deve conter 11 dígitos",
+      (value) => !!value && value.replace(/\D/g, "").length === 11,
+    ),
 
   matricula: yup
     .string()
     .required("A matrícula é obrigatória"),
 
-  tipo_usuario: yup
+  unidade_id: yup
+    .string()
+    .required("A unidade é obrigatória"),
+
+  categoria_usuario: yup
     .string()
     .required("A categoria é obrigatória")
-    .oneOf(mockTipoUsuario.map(u => u.value), "Categoria inválida"),
-
-  unidade: yup
-    .string()
-    .required("A unidade é obrigatória")
-    .oneOf(mockUnidades.map(u => u.value), "Unidade inválida"),
+    .oneOf(CATEGORIA_USUARIO_OPTIONS.map((c) => c.value), "Categoria inválida"),
 
   status: yup
     .string()
     .required("O status é obrigatório")
-    .oneOf(mockStatuses.map(u => u.value), "Status inválido"),
+    .oneOf(mockStatuses.map((s) => s.value), "Status inválido"),
+
+  password: yup
+    .string()
+    .required("A senha é obrigatória")
+    .min(6, "A senha deve ter pelo menos 6 caracteres"),
 
   numero_cartao: yup
     .string()
-    .required("O número do cartão é obrigatório")
-    .matches(/^\d+$/, "O número do cartão deve conter apenas dígitos"),
+    .default("")
+    .test(
+      "numero-cartao-digits",
+      "O número do cartão deve conter apenas dígitos",
+      (value) => !value || /^\d+$/.test(value),
+    ),
+
+  email: yup
+    .string()
+    .default("")
+    .test(
+      "email-format",
+      "E-mail inválido",
+      (value) => !value || yup.string().email().isValidSync(value),
+    ),
+
+  telefone: yup
+    .string()
+    .default(""),
 });
 
 export type CreateUserSchemaFormData = yup.InferType<typeof createUserSchema>;
