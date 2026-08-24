@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/cardapio/`);
+  const url = new URL(`${baseUrl}/cargos`);
 
   searchParams.forEach((value, key) => {
     url.searchParams.append(key, value);
@@ -48,32 +48,6 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(url.toString(), { headers });
-    const data = await safeJson(response);
-    return NextResponse.json(data, { status: response.status });
-  } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
-  }
-}
-
-export async function POST(req: NextRequest) {
-  const baseUrl = getApiBaseUrl();
-  const headers = await getHeaders();
-  if (!headers) {
-    return NextResponse.json(
-      { message: "Autenticação necessária" },
-      { status: 401 },
-    );
-  }
-
-  const body = await req.json();
-
-  try {
-    const response = await fetch(`${baseUrl}/cardapio/`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    });
-
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {
