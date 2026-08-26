@@ -29,7 +29,10 @@ async function safeJson(response: Response) {
   return response.json();
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
@@ -39,8 +42,9 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  const { id } = await params;
   const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/cargos`);
+  const url = new URL(`${baseUrl}/cargos/${id}/usuarios/`);
 
   searchParams.forEach((value, key) => {
     url.searchParams.append(key, value);
@@ -55,7 +59,10 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
@@ -65,10 +72,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const { id } = await params;
   const body = await req.json();
 
   try {
-    const response = await fetch(`${baseUrl}/cargos/`, {
+    const response = await fetch(`${baseUrl}/cargos/${id}/usuarios/`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),

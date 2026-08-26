@@ -27,7 +27,7 @@ export default function EditPermissionProfileModal({
       resolver: yupResolver(profilePermissionsSchema),
       defaultValues: {
         ...profilePermissions,
-        permissoes: profilePermissions.permissoes ?? [],
+        permissoes: profilePermissions.permissoes_modulos ?? [],
       }
     });
 
@@ -37,7 +37,7 @@ export default function EditPermissionProfileModal({
     if (open && profilePermissions) {
       reset({
         ...profilePermissions,
-        permissoes: profilePermissions.permissoes ?? [],
+        permissoes: profilePermissions.permissoes_modulos ?? [],
       });
     }
   }, [open, profilePermissions, reset]);
@@ -48,7 +48,7 @@ export default function EditPermissionProfileModal({
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="Editar Perfil">
+    <Modal open={open} onClose={onClose} title="Editar Cargo">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Nome"

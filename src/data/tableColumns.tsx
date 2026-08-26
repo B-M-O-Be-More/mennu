@@ -12,7 +12,7 @@ import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+import { ICargoUsuario, IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 import dayjs from "dayjs";
 
 const statusChipSx = {
@@ -484,7 +484,7 @@ const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[]
 ];
 
 const permissionsColumns: IColumn<IProfilePermissionsItems>[] = [
-  { key: "modulo", label: "Módulo" },
+  { key: "modulo", label: "Módulo", render: (row) => row.label ?? row.modulo },
   {
     key: "visualizar",
     label: "Visualizar",
@@ -532,6 +532,76 @@ const permissionsColumns: IColumn<IProfilePermissionsItems>[] = [
 ];
 
 
+const cargoUsuariosColumns: IColumn<ICargoUsuario>[] = [
+  {
+    key: "nome",
+    label: "Nome",
+    render: (row) => <>{row.nome?.trim() || row.documento}</>,
+  },
+  {
+    key: "matricula",
+    label: "Matricula",
+    render: (row) => <>{row.matricula || "-"}</>,
+  },
+  {
+    key: "ativo",
+    label: "Status",
+    render: (row) => (
+      <Chip
+        label={row.ativo ? "Ativo" : "Inativo"}
+        color={row.ativo ? "success" : "default"}
+        size="small"
+        sx={statusChipSx}
+      />
+    ),
+  },
+  {
+    key: "data_inicio",
+    label: "Vinculado em",
+    align: "right",
+    render: (row) => (
+      <>{row.data_inicio ? formatDate(new Date(row.data_inicio), "dd/MM/yyyy") : "-"}</>
+    ),
+  },
+  {
+    key: "acoes",
+    label: "Ações",
+    align: "right",
+    render: () => <></>,
+  },
+];
+
+const cargoUsuariosSelecaoColumns: IColumn<IUsuarioListItem>[] = [
+  {
+    key: "selecionar",
+    label: "",
+    render: () => <></>,
+  },
+  {
+    key: "nome",
+    label: "Nome",
+    render: (row) => <>{row.nome?.trim() || row.documento}</>,
+  },
+  {
+    key: "matricula",
+    label: "Matricula",
+    render: (row) => <>{row.matricula || "-"}</>,
+  },
+  {
+    key: "is_active",
+    label: "Status",
+    align: "right",
+    render: (row) => (
+      <Chip
+        label={row.is_active ? "Ativo" : "Inativo"}
+        color={row.is_active ? "success" : "default"}
+        size="small"
+        sx={statusChipSx}
+      />
+    ),
+  },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -543,4 +613,6 @@ export {
   reportsMenuColumns,
   reportsConsumptionHistoryColumns,
   permissionsColumns,
+  cargoUsuariosColumns,
+  cargoUsuariosSelecaoColumns,
 };

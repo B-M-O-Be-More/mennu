@@ -1,9 +1,10 @@
 import { AlertColor } from "@mui/material";
 import { IProfilePermissions } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
-export interface ProfileCardProps {
-  profile: IProfilePermissions;
-  onUpdated?: () => void;
-  onAddProfile?: (profile: IProfilePermissions) => void;
+export interface AddUsersToCargoModalProps {
+  open: boolean;
+  onClose: () => void;
+  profile: IProfilePermissions | null;
+  onAdded?: () => void;
   onNotify?: (message: string, severity?: AlertColor, duration?: number) => void;
 }

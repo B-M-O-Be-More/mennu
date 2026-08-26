@@ -29,7 +29,10 @@ async function safeJson(response: Response) {
   return response.json();
 }
 
-export async function GET(req: NextRequest) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
@@ -39,15 +42,16 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/cargos`);
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.append(key, value);
-  });
+  const { id } = await params;
+  const body = await req.json();
 
   try {
-    const response = await fetch(url.toString(), { headers });
+    const response = await fetch(`${baseUrl}/cargos/${id}/`, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(body),
+    });
+
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
   } catch (err) {
@@ -55,7 +59,10 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
@@ -65,14 +72,17 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const body = await req.json();
+  const { id } = await params;
 
   try {
-    const response = await fetch(`${baseUrl}/cargos/`, {
-      method: "POST",
+    const response = await fetch(`${baseUrl}/cargos/${id}/`, {
+      method: "DELETE",
       headers,
-      body: JSON.stringify(body),
     });
+
+    if (response.ok) {
+      return NextResponse.json({ message: "Perfil excluído com sucesso" });
+    }
 
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
