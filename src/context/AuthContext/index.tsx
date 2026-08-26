@@ -84,6 +84,8 @@ const UserProvider: React.FC<UserProviderProps> = ({ children, initialUser: serv
         status_acesso: normalized.status_acesso,
         avatarInitial: normalized.nome?.charAt(0)?.toUpperCase() || "U",
         permissoes: normalized.permissoes ?? [],
+        acesso_total: normalized.acesso_total ?? false,
+        feature_flags: normalized.feature_flags ?? [],
       };
       setCookie("mennu_user_data", encodeURIComponent(JSON.stringify(persistenceData)));
     },

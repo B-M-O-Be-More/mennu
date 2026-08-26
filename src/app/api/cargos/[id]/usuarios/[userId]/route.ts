@@ -29,7 +29,10 @@ async function safeJson(response: Response) {
   return response.json();
 }
 
-export async function GET(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string; userId: string }> },
+) {
   const baseUrl = getApiBaseUrl();
   const headers = await getHeaders();
   if (!headers) {
@@ -39,40 +42,17 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { searchParams } = new URL(req.url);
-  const url = new URL(`${baseUrl}/cargos`);
-
-  searchParams.forEach((value, key) => {
-    url.searchParams.append(key, value);
-  });
+  const { id, userId } = await params;
 
   try {
-    const response = await fetch(url.toString(), { headers });
-    const data = await safeJson(response);
-    return NextResponse.json(data, { status: response.status });
-  } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
-  }
-}
-
-export async function POST(req: NextRequest) {
-  const baseUrl = getApiBaseUrl();
-  const headers = await getHeaders();
-  if (!headers) {
-    return NextResponse.json(
-      { message: "Autenticação necessária" },
-      { status: 401 },
-    );
-  }
-
-  const body = await req.json();
-
-  try {
-    const response = await fetch(`${baseUrl}/cargos/`, {
-      method: "POST",
+    const response = await fetch(`${baseUrl}/cargos/${id}/usuarios/${userId}/`, {
+      method: "DELETE",
       headers,
-      body: JSON.stringify(body),
     });
+
+    if (response.ok) {
+      return NextResponse.json({ message: "Usuário desvinculado com sucesso" });
+    }
 
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });

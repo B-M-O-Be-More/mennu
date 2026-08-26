@@ -6,7 +6,8 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
 import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
-import { hasAdminAccess, hasModulePermission } from "@/utils/userUtils";
+import { hasAdminAccess } from "@/utils/userUtils";
+import { hasModulePermission } from "@/utils/permissionUtils";
 
 export default function MainLayout({
   children,
@@ -37,7 +38,7 @@ export default function MainLayout({
   ];
 
   const visibleMenuItems = menuItems.filter(
-    (item) => item.id !== "terminal" || hasModulePermission(user, "Terminal"),
+    (item) => item.id !== "terminal" || hasModulePermission(user, "terminal"),
   );
 
   const protectedRoutes = [...menuItems, ...adminMenuItems].map((item) => item.path);

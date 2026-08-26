@@ -13,6 +13,7 @@ export const profilePermissionsSchema = yup.object({
   permissoes: yup.array().of(
     yup.object({
       modulo: yup.string().required("O módulo é obrigatório"),
+      label: yup.string().optional(),
       visualizar: yup.boolean().required(),
       criar: yup.boolean().required(),
       editar: yup.boolean().required(),

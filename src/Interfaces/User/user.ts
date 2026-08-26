@@ -1,12 +1,23 @@
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+import {
+  FeatureFlag,
+  PermissionCode,
+} from "@/Interfaces/ProfilePermissions/profilePermissions";
+
+/** Nível do usuário, já normalizado para minúsculo (a API envia `ADMIN`). */
+export type UserLevel = "admin" | "gestor" | "funcionario";
 
 export interface IUser {
   id: number;
   nome: string;
   email: string;
   cpf?: string;
+  documento?: string;
   matricula: string;
-  tipo_usuario: "admin" | "gestor" | "funcionario";
+  telefone?: string | null;
+  cargo?: string | null;
+  tipo_usuario: UserLevel;
+  categoria_usuario?: string;
+  empresa_id?: number;
   status: boolean;
   status_acesso: boolean;
   numero_cartao: string;
@@ -17,7 +28,14 @@ export interface IUser {
     expirado_em: string;
   };
   ultima_refeicao: string | null;
-  permissoes?: IProfilePermissionsItems[];
+  /**
+   * Lista plana de códigos de permissão do cargo do usuário
+   * (ex.: `["cardapio.view.list", "estoque.create.item"]`).
+   */
+  permissoes?: PermissionCode[];
+  /** Superusuário: ignora a checagem de códigos de permissão. */
+  acesso_total?: boolean;
+  feature_flags?: FeatureFlag[];
 }
 
 export interface IUsuarioListItem {

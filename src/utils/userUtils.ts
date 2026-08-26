@@ -1,36 +1,16 @@
 import { IUser } from "@/Interfaces/User/user";
-import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
-
-const ADMIN_MODULES = ["Configurações", "Permissões", "Perfil de Acesso"];
+import {
+  FeatureFlag,
+  PermissionCode,
+} from "@/Interfaces/ProfilePermissions/profilePermissions";
+import { ADMIN_PERMISSIONS, hasPermission } from "@/utils/permissionUtils";
 
 /**
- * Returns true if the user has access to the admin section.
- * Checks tipo_usuario first, then falls back to module-level permissions.
+ * Libera a seção administrativa da sidebar. Superusuário (`acesso_total`)
+ * passa direto; os demais precisam de alguma permissão administrativa.
  */
 export function hasAdminAccess(user: IUser): boolean {
-  if (user.tipo_usuario === "admin") return true;
-  if (!user.permissoes?.length) return false;
-  return user.permissoes.some(
-    (p) => ADMIN_MODULES.includes(p.modulo) && p.visualizar
-  );
-}
-
-type PermissionAction = "visualizar" | "criar" | "editar" | "excluir";
-
-/**
- * Returns true if the user has the given action permission on the given
- * module. Admins bypass module-level checks — the real enforcement always
- * happens server-side (CargoPermission); this only avoids showing UI that
- * would just 403.
- */
-export function hasModulePermission(
-  user: IUser,
-  modulo: string,
-  action: PermissionAction = "visualizar"
-): boolean {
-  if (user.tipo_usuario === "admin") return true;
-  if (!user.permissoes?.length) return false;
-  return user.permissoes.some((p) => p.modulo === modulo && p[action]);
+  return hasPermission(user, ADMIN_PERMISSIONS, "any");
 }
 
 /**
@@ -55,6 +35,8 @@ export function initialUser(): IUser {
     },
     ultima_refeicao: null,
     permissoes: [],
+    acesso_total: false,
+    feature_flags: [],
   };
 }
 
@@ -95,8 +77,16 @@ export function normalizeUserData(data: unknown): IUser {
       expirado_em: parsed.token_access?.expirado_em ?? "",
     },
     ultima_refeicao: parsed.ultima_refeicao ?? null,
+    // A API manda códigos planos (`cardapio.view.list`). Qualquer item fora
+    // desse formato é descartado para não quebrar os matchers.
     permissoes: Array.isArray(parsed.permissoes)
-      ? (parsed.permissoes as IProfilePermissionsItems[])
+      ? parsed.permissoes.filter(
+          (permissao): permissao is PermissionCode => typeof permissao === "string",
+        )
+      : [],
+    acesso_total: Boolean(parsed.acesso_total),
+    feature_flags: Array.isArray(parsed.feature_flags)
+      ? (parsed.feature_flags as FeatureFlag[])
       : [],
   };
 }
