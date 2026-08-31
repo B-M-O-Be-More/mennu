@@ -21,6 +21,7 @@ import NextLink from "next/link";
 import Image from "next/image";
 import { SidebarProps } from "./interface";
 import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
+import Can from "@/components/Can";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -95,6 +96,46 @@ function NavItem({ item, active, theme, renderIcon }: NavItemProps) {
   );
 }
 
+interface ProfileMenuActionProps {
+  label: string;
+  icon?: React.ReactNode;
+  onClick: () => void;
+  renderIcon: (icon: React.ReactNode, active: boolean) => React.ReactNode;
+}
+
+function ProfileMenuAction({ label, icon, onClick, renderIcon }: ProfileMenuActionProps) {
+  return (
+    <MenuItem
+      onClick={onClick}
+      sx={{
+        gap: 1.5,
+        py: { xs: 1.25, lg: 1.5 },
+        px: { xs: 1.5, lg: 2 },
+        borderRadius: 1.5,
+        mx: 0.5,
+        my: 0.5,
+        "&:hover": { bgcolor: "sidebar.bgHover" },
+      }}
+    >
+      {icon ? (
+        <Box sx={{ display: "flex", alignItems: "center", "& svg": { width: 20, height: 20 } }}>
+          {renderIcon(icon, false)}
+        </Box>
+      ) : null}
+      <Typography
+        sx={{
+          fontSize: { xs: 14, sm: 15, lg: 16 },
+          fontWeight: 500,
+          color: "sidebar.text",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {label}
+      </Typography>
+    </MenuItem>
+  );
+}
+
 interface SidebarLogoProps {
   logoSrc?: string;
 }
@@ -138,6 +179,9 @@ export function SidebarComponent({
   user,
   onLogout,
   logoutIcon,
+  activeUnit,
+  onSwitchUnit,
+  switchUnitIcon,
   showAdminSection = false,
   activePath,
   logoSrc,
@@ -180,6 +224,11 @@ export function SidebarComponent({
   const handleLogout = () => {
     handleCloseMenu();
     onLogout?.();
+  };
+
+  const handleSwitchUnit = () => {
+    handleCloseMenu();
+    onSwitchUnit?.();
   };
 
   return (
@@ -242,13 +291,14 @@ export function SidebarComponent({
         }}
       >
         {menuItems.map((item) => (
-          <NavItem
-            key={item.id}
-            item={item}
-            active={isActive(item.path)}
-            theme={theme}
-            renderIcon={renderIcon}
-          />
+          <Can key={item.id} permissions={item.permissions}>
+            <NavItem
+              item={item}
+              active={isActive(item.path)}
+              theme={theme}
+              renderIcon={renderIcon}
+            />
+          </Can>
         ))}
 
         <Divider component="li" sx={{ my: 2, borderColor: "sidebar.divider" }} />
@@ -279,13 +329,14 @@ export function SidebarComponent({
             </Box>
 
             {adminMenuItems.map((item) => (
-              <NavItem
-                key={item.id}
-                item={item}
-                active={isActive(item.path)}
-                theme={theme}
-                renderIcon={renderIcon}
-              />
+              <Can key={item.id} permissions={item.permissions}>
+                <NavItem
+                  item={item}
+                  active={isActive(item.path)}
+                  theme={theme}
+                  renderIcon={renderIcon}
+                />
+              </Can>
             ))}
           </>
         )}
@@ -306,6 +357,59 @@ export function SidebarComponent({
           borderColor: "sidebar.divider",
         }}
       >
+        {activeUnit && (
+          <Stack
+            spacing={0.25}
+            sx={{
+              mb: { xs: 1, lg: 1.25 },
+              px: { xs: 1, lg: 1.25 },
+              py: { xs: 0.75, lg: 1 },
+              borderRadius: 2.05,
+              bgcolor: "sidebar.bgActive",
+            }}
+          >
+            <Typography
+              variant="overline"
+              sx={{
+                fontSize: 10,
+                fontWeight: 500,
+                lineHeight: 1.4,
+                color: "sidebar.section",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Unidade
+            </Typography>
+            <Typography
+              noWrap
+              title={activeUnit.unidade}
+              sx={{
+                fontSize: { xs: 13, sm: 14 },
+                fontWeight: 600,
+                color: "sidebar.textActive",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.3,
+              }}
+            >
+              {activeUnit.unidade}
+            </Typography>
+            {activeUnit.empresa ? (
+              <Typography
+                noWrap
+                title={activeUnit.empresa}
+                sx={{
+                  fontSize: 11,
+                  fontWeight: 400,
+                  color: "sidebar.userEmailColor",
+                  lineHeight: 1.3,
+                }}
+              >
+                {activeUnit.empresa}
+              </Typography>
+            ) : null}
+          </Stack>
+        )}
+
         <ButtonBase
           onClick={handleOpenMenu}
           aria-label="Opções do perfil"
@@ -382,32 +486,25 @@ export function SidebarComponent({
             },
           }}
         >
-          <MenuItem
+          {onSwitchUnit ? (
+            <ProfileMenuAction
+              label="Trocar unidade"
+              icon={switchUnitIcon}
+              onClick={handleSwitchUnit}
+              renderIcon={renderIcon}
+            />
+          ) : null}
+
+          {onSwitchUnit ? (
+            <Divider sx={{ my: 0.5, borderColor: "sidebar.divider" }} />
+          ) : null}
+
+          <ProfileMenuAction
+            label="Sair"
+            icon={logoutIcon}
             onClick={handleLogout}
-            sx={{
-              gap: 1.5,
-              py: { xs: 1.25, lg: 1.5 },
-              px: { xs: 1.5, lg: 2 },
-              borderRadius: 1.5,
-              mx: 0.5,
-              my: 0.5,
-              "&:hover": { bgcolor: "sidebar.bgHover" },
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", "& svg": { width: 20, height: 20 } }}>
-              {renderIcon(logoutIcon, false)}
-            </Box>
-            <Typography
-              sx={{
-                fontSize: { xs: 14, sm: 15, lg: 16 },
-                fontWeight: 500,
-                color: "sidebar.text",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Sair
-            </Typography>
-          </MenuItem>
+            renderIcon={renderIcon}
+          />
         </Menu>
 
       </Box>

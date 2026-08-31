@@ -7,12 +7,17 @@ import {
 } from "@/Interfaces/ProfilePermissions/profilePermissions";
 
 /**
- * Checagem de permissões a partir do payload de `/auth/ativo`.
+ * Checagem de permissões do usuário na unidade ativa.
  *
- * A API devolve uma lista plana de códigos `<recurso>.<ação>.<escopo>`
- * (ex.: `cardapio.view.list`) mais o flag `acesso_total` para quem não tem
- * restrição. Nada aqui substitui a validação do backend — serve para não
- * exibir UI que resultaria em 403.
+ * As permissões vêm por contexto: `/auth/ativo` devolve um `contextos[]`
+ * (um por unidade em que o usuário tem vínculo) e cada entrada traz a lista
+ * plana de códigos `<recurso>.<ação>.<escopo>` (ex.: `cardapio.view.list`)
+ * mais o flag `acesso_total`. `applyContextToUser` projeta o contexto
+ * escolhido em `user.permissoes`/`user.acesso_total`, que é o que as
+ * funções abaixo leem — trocar de unidade troca o resultado delas.
+ *
+ * Nada aqui substitui a validação do backend: serve para não exibir UI que
+ * resultaria em 403.
  */
 
 const WILDCARD = "*";
@@ -30,7 +35,10 @@ function toArray<T>(value: T | T[] | undefined | null): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-/** Códigos de permissão do usuário, ignorando qualquer item fora do formato. */
+/**
+ * Códigos de permissão do usuário na unidade ativa, ignorando qualquer item
+ * fora do formato. Sem unidade escolhida, vem vazio.
+ */
 export function getUserPermissions(user?: IUser | null): PermissionCode[] {
   const permissoes = user?.permissoes;
   if (!Array.isArray(permissoes)) return [];
@@ -61,11 +69,13 @@ export function getUserFeatureFlags(user?: IUser | null): string[] {
 }
 
 /**
- * Superusuário. `acesso_total` vem da API; `admin` entra aqui porque é o topo
- * da hierarquia neste sistema (o gate real continua no backend).
+ * Superusuário: único bypass das checagens de código de permissão. Vem do
+ * `acesso_total` **do contexto ativo** — `tipo_usuario` não entra aqui,
+ * então um admin com cargo restrito numa unidade só vê o que aquele cargo
+ * permite, mesmo tendo acesso total em outra.
  */
 export function hasFullAccess(user?: IUser | null): boolean {
-  return user?.acesso_total === true || user?.tipo_usuario === "admin";
+  return user?.acesso_total === true;
 }
 
 /**
@@ -136,6 +146,18 @@ export function hasModulePermission(
     action ? `${module}.${action}.${WILDCARD}` : `${module}.${WILDCARD}`
   ) as PermissionCode;
   return hasPermission(user, pattern);
+}
+
+/**
+ * Permissão de leitura de um recurso, no formato que a API usa:
+ * `viewPermission("cardapio")` → `cardapio.view.*`, que casa com
+ * `cardapio.view.list` e `cardapio.view.item`.
+ *
+ * O recurso é o nome que a API usa no código de permissão (singular:
+ * `cardapio`, `relatorio`, `usuario`), não o rótulo da tela.
+ */
+export function viewPermission(resource: string): PermissionCode {
+  return `${resource}.view.${WILDCARD}` as PermissionCode;
 }
 
 /** Comparação exata de `tipo_usuario` — sem bypass de superusuário. */

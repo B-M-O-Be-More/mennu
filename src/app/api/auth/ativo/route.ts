@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
+import {
+  EMPRESA_COOKIE,
+  SESSION_COOKIE_MAX_AGE,
+  TOKEN_COOKIE,
+  UNIDADE_COOKIE,
+} from "@/utils/authCookies";
 
 export async function GET() {
   const baseUrl = getApiBaseUrl();
   const cookieStore = await cookies();
-  const token = cookieStore.get("mennu_token")?.value;
-  const empresaId = cookieStore.get("empresa_id")?.value;
+  const token = cookieStore.get(TOKEN_COOKIE)?.value;
+  const empresaId = cookieStore.get(EMPRESA_COOKIE)?.value;
+  const unidadeId = cookieStore.get(UNIDADE_COOKIE)?.value;
 
   if (!token) {
     return NextResponse.json(
@@ -22,6 +29,7 @@ export async function GET() {
       Accept: "application/json",
       Authorization: token,
       ...(empresaId ? { "empresa-id-x": empresaId } : {}),
+      ...(unidadeId ? { "unidade-id-x": unidadeId } : {}),
     },
   });
 
@@ -40,21 +48,24 @@ export async function GET() {
   const nextEmpresaId = data?.empresa_id;
 
   if (nextToken) {
-    res.cookies.set("mennu_token", nextToken, {
+    res.cookies.set(TOKEN_COOKIE, nextToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_COOKIE_MAX_AGE,
       path: "/",
     });
   }
 
-  if (nextEmpresaId !== undefined && nextEmpresaId !== null) {
-    res.cookies.set("empresa_id", String(nextEmpresaId), {
+  // O `empresa_id` do raiz é a empresa de origem do usuário; a unidade ativa
+  // pode estar em outra. Com contexto já escolhido, não sobrescreve — quem
+  // manda é a seleção feita em `/selecionar-unidade`.
+  if (!unidadeId && nextEmpresaId !== undefined && nextEmpresaId !== null) {
+    res.cookies.set(EMPRESA_COOKIE, String(nextEmpresaId), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_COOKIE_MAX_AGE,
       path: "/",
     });
   }

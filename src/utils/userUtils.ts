@@ -4,6 +4,7 @@ import {
   PermissionCode,
 } from "@/Interfaces/ProfilePermissions/profilePermissions";
 import { ADMIN_PERMISSIONS, hasPermission } from "@/utils/permissionUtils";
+import { normalizeUserContexts } from "@/utils/userContextUtils";
 
 /**
  * Libera a seção administrativa da sidebar. Superusuário (`acesso_total`)
@@ -34,6 +35,7 @@ export function initialUser(): IUser {
       expirado_em: "",
     },
     ultima_refeicao: null,
+    contextos: [],
     permissoes: [],
     acesso_total: false,
     feature_flags: [],
@@ -77,8 +79,13 @@ export function normalizeUserData(data: unknown): IUser {
       expirado_em: parsed.token_access?.expirado_em ?? "",
     },
     ultima_refeicao: parsed.ultima_refeicao ?? null,
-    // A API manda códigos planos (`cardapio.view.list`). Qualquer item fora
-    // desse formato é descartado para não quebrar os matchers.
+    // Um contexto por unidade em que o usuário tem vínculo. É de onde saem
+    // as permissões depois que ele escolhe a unidade — ver
+    // `applyContextToUser`.
+    contextos: normalizeUserContexts(parsed.contextos),
+    // Campo legado: a API antiga mandava os códigos planos
+    // (`cardapio.view.list`) no raiz. Mantido para não quebrar payload
+    // antigo; com `contextos` presente, quem vale é o contexto ativo.
     permissoes: Array.isArray(parsed.permissoes)
       ? parsed.permissoes.filter(
           (permissao): permissao is PermissionCode => typeof permissao === "string",

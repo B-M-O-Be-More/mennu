@@ -13,6 +13,8 @@ import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
 import { ICargoUsuario, IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
+import { IStockAudit } from "@/Interfaces/StockAudit/stockAudit";
+import { isDraft, resolveStatus } from "@/utils/stockAuditUtils";
 import dayjs from "dayjs";
 
 const statusChipSx = {
@@ -602,6 +604,54 @@ const cargoUsuariosSelecaoColumns: IColumn<IUsuarioListItem>[] = [
   },
 ];
 
+const stockAuditColumns: IColumn<IStockAudit>[] = [
+  {
+    key: "criado_em",
+    label: "Data/Hora",
+    render: (row) => formatDateTime(row.criado_em) || "—",
+  },
+  {
+    key: "unidade_nome",
+    label: "Unidade",
+    align: "center",
+    render: (row) => row.unidade_nome ?? "—",
+  },
+  {
+    key: "auditor_nome",
+    label: "Auditor",
+    align: "center",
+    render: (row) => row.auditor_nome ?? "—",
+  },
+  { key: "total_itens", label: "itens", align: "center" },
+  {
+    key: "total_divergentes",
+    label: "Divergencia",
+    align: "center",
+    // Rascunho ainda não teve divergência apurada (só é calculada no envio).
+    render: (row) => (isDraft(row) ? "-----" : row.total_divergentes),
+  },
+  {
+    key: "status",
+    label: "Status",
+    align: "center",
+    render: (row) => {
+      const { label, color } = resolveStatus(row.status);
+
+      return (
+        <Chip
+          label={label}
+          color={color}
+          size="small"
+          sx={{ ...statusChipSx, width: "auto", minWidth: 130 }}
+        />
+      );
+    },
+  },
+  // A ação depende da página (abrir x continuar): o render é sobrescrito por
+  // quem monta a tabela, como já é feito em `stockColumns.acoes`.
+  { key: "acoes", label: "Ações", align: "center", render: () => null },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -615,4 +665,5 @@ export {
   permissionsColumns,
   cargoUsuariosColumns,
   cargoUsuariosSelecaoColumns,
+  stockAuditColumns,
 };

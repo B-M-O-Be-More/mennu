@@ -18,6 +18,9 @@ import { UsePermissionsReturn } from "./interface";
  * API imperativa de permissões — para desabilitar botões, montar menus,
  * decidir redirects, etc. Para esconder/mostrar JSX prefira `<Can />`.
  *
+ * Tudo é relativo à unidade ativa da sessão: sem unidade escolhida o usuário
+ * não tem permissão alguma, e trocar de unidade muda as respostas.
+ *
  * ```tsx
  * const { can, canModule } = usePermissions();
  * <Button disabled={!can("estoque.create.item")}>Novo insumo</Button>

@@ -3,6 +3,12 @@ import { unstable_rethrow } from "next/navigation";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 import { normalizeUserData } from "@/utils/userUtils";
 import { IUser } from "@/Interfaces/User/user";
+import {
+  EMPRESA_COOKIE,
+  TOKEN_COOKIE,
+  UNIDADE_COOKIE,
+} from "@/utils/authCookies";
+import { parseUnidadeId } from "@/utils/userContextUtils";
 
 /**
  * Fetches the user session directly on the server to avoid client-side flickering.
@@ -10,8 +16,9 @@ import { IUser } from "@/Interfaces/User/user";
 export async function getServerUser(): Promise<IUser | null> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("mennu_token")?.value;
-    const empresaId = cookieStore.get("empresa_id")?.value;
+    const token = cookieStore.get(TOKEN_COOKIE)?.value;
+    const empresaId = cookieStore.get(EMPRESA_COOKIE)?.value;
+    const unidadeId = cookieStore.get(UNIDADE_COOKIE)?.value;
 
     if (!token) return null;
 
@@ -23,6 +30,9 @@ export async function getServerUser(): Promise<IUser | null> {
         Accept: "application/json",
         Authorization: token,
         ...(empresaId ? { "empresa-id-x": empresaId } : {}),
+        // Ausente entre o login e a escolha da unidade — `/auth/ativo` é
+        // justamente quem devolve os `contextos` disponíveis.
+        ...(unidadeId ? { "unidade-id-x": unidadeId } : {}),
       },
       cache: "no-store",
     });
@@ -45,4 +55,14 @@ export async function getServerUser(): Promise<IUser | null> {
     console.error("Error fetching user on server:", error);
     return null;
   }
+}
+
+/**
+ * Unidade ativa gravada no cookie, lida no servidor. Passar esse valor para
+ * o `UserProvider` evita divergência de hidratação — o client leria o mesmo
+ * cookie, mas só depois do HTML do servidor já ter sido montado sem ele.
+ */
+export async function getServerActiveUnidadeId(): Promise<number | null> {
+  const cookieStore = await cookies();
+  return parseUnidadeId(cookieStore.get(UNIDADE_COOKIE)?.value);
 }

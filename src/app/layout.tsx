@@ -3,7 +3,7 @@ import { Providers } from "./providers";
 import { Poppins } from "next/font/google";
 import MainLayout from "@/components/Layouts/Main";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
-import { getServerUser } from "@/app/api/auth/actions";
+import { getServerUser, getServerActiveUnidadeId } from "@/app/api/auth/actions";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,13 +22,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getServerUser();
+  const [user, activeUnidadeId] = await Promise.all([
+    getServerUser(),
+    getServerActiveUnidadeId(),
+  ]);
 
   return (
     <html lang="pt-br" className={poppins.variable} suppressHydrationWarning>
       <body style={{ height: "100dvh" }} suppressHydrationWarning>
         <AppRouterCacheProvider options={{ key: "css" }}>
-          <Providers initialUser={user}>
+          <Providers initialUser={user} initialUnidadeId={activeUnidadeId}>
             <MainLayout>
               {children}
             </MainLayout>
