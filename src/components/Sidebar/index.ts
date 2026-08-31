@@ -1,5 +1,5 @@
 import { SidebarComponent } from "./component";
-import { SidebarProps } from "./interface";
+import { SidebarActiveUnit, SidebarProps } from "./interface";
 
-export type { SidebarProps };
+export type { SidebarActiveUnit, SidebarProps };
 export { SidebarComponent };

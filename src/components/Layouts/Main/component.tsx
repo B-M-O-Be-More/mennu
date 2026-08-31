@@ -5,43 +5,59 @@ import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
-import { CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
+import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 import { hasAdminAccess } from "@/utils/userUtils";
-import { hasModulePermission } from "@/utils/permissionUtils";
+import { viewPermission } from "@/utils/permissionUtils";
+import { SELECT_UNIT_ROUTE } from "@/utils/userContextUtils";
+import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, logout, isLoadingPages, user } = useUser();
+  const {
+    isAuthenticated,
+    logout,
+    isLoadingPages,
+    user,
+    activeContext,
+    clearContext,
+  } = useUser();
   const router = useRouter();
 
   const pathname = usePathname();
   const previousPathnameRef = React.useRef<string | null>(null);
 
-  const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios" },
-    { id: "estoque", label: "Estoque", icon: <EstoqueIcon />, path: "/estoque" },
-    { id: "refeicoes", label: "Refeições", icon: <RefeicoesIcon />, path: "/refeicoes" },
+  // `permissions` é o que o <Can> dentro da sidebar checa para exibir o item:
+  // `viewPermission("cardapio")` → `cardapio.view.*`, que casa com
+  // `cardapio.view.list`/`cardapio.view.item`. O recurso é o nome usado pela
+  // API no código de permissão (singular), não o rótulo da tela.
+  const menuItems: SidebarMenuItem[] = [
+    { id: "dashboard", label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", permissions: viewPermission("dashboard") },
+    { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios", permissions: viewPermission("cardapiodfdf") },
+    { id: "estoque", label: "Estoque", icon: <EstoqueIcon />, path: "/estoque", permissions: viewPermission("estoque") },
+    { id: "refeicoes", label: "Refeições", icon: <RefeicoesIcon />, path: "/refeicoes", permissions: viewPermission("refeicaoservida") },
+    // TODO: a API ainda não expõe um recurso para solicitações extras — sem
+    // `permissions`, o item fica visível para todos.
     { id: "solicitacoes-extras", label: "Solicitações Extras", icon: <SolicitacoesExtrasIcon />, path: "/solicitacoes-extras" },
-    { id: "relatorios", label: "Relatórios", icon: <RelatoriosIcon />, path: "/relatorios" },
-    { id: "usuarios", label: "Usuários", icon: <UsuariosIcon />, path: "/usuarios" },
-    { id: "terminal", label: "Terminal", icon: <TerminalIcon />, path: "/terminal" },
+    { id: "relatorios", label: "Relatórios", icon: <RelatoriosIcon />, path: "/relatorios", permissions: viewPermission("relatorio") },
+    { id: "usuarios", label: "Usuários", icon: <UsuariosIcon />, path: "/usuarios", permissions: viewPermission("usuario") },
+    { id: "terminal", label: "Terminal", icon: <TerminalIcon />, path: "/terminal", permissions: viewPermission("terminal") },
   ];
 
-  const adminMenuItems = [
-    { id: "perfis-permissoes", label: "Perfis & Permissões", icon: <PerfisPermissoesIcon />, path: "/admin/perfis-permissoes" },
-    { id: "logs-auditoria", label: "Logs & Auditoria", icon: <LogsAuditoriaIcon />, path: "/admin/logs-auditoria" },
-    { id: "configuracoes", label: "Configurações", icon: <ConfiguracoesIcon />, path: "/admin/configuracoes" },
+  const adminMenuItems: SidebarMenuItem[] = [
+    { id: "perfis-permissoes", label: "Perfis & Permissões", icon: <PerfisPermissoesIcon />, path: "/admin/perfis-permissoes", permissions: viewPermission("cargo") },
+    { id: "logs-auditoria", label: "Logs & Auditoria", icon: <LogsAuditoriaIcon />, path: "/admin/logs-auditoria", permissions: viewPermission("log") },
+    { id: "configuracoes", label: "Configurações", icon: <ConfiguracoesIcon />, path: "/admin/configuracoes", permissions: viewPermission("configuracao") },
   ];
 
-  const visibleMenuItems = menuItems.filter(
-    (item) => item.id !== "terminal" || hasModulePermission(user, "terminal"),
-  );
-
-  const protectedRoutes = [...menuItems, ...adminMenuItems].map((item) => item.path);
+  // A seleção de unidade também exige sessão: entra na lista para herdar o
+  // redirect de não autenticado.
+  const protectedRoutes = [
+    ...[...menuItems, ...adminMenuItems].map((item) => item.path),
+    SELECT_UNIT_ROUTE,
+  ];
   const isKnownProtectedRoute = protectedRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
@@ -70,7 +86,34 @@ export default function MainLayout({
   }, [isLoadingPages, isAuthenticated, isKnownProtectedRoute, pathname, router]);
 
   const isKioskRoute = pathname.startsWith("/terminal/");
-  const shouldShowSidebar = isAuthenticated && isKnownProtectedRoute && !isKioskRoute;
+  const isContextRoute = pathname === SELECT_UNIT_ROUTE;
+
+  React.useEffect(() => {
+    // Sem unidade ativa não existe escopo: as telas mostrariam dados de lugar
+    // nenhum e os requests sairiam sem o header `unidade-id-x`. O usuário volta
+    // para a seleção — inclusive quando a unidade guardada deixou de valer.
+    if (isLoadingPages) return;
+    if (!isAuthenticated) return;
+    if (!isKnownProtectedRoute) return;
+    if (isContextRoute) return;
+    if (activeContext) return;
+
+    router.replace(SELECT_UNIT_ROUTE);
+  }, [
+    isLoadingPages,
+    isAuthenticated,
+    isKnownProtectedRoute,
+    isContextRoute,
+    activeContext,
+    router,
+  ]);
+
+  const shouldShowSidebar =
+    isAuthenticated &&
+    isKnownProtectedRoute &&
+    !isKioskRoute &&
+    !isContextRoute &&
+    Boolean(activeContext);
 
   React.useEffect(() => {
     // Sai da tela cheia sempre que a rota atual não for mais kiosk — cobre
@@ -83,13 +126,22 @@ export default function MainLayout({
     }
   }, [isKioskRoute]);
   const shouldBlockProtectedContent =
-    !isLoadingPages && !isAuthenticated && isKnownProtectedRoute;
+    !isLoadingPages &&
+    isKnownProtectedRoute &&
+    (!isAuthenticated || (!isContextRoute && !activeContext));
 
   const sidebarUser = {
     name: user?.nome || "Usuário",
     email: user?.email || "",
     avatarInitial: user?.nome?.charAt(0)?.toUpperCase() || "U",
   };
+
+  const activeUnit = activeContext
+    ? {
+        unidade: activeContext.unidade_nome,
+        empresa: activeContext.empresa_nome,
+      }
+    : null;
 
   return (
     <Box
@@ -102,11 +154,14 @@ export default function MainLayout({
     >
       {shouldShowSidebar && (
         <SidebarComponent
-          menuItems={visibleMenuItems}
+          menuItems={menuItems}
           adminMenuItems={adminMenuItems}
           user={sidebarUser}
           onLogout={logout}
           logoutIcon={<SairIcon />}
+          activeUnit={activeUnit}
+          onSwitchUnit={clearContext}
+          switchUnitIcon={<BuildingIcon />}
           showAdminSection={hasAdminAccess(user)}
           logoSrc="/assets/logo.svg"
           activePath={pathname}

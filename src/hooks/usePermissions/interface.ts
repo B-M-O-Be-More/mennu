@@ -8,14 +8,14 @@ import {
 
 export interface UsePermissionsReturn {
   user: IUser;
-  /** Códigos de permissão do usuário logado. */
+  /** Códigos de permissão do usuário na unidade ativa. */
   permissions: PermissionCode[];
   /** Feature flags ativas. */
   features: string[];
   level?: UserLevel;
   /** Sessão ainda sendo validada — trate como "sem permissão" até resolver. */
   isLoading: boolean;
-  /** `acesso_total` da API (ou `tipo_usuario === "admin"`). */
+  /** `acesso_total` do contexto ativo — único bypass das checagens. */
   hasFullAccess: boolean;
   /** Exige todas as permissões informadas (`mode="any"` para exigir uma). */
   can: (

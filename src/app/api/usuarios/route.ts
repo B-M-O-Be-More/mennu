@@ -1,21 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
-
-async function getHeaders(): Promise<Record<string, string> | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("mennu_token")?.value;
-  const empresaId = cookieStore.get("empresa_id")?.value;
-
-  if (!token || !empresaId) return null;
-
-  return {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: token,
-    "empresa-id-x": empresaId,
-  };
-}
+import { getAuthHeaders } from "@/app/api/_shared/getAuthHeaders";
 
 async function safeJson(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
@@ -31,7 +16,7 @@ async function safeJson(response: Response) {
 
 export async function GET(req: NextRequest) {
   const baseUrl = getApiBaseUrl();
-  const headers = await getHeaders();
+  const headers = await getAuthHeaders();
   if (!headers) {
     return NextResponse.json(
       { message: "Autenticação necessária" },
@@ -57,7 +42,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const baseUrl = getApiBaseUrl();
-  const headers = await getHeaders();
+  const headers = await getAuthHeaders();
   if (!headers) {
     return NextResponse.json(
       { message: "Autenticação necessária" },

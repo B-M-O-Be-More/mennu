@@ -11,6 +11,7 @@ import {
   Divider,
   Checkbox,
   Button,
+  Chip,
 } from "@mui/material";
 import { ProfileCardProps } from "./";
 import IconBox from "@/components/Cards/IconBox";
@@ -210,9 +211,16 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
               </Stack>
             ) : (
               <React.Fragment>
-                <Typography variant="h5" fontWeight={600}>
-                  {profile.nome}
-                </Typography>
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Typography variant="h5" fontWeight={600}>
+                    {profile.nome}
+                  </Typography>
+                  {profile.is_default && (
+                    <Tooltip title="Cargo padrão do sistema">
+                      <Chip label="Padrão" size="small" color="info" />
+                    </Tooltip>
+                  )}
+                </Stack>
                 <Typography variant="caption" color="text.secondary">
                   {profile.descricao}
                 </Typography>
@@ -245,52 +253,48 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
                 </IconButton>
               </span>
             </Tooltip>
-            <Tooltip
-              title={
-                !profile.editavel
-                  ? "Perfil não editável"
-                  : isEditing
-                    ? "Cancelar edição"
-                    : "Editar cargo"
-              }
-            >
-              <span>
-                <IconButton
-                  aria-label="edit"
-                  size="small"
-                  disabled={!profile.editavel || isSaving}
-                  onClick={isEditing ? handleCancelEditing : handleStartEditing}
-                  sx={{
-                    border: "1px solid",
-                    borderColor: isEditing ? "primary.main" : "divider",
-                    borderRadius: 2,
-                    height: "fit-content",
-                    color: isEditing ? "primary.main" : "text.secondary",
-                  }}
-                >
-                  <EditIcon width={20} />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={profile.excluivel ? "Excluir perfil" : "Perfil não excluível"}>
-              <span>
-                <IconButton
-                  aria-label="delete"
-                  size="small"
-                  disabled={!profile.excluivel || isEditing || isDeleting}
-                  onClick={() => setOpenDeleteProfileModal(true)}
-                  sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    height: "fit-content",
-                    color: "text.secondary",
-                  }}
-                >
-                  <TrashIcon width={20} color={theme.palette.error.contrastText} />
-                </IconButton>
-              </span>
-            </Tooltip>
+            {profile.editavel && (
+              <Tooltip title={isEditing ? "Cancelar edição" : "Editar cargo"}>
+                <span>
+                  <IconButton
+                    aria-label="edit"
+                    size="small"
+                    disabled={isSaving}
+                    onClick={isEditing ? handleCancelEditing : handleStartEditing}
+                    sx={{
+                      border: "1px solid",
+                      borderColor: isEditing ? "primary.main" : "divider",
+                      borderRadius: 2,
+                      height: "fit-content",
+                      color: isEditing ? "primary.main" : "text.secondary",
+                    }}
+                  >
+                    <EditIcon width={20} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+            {profile.excluivel && (
+              <Tooltip title="Excluir perfil">
+                <span>
+                  <IconButton
+                    aria-label="delete"
+                    size="small"
+                    disabled={isEditing || isDeleting}
+                    onClick={() => setOpenDeleteProfileModal(true)}
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                      height: "fit-content",
+                      color: "text.secondary",
+                    }}
+                  >
+                    <TrashIcon width={20} color={theme.palette.error.contrastText} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
             <Tooltip title={isOpen ? "Recolher" : "Expandir"}>
               <span>
                 <IconButton

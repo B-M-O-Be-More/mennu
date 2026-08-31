@@ -27,9 +27,18 @@ import { IStock, IStockData } from "@/Interfaces/Stock/stock";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
+import TabButton from "../TabButton";
+import StockAuditPanel from "./StockAuditPanel";
+
+/** Sub-abas da aba "Movimentações" — Auditoria já vem selecionada. */
+const MOVEMENT_TABS = { auditoria: 0, historico: 1 } as const;
 
 export function StockPage({}: StockPageProps) {
   const [openTab, setOpenTab] = React.useState(0);
+  const [movementTab, setMovementTab] = React.useState<number>(
+    MOVEMENT_TABS.auditoria,
+  );
+  const [auditRefreshToken, setAuditRefreshToken] = React.useState(0);
 
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
@@ -99,13 +108,18 @@ export function StockPage({}: StockPageProps) {
     }
   };
 
+  const isAuditTab = openTab === 1 && movementTab === MOVEMENT_TABS.auditoria;
+
   useEffect(() => {
     if (openTab === 0) {
       loadStockData(debouncedSearch);
-    } else {
+      return;
+    }
+
+    if (movementTab === MOVEMENT_TABS.historico) {
       loadMovementData();
     }
-  }, [openTab, debouncedSearch]);
+  }, [openTab, movementTab, debouncedSearch]);
 
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
@@ -185,9 +199,11 @@ export function StockPage({}: StockPageProps) {
         <Button
           variant="outlined"
           startIcon={<UpdateIcon />}
-          onClick={() =>
-            openTab === 0 ? loadStockData(debouncedSearch) : loadMovementData()
-          }
+          onClick={() => {
+            if (openTab === 0) return loadStockData(debouncedSearch);
+            if (isAuditTab) return setAuditRefreshToken((token) => token + 1);
+            return loadMovementData();
+          }}
         >
           Atualizar
         </Button>
@@ -225,208 +241,233 @@ export function StockPage({}: StockPageProps) {
         </Button>
       </Stack>
 
-      <Box
-        display="grid"
-        gap={2}
-        gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))"
-      >
-        <Card spacing={0}>
-          <Stack
-            alignItems="center"
-            direction="row"
-            gap={2}
-            justifyContent="space-between"
-            width="100%"
-          >
-            <Box>
-              <Typography color="text.primary" variant="body1" fontWeight={400}>
-                Total de Itens
-              </Typography>
-              <Typography
-                color="text.secondary"
-                variant="body2"
-                fontWeight={400}
-              >
-                Ativos no sistema
-              </Typography>
-            </Box>
-            <IconBox
-              icon={<EstoqueIcon color="#00A63E" />}
-              bgColor={"#F0FDF4"}
-            />
-          </Stack>
-          <Typography variant="h4" fontWeight={400} color="text.primary">
-            {stockData.resumo.total_ativos}
-          </Typography>
-        </Card>
-        <Card spacing={0}>
-          <Stack
-            alignItems="center"
-            direction="row"
-            gap={2}
-            justifyContent="space-between"
-            width="100%"
-          >
-            <Box>
-              <Typography color="text.primary" variant="body1" fontWeight={400}>
-                Itens Críticos
-              </Typography>
-              <Typography
-                color="text.secondary"
-                variant="body2"
-                fontWeight={400}
-              >
-                Abaixo do mínimo
-              </Typography>
-            </Box>
-            <IconBox icon={<AlertIcon color="#E7000B" />} bgColor={"#FEF2F2"} />
-          </Stack>
-          <Typography variant="h4" fontWeight={400} color="text.primary">
-            {stockData.resumo.itens_criticos}
-          </Typography>
-        </Card>
-        <Card spacing={0}>
-          <Stack
-            alignItems="center"
-            direction="row"
-            gap={2}
-            justifyContent="space-between"
-            width="100%"
-          >
-            <Box>
-              <Typography color="text.primary" variant="body1" fontWeight={400}>
-                Movimentações
-              </Typography>
-              <Typography
-                color="text.secondary"
-                variant="body2"
-                fontWeight={400}
-              >
-                Últimos 7 dias
-              </Typography>
-            </Box>
-            <IconBox
-              icon={<TwistedArrowIcon color="#155DFC" />}
-              bgColor={"#FEF2F2"}
-            />
-          </Stack>
-          <Typography variant="h4" fontWeight={400} color="text.primary">
-            {stockData.resumo.movimentacoes}
-          </Typography>
-        </Card>
-      </Box>
+      {openTab === 1 && (
+        <Stack gap={2} direction="row">
+          <TabButton
+            label="Auditoria"
+            tabIndex={MOVEMENT_TABS.auditoria}
+            activeTab={movementTab}
+            onChange={setMovementTab}
+          />
+          <TabButton
+            label="Histórico de movimentações"
+            tabIndex={MOVEMENT_TABS.historico}
+            activeTab={movementTab}
+            onChange={setMovementTab}
+          />
+        </Stack>
+      )}
 
-      <Card>
-        {openTab === 0 ? (
-          <React.Fragment>
-            {error && <Alert severity="error">{error}</Alert>}
-
+      {/* Os totalizadores de insumos não se aplicam à auditoria, que tem os
+          próprios cards de resumo. */}
+      {!isAuditTab && (
+        <Box
+          display="grid"
+          gap={2}
+          gridTemplateColumns="repeat(auto-fit, minmax(236px, 1fr))"
+        >
+          <Card spacing={0}>
             <Stack
-              direction="row"
-              justifyContent="space-between"
-              gap={2}
               alignItems="center"
+              direction="row"
+              gap={2}
+              justifyContent="space-between"
+              width="100%"
             >
-              <Typography>Itens Cadastrados</Typography>
-              <Stack direction="row" gap={2} minWidth="450px">
-                <Input
-                  placeholder="Buscar item..."
-                  icon={<SearchIcon />}
-                  register={register("itemSearch")}
+              <Box>
+                <Typography color="text.primary" variant="body1" fontWeight={400}>
+                  Total de Itens
+                </Typography>
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  fontWeight={400}
+                >
+                  Ativos no sistema
+                </Typography>
+              </Box>
+              <IconBox
+                icon={<EstoqueIcon color="#00A63E" />}
+                bgColor={"#F0FDF4"}
+              />
+            </Stack>
+            <Typography variant="h4" fontWeight={400} color="text.primary">
+              {stockData.resumo.total_ativos}
+            </Typography>
+          </Card>
+          <Card spacing={0}>
+            <Stack
+              alignItems="center"
+              direction="row"
+              gap={2}
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Box>
+                <Typography color="text.primary" variant="body1" fontWeight={400}>
+                  Itens Críticos
+                </Typography>
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  fontWeight={400}
+                >
+                  Abaixo do mínimo
+                </Typography>
+              </Box>
+              <IconBox icon={<AlertIcon color="#E7000B" />} bgColor={"#FEF2F2"} />
+            </Stack>
+            <Typography variant="h4" fontWeight={400} color="text.primary">
+              {stockData.resumo.itens_criticos}
+            </Typography>
+          </Card>
+          <Card spacing={0}>
+            <Stack
+              alignItems="center"
+              direction="row"
+              gap={2}
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Box>
+                <Typography color="text.primary" variant="body1" fontWeight={400}>
+                  Movimentações
+                </Typography>
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  fontWeight={400}
+                >
+                  Últimos 7 dias
+                </Typography>
+              </Box>
+              <IconBox
+                icon={<TwistedArrowIcon color="#155DFC" />}
+                bgColor={"#FEF2F2"}
+              />
+            </Stack>
+            <Typography variant="h4" fontWeight={400} color="text.primary">
+              {stockData.resumo.movimentacoes}
+            </Typography>
+          </Card>
+        </Box>
+      )}
+
+      {isAuditTab ? (
+        <StockAuditPanel refreshToken={auditRefreshToken} />
+      ) : (
+        <Card>
+          {openTab === 0 ? (
+            <React.Fragment>
+              {error && <Alert severity="error">{error}</Alert>}
+
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                gap={2}
+                alignItems="center"
+              >
+                <Typography>Itens Cadastrados</Typography>
+                <Stack direction="row" gap={2} minWidth="450px">
+                  <Input
+                    placeholder="Buscar item..."
+                    icon={<SearchIcon />}
+                    register={register("itemSearch")}
+                  />
+                  <Button
+                    variant="contained"
+                    startIcon={<PlusIcon />}
+                    onClick={() => setOpenNewStockModal(true)}
+                    sx={{
+                      height: "50px",
+                      whiteSpace: "nowrap",
+                      paddingX: "2rem",
+                    }}
+                  >
+                    Novo Item
+                  </Button>
+                  <NewStockModal
+                    open={openNewStockModal}
+                    onClose={() => {
+                      setOpenNewStockModal(false);
+                      loadStockData(debouncedSearch);
+                    }}
+                  />
+                </Stack>
+              </Stack>
+
+              <Table
+                columns={stockColumns.map((col) =>
+                  col.key === "acoes"
+                    ? {
+                        ...col,
+                        render: (row: IStock) => (
+                          <ActionCell
+                            checked={row.ativo}
+                            tooltipToggle="Ativar/Desativar item"
+                            onToggle={(newState) =>
+                              handleToggleStock(row, newState)
+                            }
+                            tooltipEdit="Editar item"
+                            onEdit={() => handleEditStock(row)}
+                          />
+                        ),
+                      }
+                    : col,
+                )}
+                rows={stockData.results}
+                initialRowsPerPage={5}
+                isLoading={loading}
+              />
+
+              {selectedStock && (
+                <EditStockModal
+                  open={openEditStockModal}
+                  onClose={() => {
+                    setOpenEditStockModal(false);
+                    setSelectedStock(null);
+                  }}
+                  stockItem={selectedStock}
+                  onSave={handleSaveStock}
                 />
+              )}
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              {error && <Alert severity="error">{error}</Alert>}
+
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                gap={2}
+                alignItems="center"
+              >
+                <Typography>Histórico de Movimentações</Typography>
                 <Button
                   variant="contained"
                   startIcon={<PlusIcon />}
-                  onClick={() => setOpenNewStockModal(true)}
-                  sx={{
-                    height: "50px",
-                    whiteSpace: "nowrap",
-                    paddingX: "2rem",
-                  }}
+                  onClick={() => setOpenNewMovementModal(true)}
+                  sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
                 >
-                  Novo Item
+                  Nova Movimentação
                 </Button>
-                <NewStockModal
-                  open={openNewStockModal}
-                  onClose={() => {
-                    setOpenNewStockModal(false);
-                    loadStockData(debouncedSearch);
-                  }}
+                <NewMovementModal
+                  open={openNewMovementModal}
+                  onClose={() => setOpenNewMovementModal(false)}
+                  onSave={loadMovementData}
                 />
               </Stack>
-            </Stack>
 
-            <Table
-              columns={stockColumns.map((col) =>
-                col.key === "acoes"
-                  ? {
-                      ...col,
-                      render: (row: IStock) => (
-                        <ActionCell
-                          checked={row.ativo}
-                          tooltipToggle="Ativar/Desativar item"
-                          onToggle={(newState) =>
-                            handleToggleStock(row, newState)
-                          }
-                          tooltipEdit="Editar item"
-                          onEdit={() => handleEditStock(row)}
-                        />
-                      ),
-                    }
-                  : col,
-              )}
-              rows={stockData.results}
-              initialRowsPerPage={5}
-              isLoading={loading}
-            />
-
-            {selectedStock && (
-              <EditStockModal
-                open={openEditStockModal}
-                onClose={() => {
-                  setOpenEditStockModal(false);
-                  setSelectedStock(null);
-                }}
-                stockItem={selectedStock}
-                onSave={handleSaveStock}
+              <Table
+                columns={movementColumns}
+                rows={movementData}
+                initialRowsPerPage={5}
+                isLoading={loading}
               />
-            )}
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            {error && <Alert severity="error">{error}</Alert>}
-
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              gap={2}
-              alignItems="center"
-            >
-              <Typography>Histórico de Movimentações</Typography>
-              <Button
-                variant="contained"
-                startIcon={<PlusIcon />}
-                onClick={() => setOpenNewMovementModal(true)}
-                sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
-              >
-                Nova Movimentação
-              </Button>
-              <NewMovementModal
-                open={openNewMovementModal}
-                onClose={() => setOpenNewMovementModal(false)}
-                onSave={loadMovementData}
-              />
-            </Stack>
-
-            <Table
-              columns={movementColumns}
-              rows={movementData}
-              initialRowsPerPage={5}
-              isLoading={loading}
-            />
-          </React.Fragment>
-        )}
-      </Card>
+            </React.Fragment>
+          )}
+        </Card>
+      )}
     </Stack>
   );
 }

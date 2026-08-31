@@ -1,11 +1,16 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
+import {
+  EMPRESA_COOKIE,
+  TOKEN_COOKIE,
+  UNIDADE_COOKIE,
+} from "@/utils/authCookies";
 
 export async function POST() {
   const baseUrl = getApiBaseUrl();
   const cookieStore = await cookies();
-  const token = cookieStore.get("mennu_token")?.value;
+  const token = cookieStore.get(TOKEN_COOKIE)?.value;
 
   if (!token) {
     return NextResponse.json(
@@ -32,7 +37,7 @@ export async function POST() {
       status: response.status,
     });
 
-    res.cookies.set("mennu_token", "", {
+    res.cookies.set(TOKEN_COOKIE, "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -40,8 +45,16 @@ export async function POST() {
       path: "/",
     });
 
-    res.cookies.set("empresa_id", "", {
+    res.cookies.set(EMPRESA_COOKIE, "", {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 0,
+      path: "/",
+    });
+
+    res.cookies.set(UNIDADE_COOKIE, "", {
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 0,
