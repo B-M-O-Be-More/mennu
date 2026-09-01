@@ -19,9 +19,11 @@ import {
 import * as React from "react";
 import NextLink from "next/link";
 import Image from "next/image";
+import { Inbox } from "@novu/nextjs";
 import { SidebarProps } from "./interface";
 import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
 import Can from "@/components/Can";
+import { useUser } from "@/context/AuthContext";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -187,7 +189,10 @@ export function SidebarComponent({
   logoSrc,
 }: SidebarProps) {
   const theme = useTheme();
+  const { user: authUser } = useUser();
   const sidebarColors = (theme.palette as any).sidebar;
+  const novuApplicationIdentifier = process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER;
+  const novuSubscriberId = authUser.id > 0 ? String(authUser.id) : undefined;
 
   const isActive = React.useCallback(
     (path: string) => {
@@ -410,6 +415,35 @@ export function SidebarComponent({
           </Stack>
         )}
 
+        {novuApplicationIdentifier && novuSubscriberId && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mb: { xs: 1, sm: 1.25, lg: 1.5 },
+            }}
+          >
+            <Inbox
+              applicationIdentifier={novuApplicationIdentifier}
+              subscriberId={novuSubscriberId}
+              appearance={{
+                variables: {
+                  colorPrimary: theme.palette.primary.main,
+                  colorPrimaryForeground: theme.palette.primary.contrastText,
+                  colorBackground: theme.palette.background.paper,
+                  colorForeground: theme.palette.text.primary,
+                  colorSecondary: theme.palette.text.secondary,
+                  colorSecondaryForeground: theme.palette.secondary.contrastText,
+                  colorCounter: theme.palette.primary.main,
+                  colorCounterForeground: theme.palette.primary.contrastText,
+                  colorNeutral: theme.palette.divider,
+                  borderRadius: "14px",
+                  fontSize: "14px",
+                },
+              }}
+            />
+          </Box>
+        )}
         <ButtonBase
           onClick={handleOpenMenu}
           aria-label="Opções do perfil"
