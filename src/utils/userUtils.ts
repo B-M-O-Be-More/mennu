@@ -6,6 +6,26 @@ import {
 import { ADMIN_PERMISSIONS, hasPermission } from "@/utils/permissionUtils";
 import { normalizeUserContexts } from "@/utils/userContextUtils";
 
+function toNumber(value: unknown): number | null {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+/** Identificador estável do usuário para integrações externas (ex.: Novu). */
+export function getNovuSubscriberId(user: IUser): string | undefined {
+  if (Number.isFinite(user.id) && user.id > 0) {
+    return String(user.id);
+  }
+
+  const email = user.email?.trim();
+  if (email) return email;
+
+  const matricula = user.matricula?.trim();
+  if (matricula) return matricula;
+
+  return undefined;
+}
+
 /**
  * Libera a seção administrativa da sidebar. Superusuário (`acesso_total`)
  * passa direto; os demais precisam de alguma permissão administrativa.
@@ -63,9 +83,15 @@ export function normalizeUserData(data: unknown): IUser {
     tipoUsuario = "gestor";
   }
 
+  const resolvedId =
+    toNumber(parsed.id) ??
+    toNumber((parsed as { usuario_id?: unknown }).usuario_id) ??
+    0;
+
   return {
     ...initialUser(),
     ...parsed,
+    id: resolvedId,
     cpf: parsed.cpf ?? parsed.documento ?? "",
     tipo_usuario: tipoUsuario,
     status: typeof parsed.status === "boolean" ? parsed.status : Boolean(parsed.ativo),
