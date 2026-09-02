@@ -14,11 +14,6 @@ import {
   IconButton,
   MenuItem,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -36,6 +31,7 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import PageHeader from "@/components/PageHeader";
 import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
+import Table, { IColumn } from "@/components/Tables/Table";
 import { DownloadIcon, EyeIcon, SearchIcon } from "@/components/Icons";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import {
@@ -47,7 +43,7 @@ import {
 } from "@/Interfaces/LogAudit/logAudit";
 import { LogsAuditPageProps } from "./interface";
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 5;
 const STATUS_OPTIONS = [
   { label: "Todos os status", value: "all" },
   { label: "Sucesso", value: "sucesso" },
@@ -67,16 +63,6 @@ const RETENTION_ITEMS = [
   "Todas as alterações em permissões são auditadas",
   "Tentativas de acesso não autorizado geram alertas imediatos",
 ];
-
-const TABLE_HEADERS = [
-  { id: "timestamp", label: "Timestamp" },
-  { id: "usuario", label: "Usuário" },
-  { id: "acao", label: "Ação" },
-  { id: "modulo", label: "Módulo" },
-  { id: "ip", label: "IP" },
-  { id: "status", label: "Status" },
-  { id: "acoes", label: "Ação" },
-] as const;
 
 type DetailField = {
   label: string;
@@ -580,6 +566,7 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
   const detailsRequestId = React.useRef(0);
   const debouncedSearch = useDebounce(filters.search, 500);
   const [page, setPage] = React.useState(1);
+  const [rowsPerPage, setRowsPerPage] = React.useState(PAGE_SIZE);
 
   const loadLogs = React.useCallback(async (signal: AbortSignal) => {
     const requestId = ++logsRequestId.current;
@@ -589,7 +576,7 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
     try {
       const params = new URLSearchParams({
         page: String(page),
-        page_size: String(PAGE_SIZE),
+        page_size: String(rowsPerPage),
       });
 
       if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
@@ -617,7 +604,7 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
     } finally {
       if (requestId === logsRequestId.current) setIsLoading(false);
     }
-  }, [debouncedSearch, filters.modulo, filters.status, page]);
+  }, [debouncedSearch, filters.modulo, filters.status, page, rowsPerPage]);
 
   const loadStats = React.useCallback(async (signal: AbortSignal) => {
     const requestId = ++statsRequestId.current;
@@ -743,6 +730,13 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const handlePageChange = (nextPage: number) => setPage(nextPage + 1);
+
+  const handleRowsPerPageChange = (nextRowsPerPage: number) => {
+    setRowsPerPage(nextRowsPerPage);
+    setPage(1);
+  };
+
   const summaryCards: SummaryCardData[] = [
     {
       title: "Total de Eventos",
@@ -767,6 +761,77 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
       value: stats.total_avisos,
       icon: getStatusConfig("aviso").statIcon,
       iconBg: getStatusConfig("aviso").statBg,
+    },
+  ];
+
+  const columns: IColumn<ILogAuditListItem>[] = [
+    {
+      key: "criado_em",
+      label: "Timestamp",
+      render: (log) => formatDateTime(log.criado_em),
+    },
+    {
+      key: "usuario_email",
+      label: "Usuário",
+      render: (log) => (
+        <Stack spacing={0.25}>
+          <Typography variant="body2">{log.usuario_email}</Typography>
+          <Typography variant="caption" color="text.secondary">
+            Log #{log.id}
+          </Typography>
+        </Stack>
+      ),
+    },
+    { key: "acao", label: "Ação" },
+    {
+      key: "modulo",
+      label: "Módulo",
+      render: (log) => (
+        <Chip
+          label={log.modulo}
+          variant="outlined"
+          size="small"
+          sx={{ bgcolor: "grey.100", border: "none", color: "text.secondary" }}
+        />
+      ),
+    },
+    {
+      key: "ip_address",
+      label: "IP",
+      render: (log) => log.ip_address || "-",
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (log) => {
+        const statusConfig = getStatusConfig(log.status);
+
+        return (
+          <Stack direction="row" spacing={1} alignItems="center">
+            {statusConfig.icon}
+            <Chip
+              label={statusConfig.label}
+              variant="outlined"
+              size="small"
+              sx={{ ...statusConfig.chipSx, textTransform: "capitalize" }}
+            />
+          </Stack>
+        );
+      },
+    },
+    {
+      key: "details",
+      label: "Ação",
+      render: (log) => (
+        <Button
+          variant="text"
+          startIcon={<EyeIcon width={14} height={14} color="#FF3D00" />}
+          onClick={() => handleViewDetails(log)}
+          sx={{ color: "primary.main", px: 0, minWidth: 0 }}
+        >
+          Ver detalhes
+        </Button>
+      ),
     },
   ];
 
@@ -907,195 +972,19 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
           </Typography>
         </Box>
 
-        <Box sx={{ overflowX: "auto" }}>
-          <Table
-            sx={{
-              minWidth: 1040,
-              "& .MuiTableCell-root": {
-                borderColor: "grey.100",
-              },
-            }}
-          >
-            <TableHead>
-              <TableRow>
-                {TABLE_HEADERS.map(({ id, label }) => (
-                  <TableCell
-                    key={id}
-                    sx={{
-                      py: 1.75,
-                      px: 3,
-                      fontSize: 11,
-                      letterSpacing: "0.03em",
-                      textTransform: "uppercase",
-                      color: "text.secondary",
-                      fontWeight: 500,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={7} sx={{ py: 6 }}>
-                    <Stack alignItems="center" spacing={1.5}>
-                      <CircularProgress size={26} />
-                      <Typography color="text.secondary">
-                        Carregando logs...
-                      </Typography>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ) : rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} sx={{ py: 6 }}>
-                    <Stack alignItems="center" spacing={1}>
-                      <Typography sx={{ fontSize: 18, fontWeight: 500 }}>
-                        Nenhum log encontrado
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Ajuste os filtros para ampliar a busca.
-                      </Typography>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                rows.map((log) => {
-                  const statusConfig = getStatusConfig(log.status);
-
-                  return (
-                    <TableRow key={log.id} hover>
-                      <TableCell sx={{ px: 3, py: 2.25, fontSize: 14.5, color: "text.secondary", whiteSpace: "nowrap" }}>
-                        {formatDateTime(log.criado_em)}
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2 }}>
-                        <Typography sx={{ fontSize: 18, lineHeight: 1.6, color: "text.primary" }}>
-                          {log.usuario_email}
-                        </Typography>
-                        <Typography sx={{ fontSize: 14, lineHeight: 1.5, color: "#99A1AF" }}>
-                          Log #{log.id}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2, fontSize: 18, lineHeight: 1.6, color: "text.primary", whiteSpace: "nowrap" }}>
-                        {log.acao}
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2 }}>
-                        <Chip
-                          label={log.modulo}
-                          variant="outlined"
-                          sx={{
-                            height: 25,
-                            fontSize: 12,
-                            borderRadius: 999,
-                            bgcolor: "grey.100",
-                            color: "#4A5565",
-                            border: "none",
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2, fontSize: 14.5, color: "text.secondary", fontFamily: "Consolas, monospace", whiteSpace: "nowrap" }}>
-                        {log.ip_address || "-"}
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2 }}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          {statusConfig.icon}
-                          <Chip
-                            label={statusConfig.label}
-                            variant="outlined"
-                            sx={{
-                              height: 25,
-                              fontSize: 12,
-                              borderRadius: 999,
-                              ...statusConfig.chipSx,
-                            }}
-                          />
-                        </Stack>
-                      </TableCell>
-                      <TableCell sx={{ px: 3, py: 2 }}>
-                        <Button
-                          variant="text"
-                          startIcon={<EyeIcon width={14} height={14} color="#FF3D00" />}
-                          onClick={() => handleViewDetails(log)}
-                          sx={{
-                            color: "primary.main",
-                            px: 0,
-                            py: 0,
-                            minWidth: 0,
-                            fontSize: 15.5,
-                            fontWeight: 400,
-                            "&:hover": {
-                              bgcolor: "transparent",
-                              color: "primary.dark",
-                            },
-                          }}
-                        >
-                          Ver detalhes
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </Box>
-
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{
-            px: 3,
-            py: 2,
-            borderTop: "1px solid",
-            borderColor: "grey.100",
+        <Table
+          columns={columns}
+          rows={rows}
+          isLoading={isLoading}
+          getRowKey={(log) => log.id}
+          remotePagination={{
+            count: pagination?.total_results ?? 0,
+            page: (pagination?.page ?? page) - 1,
+            rowsPerPage,
+            onPageChange: handlePageChange,
+            onRowsPerPageChange: handleRowsPerPageChange,
           }}
-        >
-          <Typography sx={{ fontSize: 18, color: "text.secondary", lineHeight: 1.65 }}>
-            Página {pagination?.page ?? page} de {pagination?.total_pages ?? 1}
-          </Typography>
-
-          <Stack direction="row" spacing={1}>
-            <Button
-              variant="outlined"
-              disabled={!pagination || page <= 1}
-              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-              sx={{ minWidth: 34, width: 34, height: 34, p: 0, borderRadius: 2.5 }}
-            >
-              {"<"}
-            </Button>
-
-            {Array.from({ length: pagination?.total_pages ?? 1 }, (_, index) => index + 1)
-              .slice(0, 5)
-              .map((pageNumber) => (
-                <Button
-                  key={pageNumber}
-                  variant={pageNumber === (pagination?.page ?? page) ? "contained" : "outlined"}
-                  onClick={() => setPage(pageNumber)}
-                  sx={{ minWidth: 34, width: 34, height: 34, p: 0, borderRadius: 2.5 }}
-                >
-                  {pageNumber}
-                </Button>
-              ))}
-
-            <Button
-              variant="outlined"
-              disabled={!pagination || page >= (pagination.total_pages || 1)}
-              onClick={() =>
-                setPage((prev) =>
-                  Math.min(pagination?.total_pages ?? prev, prev + 1),
-                )
-              }
-              sx={{ minWidth: 34, width: 34, height: 34, p: 0, borderRadius: 2.5 }}
-            >
-              {">"}
-            </Button>
-          </Stack>
-        </Stack>
+        />
       </Card>
 
       <Dialog
