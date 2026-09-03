@@ -1,5 +1,15 @@
 import Table from "./component";
-import { TableProps, IColumn, TablePaginationActionsProps } from "./interface";
+import {
+  TableProps,
+  IColumn,
+  RemotePagination,
+  TablePaginationActionsProps,
+} from "./interface";
 
 export default Table;
-export type { TableProps, IColumn, TablePaginationActionsProps };
+export type {
+  TableProps,
+  IColumn,
+  RemotePagination,
+  TablePaginationActionsProps,
+};

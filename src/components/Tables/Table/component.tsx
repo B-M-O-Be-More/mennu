@@ -61,31 +61,59 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export default function TableG<T extends Record<string, any>>({
+export default function TableG<T extends object>({
   columns,
   rows,
   rowsPerPageOptions = [5, 10, 25, 50],
   initialRowsPerPage = 5,
   isLoading = false,
+  remotePagination,
+  getRowKey,
 }: TableProps<T>) {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
+  const [localPage, setLocalPage] = React.useState(0);
+  const [localRowsPerPage, setLocalRowsPerPage] = React.useState(initialRowsPerPage);
+  const isRemotePagination = Boolean(remotePagination);
+  const page = remotePagination?.page ?? localPage;
+  const rowsPerPage = remotePagination?.rowsPerPage ?? localRowsPerPage;
+  const count = remotePagination?.count ?? rows.length;
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    !isRemotePagination && page > 0
+      ? Math.max(0, (1 + page) * rowsPerPage - rows.length)
+      : 0;
 
-  const handleChangePage = (_: any, newPage: number) => setPage(newPage);
+  const handleChangePage = (_: unknown, newPage: number) => {
+    if (remotePagination) {
+      remotePagination.onPageChange(newPage);
+      return;
+    }
+
+    setLocalPage(newPage);
+  };
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const newRowsPerPage = parseInt(event.target.value, 10);
+
+    if (remotePagination) {
+      remotePagination.onRowsPerPageChange(newRowsPerPage);
+      return;
+    }
+
+    setLocalRowsPerPage(newRowsPerPage);
+    setLocalPage(0);
   };
 
   const startIndex = page * rowsPerPage;
 
+  const displayedRows = isRemotePagination
+    ? rows
+    : rowsPerPage > 0
+      ? rows.slice(startIndex, startIndex + rowsPerPage)
+      : rows;
+
   return isLoading ? (
-    <TableSkeleton />
+    <TableSkeleton columns={columns.length} />
   ) : (
     <TableContainer
       sx={{
@@ -112,15 +140,12 @@ export default function TableG<T extends Record<string, any>>({
 
         <TableBody>
           {
-            (rowsPerPage > 0
-              ? rows.slice(startIndex, startIndex + rowsPerPage)
-              : rows
-            ).map((row, idx) => {
+            displayedRows.map((row, idx) => {
               const absoluteIndex = startIndex + idx;
 
               return (
                 <TableRow
-                  key={absoluteIndex}
+                  key={getRowKey?.(row, absoluteIndex) ?? absoluteIndex}
                   sx={{
                     "& .MuiTableCell-root": {
                       color: "tables.text",
@@ -133,7 +158,7 @@ export default function TableG<T extends Record<string, any>>({
                     <TableCell key={String(col.key)} align={col.align || "left"}>
                       {col.render
                         ? col.render(row, absoluteIndex)
-                        : row[col.key]}
+                        : (row[col.key as keyof T] as React.ReactNode)}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -164,7 +189,7 @@ export default function TableG<T extends Record<string, any>>({
             <TablePagination
               rowsPerPageOptions={rowsPerPageOptions}
               colSpan={columns.length}
-              count={rows.length}
+              count={count}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

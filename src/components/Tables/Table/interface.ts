@@ -15,12 +15,22 @@ export interface CustomColumn<T> extends BaseColumn<T> {
 
 export type IColumn<T> = DataColumn<T, keyof T> | CustomColumn<T>;
 
+export interface RemotePagination {
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange: (newRowsPerPage: number) => void;
+}
+
 export interface TableProps<TRow> {
   columns: IColumn<TRow>[];
   rows: TRow[];
   rowsPerPageOptions?: number[];
   initialRowsPerPage?: number;
   isLoading?: boolean;
+  remotePagination?: RemotePagination;
+  getRowKey?: (row: TRow, index: number) => React.Key;
 }
 
 export interface TablePaginationActionsProps {

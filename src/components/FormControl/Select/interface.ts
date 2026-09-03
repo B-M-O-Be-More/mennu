@@ -17,6 +17,8 @@ export interface SelectGProps {
   disabled?: boolean;
   formControlSx?: object;
   selectSx?: object;
+  value?: string;
+  onChange?: (value: string) => void;
   name?: string;
   control?: Control<any>;
   register?: UseFormRegisterReturn;

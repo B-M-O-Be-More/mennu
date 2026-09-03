@@ -8,9 +8,12 @@ export function formatTime(iso?: string | null) {
 }
 
 
-export function formatDateTime(iso?: string | null) {
+export function formatDateTime(
+  iso?: string | null,
+  format = "DD/MM/YYYY HH:mm",
+) {
   if (!iso) return "";
 
   const parsed = dayjs(iso);
-  return parsed.isValid() ? parsed.format("DD/MM/YYYY HH:mm") : "";
+  return parsed.isValid() ? parsed.format(format) : "";
 }
