@@ -8,24 +8,15 @@ import {
   MenuItem,
   Stack,
   Typography,
-  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Inbox } from "@novu/nextjs";
+import NotificationInbox from "@/components/NotificationInbox";
 import { PageHeaderProps } from "./interface";
-import { useUser } from "@/context/AuthContext";
-import { getNovuSubscriberId } from "@/utils/userUtils";
 
 export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
-  const theme = useTheme();
-  const { user, isAuthenticated, isLoadingPages } = useUser();
   const [menu, setMenu] = React.useState<HTMLElement | null>(null);
   const open = Boolean(menu);
   const actions = React.Children.toArray(children);
-  const novuApplicationIdentifier = process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER;
-  const novuSubscriberId = !isLoadingPages && isAuthenticated
-    ? getNovuSubscriberId(user)
-    : undefined;
 
   return (
     <Stack
@@ -54,29 +45,7 @@ export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
           {actions}
         </Stack>
 
-        {novuApplicationIdentifier && novuSubscriberId && (
-          <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-            <Inbox
-            applicationIdentifier={novuApplicationIdentifier}
-            subscriberId={novuSubscriberId}
-            appearance={{
-              variables: {
-                colorPrimary: theme.palette.primary.main,
-                colorPrimaryForeground: theme.palette.primary.contrastText,
-                colorBackground: theme.palette.background.paper,
-                colorForeground: theme.palette.text.primary,
-                colorSecondary: theme.palette.text.secondary,
-                colorSecondaryForeground: theme.palette.secondary.contrastText,
-                colorCounter: theme.palette.primary.main,
-                colorCounterForeground: theme.palette.primary.contrastText,
-                colorNeutral: theme.palette.divider,
-                borderRadius: "14px",
-                fontSize: "14px",
-              },
-            }}
-            />
-          </Box>
-        )}
+        <NotificationInbox />
 
         {actions.length > 0 && (
           <>
