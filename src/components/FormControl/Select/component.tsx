@@ -42,6 +42,8 @@ export default function SelectG({
   disabled = false,
   formControlSx,
   selectSx,
+  value,
+  onChange,
   name,
   control,
   register,
@@ -183,7 +185,15 @@ export default function SelectG({
         </Stack>
       )}
 
-      {control && name ? (
+      {value !== undefined ? (
+        renderSelect(
+          {
+            value: resolveValue(value, options),
+            onChange: (event) => onChange?.(String(event.target.value)),
+          },
+          resolveValue(value, options),
+        )
+      ) : control && name ? (
         <Controller
           name={name}
           control={control}
