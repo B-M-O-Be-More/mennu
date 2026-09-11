@@ -17,17 +17,9 @@ import {
   timeRangeApiToForm,
 } from "@/utils/timeRangeAdapter";
 import dayjs from "dayjs";
-
-interface UpdateTipoRefeicaoPayload {
-  nome: string;
-  horario_inicio: string;
-  horario_fim: string;
-  ordem?: number;
-  exige_pesagem?: boolean;
-  leitura_cartao?: boolean;
-  confirmacao_manual?: boolean;
-  ativo?: boolean;
-}
+import { TipoRefeicaoUpdateApi } from "@/Interfaces/Meals/MealTypes";
+import { mealTypeService } from "@/services/mealTypeService";
+import { authContextService } from "@/services/authContextService";
 
 interface UnidadeApiItem {
   id?: number | null;
@@ -148,7 +140,7 @@ export function EditMealTypeModal({
         throw new Error("Preencha horário de início e horário de fim.");
       }
 
-      const payload: UpdateTipoRefeicaoPayload = {
+      const payload: TipoRefeicaoUpdateApi = {
         nome: data.typeName,
         horario_inicio: horarioInicio,
         horario_fim: horarioFim,
@@ -159,20 +151,13 @@ export function EditMealTypeModal({
         ativo: typeof data.status === "boolean" ? data.status : undefined,
       };
 
-      const response = await fetch(`/api/tipo-refeicao/${typeId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errData = await response
-          .json()
-          .catch(() => ({ message: "Erro ao atualizar tipo de refeição" }));
-        throw new Error(errData.message ?? "Erro ao atualizar tipo de refeição");
+      const unitId = Number(initialData.units[0]?.id);
+      if (!Number.isInteger(unitId) || unitId <= 0) {
+        throw new Error("Não foi possível identificar a unidade deste tipo de refeição.");
       }
+
+      const context = await authContextService.getContextForUnit(unitId);
+      await mealTypeService.updateMealType(Number(typeId), payload, context);
 
       onNotify?.("Tipo de refeição atualizado com sucesso", "success");
       onSuccess?.();

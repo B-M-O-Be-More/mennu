@@ -1,5 +1,17 @@
 import dayjs from "dayjs";
 
+const API_TIME_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
+
+export function apiTimeToInput(value?: string | null): string {
+  const match = value?.match(API_TIME_PATTERN);
+  return match ? `${match[1]}:${match[2]}` : "";
+}
+
+export function inputTimeToApi(value: string): string {
+  const match = value.match(API_TIME_PATTERN);
+  return match ? `${match[1]}:${match[2]}:${match[3] ?? "00"}` : "";
+}
+
 export function timeRangeFormToApi(data: {
   startTime?: unknown;
   endTime?: unknown;

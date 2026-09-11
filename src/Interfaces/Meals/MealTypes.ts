@@ -37,6 +37,57 @@ export interface CreateMealTypePayload {
 }
 export type UpdateMealTypePayload = CreateMealTypePayload & { typeId: string };
 
+export interface TipoRefeicaoUnidadeApi {
+  id: number;
+  nome: string;
+}
+
+export interface TipoRefeicaoApi {
+  id: number;
+  nome: string;
+  unidade: TipoRefeicaoUnidadeApi;
+  horario_inicio: string;
+  horario_fim: string;
+  ordem: number;
+  exige_pesagem: boolean;
+  leitura_cartao: boolean;
+  confirmacao_manual: boolean;
+  ativo: boolean;
+}
+
+export interface TipoRefeicaoCreateApi {
+  nome: string;
+  unidade_id: number;
+  horario_inicio: string;
+  horario_fim: string;
+  ordem: number;
+  exige_pesagem?: boolean;
+  leitura_cartao?: boolean;
+  confirmacao_manual?: boolean;
+}
+
+export interface TipoRefeicaoUpdateApi {
+  nome?: string;
+  horario_inicio?: string;
+  horario_fim?: string;
+  ordem?: number;
+  exige_pesagem?: boolean;
+  leitura_cartao?: boolean;
+  confirmacao_manual?: boolean;
+  ativo?: boolean;
+}
+
+export interface TipoRefeicaoPaginatedApi {
+  message?: string;
+  metadados?: {
+    page?: number;
+    page_size?: number;
+    total?: number;
+    total_pages?: number;
+  };
+  results: TipoRefeicaoApi[];
+}
+
 export interface MealRuleResponse {
   id: string;
   unit: string;

@@ -122,10 +122,13 @@ export interface ResponsibleOption {
 }
 
 export interface UnitPoliciesFormValues {
-  horarios: {
-    cafeManha: { inicio: string; fim: string };
-    almoco: { inicio: string; fim: string };
-    jantar: { inicio: string; fim: string };
-  };
+  tiposRefeicao: Array<{
+    tipoRefeicaoId: number | null;
+    nome: string;
+    horarioInicio: string;
+    horarioFim: string;
+    ordem: number;
+    isNew: boolean;
+  }>;
   limites: { diario: number; semanal: number; mensal: number };
 }
