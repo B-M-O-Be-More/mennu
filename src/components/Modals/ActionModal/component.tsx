@@ -8,6 +8,7 @@ export function ActionModal({
   subtitle,
   confirmLabel,
   cancelLabel,
+  loading = false,
   color = "success",
   onConfirm,
   onCancel
@@ -31,7 +32,10 @@ export function ActionModal({
   return (
     <Dialog
       open={open}
-      onClose={onCancel}
+      onClose={() => {
+        if (!loading) onCancel?.();
+      }}
+      disableEscapeKeyDown={loading}
       maxWidth={"sm"}
       fullWidth
       keepMounted={false}
@@ -76,6 +80,7 @@ export function ActionModal({
                 "&:hover": { color: "text.primary" },
               }}
               onClick={onCancel}
+              disabled={loading}
             >
               {cancelLabel}
             </Button>
@@ -94,8 +99,9 @@ export function ActionModal({
             color: theme.palette.primary.contrastText,
           }}
           onClick={onConfirm}
+          disabled={loading}
         >
-          {confirmLabel}
+          {loading ? "Processando..." : confirmLabel}
         </Button>
       </Stack>
     </Dialog>

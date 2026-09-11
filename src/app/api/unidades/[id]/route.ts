@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 import { getAuthHeaders } from "@/app/api/_shared/getAuthHeaders";
 import { proxyError, proxyResponse } from "@/app/api/_shared/proxyResponse";
+import { UNIDADE_COOKIE } from "@/utils/authCookies";
 
 async function getContext(params: Promise<{ id: string }>) {
   const headers = await getAuthHeaders();
@@ -38,7 +40,24 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!headers) return NextResponse.json({ message: "Autenticação necessária" }, { status: 401 });
 
   try {
-    return proxyResponse(await fetch(`${getApiBaseUrl()}/unidade/${id}`, { method: "DELETE", headers }));
+    const activeUnitId = (await cookies()).get(UNIDADE_COOKIE)?.value;
+    const upstreamResponse = await fetch(`${getApiBaseUrl()}/unidade/${id}`, {
+      method: "DELETE",
+      headers,
+    });
+    const response = await proxyResponse(upstreamResponse);
+
+    if (upstreamResponse.ok && Number(activeUnitId) === Number(id)) {
+      response.cookies.set(UNIDADE_COOKIE, "", {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 0,
+        path: "/",
+      });
+    }
+
+    return response;
   } catch (err) {
     return proxyError(err);
   }
