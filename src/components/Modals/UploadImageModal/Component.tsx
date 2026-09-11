@@ -1,4 +1,4 @@
-import { Stack, Typography, Button, useTheme, Collapse } from "@mui/material";
+import { Stack, Typography, Button, useTheme, Collapse, Alert } from "@mui/material";
 import { Download as DownloadIcon } from "@mui/icons-material";
 import Modal from "../Modal";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
@@ -19,6 +19,8 @@ export default function UploadImageModal({
   const [tempImage, setTempImage] = React.useState<File | null>(image);
 
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [saveError, setSaveError] = React.useState<string | null>(null);
+  const [isSaving, setIsSaving] = React.useState(false);
 
   React.useEffect(() => {
     if (!tempImage) {
@@ -36,12 +38,16 @@ export default function UploadImageModal({
 
 
   React.useEffect(() => {
-    if (open) setTempImage(image);
+    if (open) {
+      setTempImage(image);
+      setSaveError(null);
+    }
   }, [open, image]);
 
   return (
     <Modal open={open} onClose={onClose} title={title} subtitle={subtitle}>
       <Stack gap={2}>
+        {saveError && <Alert severity="error">{saveError}</Alert>}
         <ClosableAlertBox
           severity="info"
           icon={<ImageIcon color={theme.palette.info.contrastText} />}
@@ -142,6 +148,7 @@ export default function UploadImageModal({
               color: "text.secondary",
               borderRadius: 2,
             }}
+            disabled={isSaving}
             onClick={() => {
               setTempImage(image);
               onClose();
@@ -159,15 +166,22 @@ export default function UploadImageModal({
             }}
             variant="contained"
             startIcon={<DownloadIcon />}
-            disabled={!tempImage}
-            onClick={() => {
-              if (tempImage) {
-                onSave(tempImage);
+            disabled={!tempImage || isSaving}
+            onClick={async () => {
+              if (!tempImage) return;
+              setIsSaving(true);
+              setSaveError(null);
+              try {
+                await onSave(tempImage);
+                onClose();
+              } catch (error) {
+                setSaveError(error instanceof Error ? error.message : "Não foi possível enviar a imagem");
+              } finally {
+                setIsSaving(false);
               }
-              onClose();
             }}
           >
-            Salvar
+            {isSaving ? "Enviando..." : "Salvar"}
           </Button>
         </Stack>
       </Stack>

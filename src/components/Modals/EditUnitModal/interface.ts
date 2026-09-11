@@ -1,9 +1,7 @@
-import { IUnit } from "@/Interfaces/Unit/unit";
-
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+import { UnitListItem } from "@/Interfaces/Settings/settings";
 export interface EditUnitModalProps {
   open: boolean;
   onClose: () => void;
-  unitItem: IUnit | null;
-  onSave: (updatedUnit: Partial<IUnit>) => void;
+  unitItem: UnitListItem | null;
+  onSaved: () => Promise<void> | void;
 }

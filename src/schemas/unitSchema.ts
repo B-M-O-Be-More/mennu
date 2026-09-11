@@ -1,4 +1,3 @@
-import { mockStatuses } from "@/data/menuItems";
 import * as yup from "yup";
 
 export const createPolicySchema = yup.object({
@@ -37,12 +36,8 @@ export type CreatePolicySchemaFormData = yup.InferType<typeof createPolicySchema
 export const createUnitSchema = yup.object({
   nome: yup.string().required("O nome da unidade é obrigatório"),
   endereco: yup.string().required("O endereço é obrigatório"),
-  responsavel: yup.string().required("O responsável é obrigatório"),
-  status: yup
-    .string()
-    .required("O status é obrigatório")
-    .oneOf(mockStatuses.slice(1).map(u => u.value), "Status inválido"),
-  politicas: createPolicySchema,
+  responsavelId: yup.string().required("Selecione o responsável"),
+  ativo: yup.string().oneOf(["ativo", "inativo"]).required("Selecione o status"),
 });
 
 export type CreateUnitSchemaFormData = yup.InferType<typeof createUnitSchema>;
