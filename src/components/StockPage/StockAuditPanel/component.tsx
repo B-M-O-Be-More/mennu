@@ -9,6 +9,7 @@ import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import Table from "@/components/Tables/Table";
 import Can from "@/components/Can";
+import TabButton from "@/components/TabButton";
 import {
   ClockIcon,
   FilterIcon,
@@ -29,6 +30,9 @@ import {
 } from "@/Interfaces/StockAudit/stockAudit";
 import { isDraft, summarizeAudits, toStatusKey } from "@/utils/stockAuditUtils";
 import NewStockAuditModal from "@/components/Modals/NewStockAuditModal";
+import AuditDetailsModal from "@/components/Modals/AuditDetailsModal";
+import AuditorStartModal from "@/components/Modals/AuditorStartModal";
+import { useAuditFlow } from "@/hooks/useAuditFlow/hook";
 import { StockAuditPanelProps } from "./interface";
 
 const PAGE_SIZE = 200;
@@ -44,6 +48,7 @@ const statusOptions: SelectOption[] = [
   { label: "Enviado", value: "enviada" },
   { label: "Com Divergência", value: "com_divergencia" },
   { label: "Normalizada", value: "normalizada" },
+  { label: "Cancelada", value: "cancelada" },
 ];
 
 const periodOptions: SelectOption[] = [
@@ -96,12 +101,15 @@ export default function StockAuditPanel({
   onOpenAudit,
 }: StockAuditPanelProps) {
   const { unitOptions } = useUnitFilterOptions();
+  const { flow, setFlow, canChooseFlow } = useAuditFlow();
 
   const [audits, setAudits] = React.useState<IStockAudit[]>([]);
   const [totalResults, setTotalResults] = React.useState<number>();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isNewAuditOpen, setIsNewAuditOpen] = React.useState(false);
+  const [auditToTrack, setAuditToTrack] = React.useState<IStockAudit | null>(null);
+  const [auditToAudit, setAuditToAudit] = React.useState<IStockAudit | null>(null);
 
   // Os auditores só aparecem nos próprios registros — acumulamos os já vistos
   // para o filtro não encolher depois de filtrar por um deles.
@@ -248,6 +256,40 @@ export default function StockAuditPanel({
       ? {
           ...col,
           render: (row: IStockAudit) => {
+            // Fluxo da nutricionista: o modal de detalhes atende todos os
+            // status conhecidos — acompanhar o rascunho, revisar antes de
+            // normalizar e conferir o que já foi enviado/normalizado/cancelado.
+            const statusKey = toStatusKey(row.status);
+
+            // Fluxo do auditor: o rascunho é a auditoria que ele tem para
+            // fazer — abre o modal de início da conferência física.
+            if (flow === "auditor" && statusKey === "rascunho") {
+              return (
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => setAuditToAudit(row)}
+                >
+                  Conferir
+                </Button>
+              );
+            }
+
+            const opensDetails =
+              flow === "nutricionista" && statusKey !== "desconhecido";
+
+            if (opensDetails) {
+              return (
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => setAuditToTrack(row)}
+                >
+                  {statusKey === "rascunho" ? "Acompanhar" : "VER"}
+                </Button>
+              );
+            }
+
             const label = isDraft(row) ? "Continuar" : "VER";
 
             if (!onOpenAudit) {
@@ -373,22 +415,44 @@ export default function StockAuditPanel({
           alignItems="center"
           gap={2}
         >
-          <Typography variant="h6" fontWeight={400}>
-            Auditoria do Estoque
-          </Typography>
+          <Stack direction="row" alignItems="center" gap={2}>
+            <Typography variant="h6" fontWeight={400}>
+              Auditoria do Estoque
+            </Typography>
 
-          <Can permissions="auditoriaestoque.create.item">
-            <Button
-              variant="contained"
-              startIcon={<PlusIcon />}
-              onClick={() =>
-                onNewAudit ? onNewAudit() : setIsNewAuditOpen(true)
-              }
-              sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
-            >
-              Nova Auditoria
-            </Button>
-          </Can>
+            {canChooseFlow && (
+              <Stack direction="row" gap={1}>
+                <TabButton
+                  label="Nutricionista"
+                  tabIndex={0}
+                  activeTab={flow === "nutricionista" ? 0 : 1}
+                  onChange={() => setFlow("nutricionista")}
+                />
+                <TabButton
+                  label="Auditor"
+                  tabIndex={1}
+                  activeTab={flow === "nutricionista" ? 0 : 1}
+                  onChange={() => setFlow("auditor")}
+                />
+              </Stack>
+            )}
+          </Stack>
+
+          {/* O auditor não cria auditoria: ele só executa a que recebeu. */}
+          {flow !== "auditor" && (
+            <Can permissions="auditoriaestoque.create.item">
+              <Button
+                variant="contained"
+                startIcon={<PlusIcon />}
+                onClick={() =>
+                  onNewAudit ? onNewAudit() : setIsNewAuditOpen(true)
+                }
+                sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
+              >
+                Nova Auditoria
+              </Button>
+            </Can>
+          )}
         </Stack>
 
         <Table
@@ -402,6 +466,18 @@ export default function StockAuditPanel({
           open={isNewAuditOpen}
           onClose={() => setIsNewAuditOpen(false)}
           onCreated={loadAudits}
+        />
+
+        <AuditDetailsModal
+          open={Boolean(auditToTrack)}
+          audit={auditToTrack}
+          onClose={() => setAuditToTrack(null)}
+        />
+
+        <AuditorStartModal
+          open={Boolean(auditToAudit)}
+          audit={auditToAudit}
+          onClose={() => setAuditToAudit(null)}
         />
       </Card>
     </Card>
