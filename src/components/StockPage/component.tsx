@@ -29,12 +29,23 @@ import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import TabButton from "../TabButton";
 import StockAuditPanel from "./StockAuditPanel";
+import { useSearchParams } from "next/navigation";
 
 /** Sub-abas da aba "Movimentações" — Auditoria já vem selecionada. */
 const MOVEMENT_TABS = { auditoria: 0, historico: 1 } as const;
 
+/** Abas principais da tela de estoque. */
+const MAIN_TABS = { estoque: 0, movimentacoes: 1 } as const;
+
 export function StockPage({}: StockPageProps) {
-  const [openTab, setOpenTab] = React.useState(0);
+  const searchParams = useSearchParams();
+  // `?tab=auditoria` abre direto a listagem de auditorias — é para onde a tela
+  // de normalização devolve o usuário depois de normalizar o estoque.
+  const startsOnAudit = searchParams.get("tab") === "auditoria";
+
+  const [openTab, setOpenTab] = React.useState(
+    startsOnAudit ? MAIN_TABS.movimentacoes : MAIN_TABS.estoque,
+  );
   const [movementTab, setMovementTab] = React.useState<number>(
     MOVEMENT_TABS.auditoria,
   );
