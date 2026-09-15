@@ -39,6 +39,20 @@ export interface SecuritySettingsUpdateApi {
   log_atividades: boolean;
 }
 
+export type StockToleranceType = "absoluto" | "percentual";
+
+export interface StockSettingsApi {
+  id: number;
+  margem_tolerancia_padrao: string;
+  margem_tolerancia_tipo: StockToleranceType;
+  atualizado_em: string;
+}
+
+export interface StockSettingsUpdateApi {
+  margem_tolerancia_padrao: string;
+  margem_tolerancia_tipo: StockToleranceType;
+}
+
 export interface UnitResponsibleApi {
   id: number;
   nome: string;

@@ -5,6 +5,8 @@ import {
   ResponsibleOption,
   SecuritySettingsApi,
   SecuritySettingsUpdateApi,
+  StockSettingsApi,
+  StockSettingsUpdateApi,
   UnitApi,
   UnitCreateApi,
   UnitListItem,
@@ -61,6 +63,14 @@ export const settingsService = {
   getSecurity: () => requestJson<SecuritySettingsApi>("/api/configuracoes/seguranca"),
   updateSecurity: (data: SecuritySettingsUpdateApi) =>
     requestJson<SecuritySettingsApi>("/api/configuracoes/seguranca", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }),
+  getStockSettings: () =>
+    requestJson<StockSettingsApi>("/api/configuracoes/estoque"),
+  updateStockSettings: (data: StockSettingsUpdateApi) =>
+    requestJson<StockSettingsApi>("/api/configuracoes/estoque", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),

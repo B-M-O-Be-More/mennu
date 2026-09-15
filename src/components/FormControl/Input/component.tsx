@@ -28,6 +28,8 @@ export default function Input({
   disabled = false,
   value,
   onChange,
+  suffix,
+  inputMode,
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -39,8 +41,7 @@ export default function Input({
     event.preventDefault();
   };
 
-  const endAdornment =
-    type === "password" ? (
+  const endAdornment = type === "password" ? (
       <InputAdornment position="end">
         <IconButton
           aria-label={showPassword ? "Ocultar senha" : "Exibir senha"}
@@ -58,6 +59,8 @@ export default function Input({
           )}
         </IconButton>
       </InputAdornment>
+    ) : suffix ? (
+      <InputAdornment position="end">{suffix}</InputAdornment>
     ) : undefined;
 
   const startAdornment =
@@ -112,6 +115,7 @@ export default function Input({
         multiline={multiline}
         minRows={multiline ? minRows : undefined}
         slotProps={{
+          htmlInput: { inputMode },
           input: {
             disabled,
             startAdornment,

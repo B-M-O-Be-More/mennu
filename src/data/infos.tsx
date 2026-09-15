@@ -1,4 +1,4 @@
-import { GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "../components/SettingsPage/SettingsTabs";
+import { AuditTab, GeneralTab, PoliciesTab, SecurityTab, TerminalsTab, UnitsTab } from "../components/SettingsPage/SettingsTabs";
 import { AlertIcon, BuildingIcon, CardapiosIcon, CircledCheckIcon, CircledXIcon, ClockIcon, ConfiguracoesIcon, EstoqueIcon, LockIcon, NoWifiIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, TerminalIcon, TwistedArrowIcon, UsuariosCheckIcon, UsuariosIcon, UsuariosXIcon } from "../components/Icons";
 
 const cardsUsers = [
@@ -92,26 +92,37 @@ const cardsStock = [
 
 const tabsSettings = [
   {
+    id: "general",
     label: "Geral",
     icon: <ConfiguracoesIcon width={24} height={24} />,
     tabComponent: <GeneralTab />,
   },
   {
+    id: "units",
     label: "Unidades",
     icon: <BuildingIcon width={24} height={24} />,
     tabComponent: <UnitsTab />,
   },
   {
+    id: "audit",
+    label: "Auditoria",
+    icon: <PerfisPermissoesIcon width={24} height={24} />,
+    tabComponent: <AuditTab />,
+  },
+  {
+    id: "terminals",
     label: "Terminais",
     icon: <TerminalIcon width={24} height={24} />,
     tabComponent: <TerminalsTab />,
   },
   {
+    id: "policies",
     label: "Políticas",
     icon: <PerfisPermissoesIcon width={24} height={24} />,
     tabComponent: <PoliciesTab />,
   },
   {
+    id: "security",
     label: "Segurança",
     icon: <LockIcon width={24} height={24} />,
     tabComponent: <SecurityTab />,
