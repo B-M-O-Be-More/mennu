@@ -13,8 +13,13 @@ import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
 import theme from "@/theme/theme";
 import { ICargoUsuario, IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
-import { IStockAudit } from "@/Interfaces/StockAudit/stockAudit";
-import { isDraft, resolveStatus } from "@/utils/stockAuditUtils";
+import { IStockAudit, IStockAuditDetailItem } from "@/Interfaces/StockAudit/stockAudit";
+import {
+  formatAuditQuantity,
+  formatAuditTolerance,
+  isDraft,
+  resolveStatus,
+} from "@/utils/stockAuditUtils";
 import dayjs from "dayjs";
 
 const statusChipSx = {
@@ -652,6 +657,64 @@ const stockAuditColumns: IColumn<IStockAudit>[] = [
   { key: "acoes", label: "Ações", align: "center", render: () => null },
 ];
 
+const auditConferenceColumns: IColumn<IStockAuditDetailItem>[] = [
+  { key: "insumo_nome", label: "Insumo" },
+  {
+    key: "quantidade_teorica",
+    label: "Teórico",
+    align: "center",
+    render: (row) => formatAuditQuantity(row.quantidade_teorica, row.unidade_medida),
+  },
+  {
+    key: "quantidade_encontrada",
+    label: "Encontrado",
+    align: "center",
+    render: (row) =>
+      formatAuditQuantity(row.quantidade_encontrada, row.unidade_medida),
+  },
+  {
+    key: "divergencia",
+    label: "Diferença",
+    align: "center",
+    render: (row) =>
+      formatAuditQuantity(row.divergencia, row.unidade_medida, { signed: true }),
+  },
+  {
+    key: "tolerancia_valor",
+    label: "Tolerância",
+    align: "center",
+    render: (row) => formatAuditTolerance(row),
+  },
+  {
+    key: "divergente",
+    label: "Status",
+    align: "center",
+    render: (row) => (
+      <Chip
+        label={row.divergente ? "Divergencia" : "Dentro do limite"}
+        color={row.divergente ? "error" : "success"}
+        size="small"
+        sx={{ ...statusChipSx, width: "auto", minWidth: 130 }}
+      />
+    ),
+  },
+];
+
+const auditNormalizeColumns: IColumn<IStockAuditDetailItem>[] = [
+  { key: "insumo_nome", label: "Insumo" },
+  {
+    key: "quantidade_encontrada",
+    label: "Encontrado pelo Auditor",
+    align: "center",
+    render: (row) =>
+      formatAuditQuantity(row.quantidade_encontrada, row.unidade_medida),
+  },
+  // Campo e ajuste dependem do que o usuário digita: o render é sobrescrito
+  // por quem monta a tabela.
+  { key: "apos_normalizacao", label: "Após Normalização", align: "center", render: () => null },
+  { key: "ajuste", label: "Ajuste", align: "center", render: () => null },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -666,4 +729,6 @@ export {
   cargoUsuariosColumns,
   cargoUsuariosSelecaoColumns,
   stockAuditColumns,
+  auditConferenceColumns,
+  auditNormalizeColumns,
 };
