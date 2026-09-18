@@ -1,5 +1,4 @@
 import { Stack, Typography, Box, Button, useTheme } from "@mui/material";
-import { mockTipoUsuario } from "../../../data/menuItems";
 import { NewMovementModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -10,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { createMovementSchema, CreateMovementSchemaFormData } from "@/schemas/movementSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
+import { useInsumoOptions } from "@/hooks/useInsumoOptions/hook";
 import { useState } from "react";
 
 const movementTypeItems = [
@@ -21,6 +21,7 @@ const movementTypeItems = [
 
 export default function NewMovementModal({ open, onClose, onSave }: NewMovementModalProps) {
   const theme = useTheme();
+  const { insumoOptions } = useInsumoOptions();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,9 +35,8 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
   } = useForm<CreateMovementSchemaFormData>({
     resolver: yupResolver(createMovementSchema),
     defaultValues: {
-      data: "",
       tipo: "entrada",
-      item: mockTipoUsuario[0].value,
+      item: "",
       quantidade: 0,
       responsavel: "",
       justificativa: "",
@@ -48,14 +48,12 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
     setError(null);
 
     try {
-      const parsedInsumoId = Number(data.item);
       const payload = {
-        insumo_id: Number.isFinite(parsedInsumoId) ? parsedInsumoId : 0,
+        insumo_id: Number(data.item),
         tipo: data.tipo,
         quantidade: Number(data.quantidade),
         motivo: data.responsavel,
         justificativa: data.justificativa || "",
-        unidade_id: 0,
       };
 
       const response = await fetch("/api/movimentacao-estoque", {
@@ -144,7 +142,7 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
         <Select
           label="Item"
           optional={false}
-          options={mockTipoUsuario}
+          options={[{ label: "Selecione um item", value: "" }, ...insumoOptions]}
           name="item"
           control={control}
           error={errors.item?.message}
