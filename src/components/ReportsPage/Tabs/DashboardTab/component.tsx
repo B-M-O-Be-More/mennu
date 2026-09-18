@@ -1,57 +1,112 @@
 import KPICard from "@/components/Cards/KPICard";
-import { RelatoriosIcon } from "@/components/Icons";
-import { Box, Stack } from "@mui/material";
-import { TrendingUp, TrendingDown } from "@mui/icons-material";
+import { RelatoriosIcon, PaperIcon } from "@/components/Icons";
+import { Alert, Box, Stack } from "@mui/material";
+import { TrendingUp } from "@mui/icons-material";
 import Vertical7DaysChart from "@/components/Charts/Vertical7DaysChart";
 import RankingChart from "@/components/Charts/RankingChart";
 import React from "react";
+import dayjs from "dayjs";
 import KPICardSkeleton from "@/components/Skeletons/Cards/KPICardSkeleton";
 import { DashboardTabProps, KPICardData } from "./interface";
+import {
+  IRefeicoesServidasResumo,
+  IRefeicoesServidasRow,
+  mapApiResumoRefeicoesServidas,
+  mapApiRowRefeicoesServidas,
+  mapApiPreviewRefeicoesServidas,
+} from "@/Interfaces/Reports/refeicoesServidas";
 
-const mockKPICards: KPICardData[] = [
-  {
-    id: "total-refeicoes",
-    label: "Total Refeições",
-    icon: <RelatoriosIcon color="#00A63E" />,
-    bgColor: "success.main",
-    value: 375,
-    trend: 12,
-  },
-  {
-    id: "media-diaria",
-    label: "Média Diária",
-    bgColor: "info.main",
-    icon: <TrendingUp sx={{ color: "info.contrastText" }} />,
-    value: 54,
-    description: "refeições/dia",
-  },
-  {
-    id: "taxa-cancelamento",
-    label: "Taxa de Cancelamento",
-    bgColor: "error.main",
-    icon: <TrendingDown sx={{ color: "error.contrastText" }} />,
-    value: 3.2,
-    unit: "%",
-    trend: 0,
-  },
-];
+const DATA_FIM = dayjs();
+const DATA_INICIO = DATA_FIM.subtract(6, "day");
 
-export function DashboardTab({}: DashboardTabProps) {
-  const [kpis, setKpis] = React.useState<KPICardData[] | null>(null);
+async function fetchJson(url: string) {
+  const response = await fetch(url);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.message ?? `Erro ao carregar ${url}`);
+  }
+  return data;
+}
+
+function topN(rows: IRefeicoesServidasRow[], labelField: "tipoRefeicao" | "unidade", n: number) {
+  return rows
+    .map((row) => ({ label: row[labelField], value: row.totalServidas }))
+    .filter((item) => item.label)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, n);
+}
+
+export function DashboardTab({ }: DashboardTabProps) {
+  const [resumo, setResumo] = React.useState<IRefeicoesServidasResumo | null>(null);
+  const [chartData, setChartData] = React.useState<{ label: string; value: number }[]>([]);
+  const [rankingTipos, setRankingTipos] = React.useState<{ label: string; value: number }[]>([]);
+  const [rankingUnidades, setRankingUnidades] = React.useState<{ label: string; value: number }[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      setKpis(mockKPICards);
-      setIsLoading(false);
-    }, 2000);
-    return () => {
-      clearTimeout(timeout);
-    };
+    const params = new URLSearchParams({
+      data_inicio: DATA_INICIO.format("YYYY-MM-DD"),
+      data_fim: DATA_FIM.format("YYYY-MM-DD"),
+    });
+
+    (async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const [resumoData, previewData, porTipo, porUnidade] = await Promise.all([
+          fetchJson(`/api/relatorio/refeicoes-servidas/resumo?${params}`),
+          fetchJson(`/api/relatorio/refeicoes-servidas/preview?${params}`),
+          fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=tipo_refeicao`),
+          fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=unidade`),
+        ]);
+
+        setResumo(mapApiResumoRefeicoesServidas(resumoData));
+        setChartData(
+          mapApiPreviewRefeicoesServidas(previewData).grafico.map((p) => ({ label: p.label, value: p.valor })),
+        );
+        setRankingTipos(topN((porTipo as unknown[]).map(mapApiRowRefeicoesServidas), "tipoRefeicao", 5));
+        setRankingUnidades(topN((porUnidade as unknown[]).map(mapApiRowRefeicoesServidas), "unidade", 10));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao carregar dashboard de relatórios");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
   }, []);
+
+  const kpis: KPICardData[] | null = resumo
+    ? [
+      {
+        id: "total-refeicoes",
+        label: "Total Refeições",
+        icon: <RelatoriosIcon color="#00A63E" />,
+        bgColor: "success.main",
+        value: resumo.totalPeriodo,
+      },
+      {
+        id: "media-diaria",
+        label: "Média Diária",
+        bgColor: "info.main",
+        icon: <TrendingUp sx={{ color: "info.contrastText" }} />,
+        value: resumo.mediaDiaria,
+        description: "refeições/dia",
+      },
+      {
+        id: "refeicoes-manuais",
+        label: "Refeições Manuais",
+        bgColor: "purple.main",
+        icon: <PaperIcon color="#8200DB" />,
+        value: resumo.totalManuais,
+      },
+    ]
+    : null;
 
   return (
     <>
+      {error && <Alert severity="error">{error}</Alert>}
+
       <Box
         display={"grid"}
         gap={3}
@@ -69,28 +124,25 @@ export function DashboardTab({}: DashboardTabProps) {
             },
           },
         }}>
-        {isLoading
+        {isLoading || !kpis
           ? Array.from({ length: 3 }).map((_, index) => (
-              <KPICardSkeleton key={index} />
-            ))
-          : kpis?.map((card) => (
-              <KPICard
-                key={card.id}
-                label={card.label}
-                icon={card.icon}
-                bgColor={card.bgColor}
-                value={card.value}
-                unit={card.unit}
-                trend={card.trend}
-                description={card.description}
-              />
-            ))}
+            <KPICardSkeleton key={index} />
+          ))
+          : kpis.map((card) => (
+            <KPICard
+              key={card.id}
+              label={card.label}
+              icon={card.icon}
+              bgColor={card.bgColor}
+              value={card.value}
+              unit={card.unit}
+              trend={card.trend}
+              description={card.description}
+            />
+          ))}
       </Box>
 
-      <Vertical7DaysChart
-        values={[36, 54, 58, 44, 64, 28, 16]}
-        isLoading={isLoading}
-      />
+      <Vertical7DaysChart data={chartData} isLoading={isLoading} />
 
       <Stack
         direction={"row"}
@@ -100,22 +152,12 @@ export function DashboardTab({}: DashboardTabProps) {
         justifyContent={"space-between"}>
         <RankingChart
           title="Top 5 Tipos de Refeição"
-          data={[
-            { label: "Almoço", value: 156 },
-            { label: "Jantar", value: 92 },
-            { label: "Café da Manhã", value: 87 },
-            { label: "Lanche", value: 32 },
-            { label: "Ceia", value: 8 },
-          ]}
+          data={rankingTipos}
           isLoading={isLoading}
         />
         <RankingChart
           title="Distribuição por Unidade"
-          data={[
-            { label: "Unidade 1", value: 198 },
-            { label: "Unidade 3", value: 62 },
-            { label: "Unidade 2", value: 115 },
-          ]}
+          data={rankingUnidades}
           barColor="info.contrastText"
           isLoading={isLoading}
         />

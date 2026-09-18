@@ -1,5 +1,5 @@
 import { ReportsFilterForm } from "./component";
-import { ReportsFilterFormFields } from "./interface";
+import { ReportsFilterFormProps, ReportsFilterFormValues } from "./interface";
 
 export default ReportsFilterForm;
-export type { ReportsFilterFormFields };
+export type { ReportsFilterFormProps, ReportsFilterFormValues };

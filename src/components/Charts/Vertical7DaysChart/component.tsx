@@ -25,14 +25,15 @@ ChartJS.register(
 );
 
 export function Vertical7DaysChart({
-  values,
+  data: items,
   isLoading = false,
 }: Vertical7DaysChartProps) {
   const theme = useTheme();
-  const maxValue = 100;
+  const values = items.map((item) => item.value);
+  const maxValue = Math.max(...values, 1);
 
   const data = {
-    labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+    labels: items.map((item) => item.label),
     datasets: [
       {
         data: values,
@@ -42,7 +43,7 @@ export function Vertical7DaysChart({
         grouped: false,
       },
       {
-        data: Array(7).fill(100),
+        data: Array(items.length).fill(maxValue),
         backgroundColor: theme.palette.divider,
         borderRadius: 12,
         stack: "progress",
