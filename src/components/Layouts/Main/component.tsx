@@ -35,7 +35,7 @@ export default function MainLayout({
   // API no código de permissão (singular), não o rótulo da tela.
   const menuItems: SidebarMenuItem[] = [
     { id: "dashboard", label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard", permissions: viewPermission("dashboard") },
-    { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios", permissions: viewPermission("cardapiodfdf") },
+    { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios", permissions: viewPermission("cardapio") },
     { id: "estoque", label: "Estoque", icon: <EstoqueIcon />, path: "/estoque", permissions: viewPermission("estoque") },
     { id: "refeicoes", label: "Refeições", icon: <RefeicoesIcon />, path: "/refeicoes", permissions: viewPermission("refeicaoservida") },
     // TODO: a API ainda não expõe um recurso para solicitações extras — sem
