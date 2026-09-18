@@ -8,18 +8,19 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { useTheme } from "@mui/material/styles";
+import { Last7DaysChartProps } from "./interface";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
-export default function Last7DaysChart() {
+export default function Last7DaysChart({ data }: Last7DaysChartProps) {
   const theme = useTheme();
-  const maxValue = 10;
+  const maxValue = Math.max(...data.map((item) => item.value), 1);
 
-  const data = {
-    labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+  const chartData = {
+    labels: data.map((item) => item.label),
     datasets: [
       {
-        data: [2, 3, 1, 0, 4, 0, 2],
+        data: data.map((item) => item.value),
         backgroundColor: theme.palette.primary.main,
         borderRadius: 6,
         barThickness: 6,
@@ -27,7 +28,7 @@ export default function Last7DaysChart() {
         grouped: false,
       },
       {
-        data: Array(7).fill(maxValue),
+        data: Array(data.length).fill(maxValue),
         backgroundColor: theme.palette.divider,
         borderRadius: 6,
         barThickness: 10,
@@ -67,5 +68,5 @@ export default function Last7DaysChart() {
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return <Bar data={chartData} options={options} />;
 }
