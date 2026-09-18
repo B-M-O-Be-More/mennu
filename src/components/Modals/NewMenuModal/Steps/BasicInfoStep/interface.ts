@@ -7,4 +7,5 @@ export interface BasicInfoStepProps {
   trigger: UseFormTrigger<CreateMenuSchemaFormData>;
   setCurrentStep: (step: number) => void;
   control: Control<CreateMenuSchemaFormData>;
+  isSubmitting?: boolean;
 }

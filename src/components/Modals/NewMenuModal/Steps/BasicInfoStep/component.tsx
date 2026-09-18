@@ -1,18 +1,31 @@
 import { Grid, Typography, Stack, Button } from "@mui/material";
-import { mockUnidades, mockStatuses, mockTiposCardapio } from "@/data/menuItems";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import { BasicInfoStepProps } from "./";
-import TimePicker from "@/components/FormControl/TimePicker";
-
+import { useWatch } from "react-hook-form";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
+import { useTipoRefeicaoOptions } from "@/hooks/useTipoRefeicaoOptions/hook";
 
 export function BasicInfoStep({
   register,
   errors,
-  trigger,
   setCurrentStep,
   control,
+  isSubmitting,
 }: BasicInfoStepProps) {
+  const { unitOptions } = useUnitFilterOptions();
+  const unidadeSelecionada = useWatch({ control, name: "unidade" });
+  const { tipoRefeicaoOptions } = useTipoRefeicaoOptions(unidadeSelecionada || undefined);
+
+  const unidadeOptions = [
+    { label: "Selecione a unidade", value: "" },
+    ...unitOptions.filter((o) => o.value !== "all"),
+  ];
+  const tipoOptions = [
+    { label: "Selecione o tipo de refeição", value: "" },
+    ...tipoRefeicaoOptions.filter((o) => o.value !== ""),
+  ];
+
   return (
     <>
       <Typography fontWeight={600} color="text.label">
@@ -23,7 +36,8 @@ export function BasicInfoStep({
         <Grid size={12}>
           <Select
             label="Unidade"
-            options={mockUnidades}
+            optional={false}
+            options={unidadeOptions}
             name="unidade"
             control={control}
             error={errors.unidade?.message}
@@ -33,36 +47,22 @@ export function BasicInfoStep({
         <Grid size={{ xs: 12, md: 6 }}>
           <Select
             label="Tipo de Refeição"
-            options={mockTiposCardapio}
+            optional={false}
+            options={tipoOptions}
             name="tipo"
             control={control}
             error={errors.tipo?.message}
+            disabled={!unidadeSelecionada}
           />
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Select
-            label="Status"
-            options={mockStatuses}
-            name="status"
-            control={control}
-            error={errors.status?.message}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
-          <TimePicker
-            label="Horário inicial"
-            control={control}
-            name="horario.inicio"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
-          <TimePicker
-            label="Horário final"
-            control={control}
-            name="horario.fim"
+          <Input
+            label="Refeições Previstas"
+            placeholder="0"
+            type="number"
+            register={register("numeroPrevistoRefeicoes")}
+            error={errors.numeroPrevistoRefeicoes?.message}
           />
         </Grid>
 
@@ -72,7 +72,6 @@ export function BasicInfoStep({
             placeholder="Ex: Opção vegetariana disponível"
             type="text"
             multiline
-            optional={false}
             register={register("observacao")}
             error={errors.observacao?.message}
           />
@@ -94,22 +93,10 @@ export function BasicInfoStep({
         <Button
           sx={{ flex: 1 }}
           variant="contained"
-          type="button"
-          onClick={async () => {
-            const valid = await trigger([
-              "unidade",
-              "tipo",
-              "horario",
-              "status",
-              "observacao",
-            ]);
-
-            if (valid) {
-              setCurrentStep(2);
-            }
-          }}
+          type="submit"
+          disabled={isSubmitting}
         >
-          Avançar
+          {isSubmitting ? "Criando..." : "Criar Cardápio"}
         </Button>
       </Stack>
     </>

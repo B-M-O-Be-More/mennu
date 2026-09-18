@@ -1,145 +1,121 @@
-import { Stack } from "@mui/material";
+import { Stack, Button, Alert } from "@mui/material";
 import Modal from "../Modal";
+import Input from "@/components/FormControl/Input";
+import DatePicker from "@/components/FormControl/DatePicker";
 import { EditMenuModalProps } from "./";
-import { useForm } from "react-hook-form"
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { editMenuSchema, EditMenuSchemaFormData } from "@/schemas/menuSchema";
 import React from "react";
-import { createMenuSchema, CreateMenuSchemaFormData } from "@/schemas/menuSchema";
-import { mockMenuItems } from "@/data/menus";
-import BasicInfoStep from "../NewMenuModal/Steps/BasicInfoStep";
-import PeriodStep from "../NewMenuModal/Steps/PeriodStep";
-import MealsStep from "../NewMenuModal/Steps/MealsStep";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export default function EditMenuModal({
   open,
   onClose,
   menu,
-  onSave,
+  onSaved,
 }: EditMenuModalProps) {
-  const [currentStep, setCurrentStep] = React.useState(0);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    watch,
     reset,
-    trigger,
-    setValue,
     control,
     formState: { errors },
-  } = useForm<CreateMenuSchemaFormData>(
-    {
-      resolver: yupResolver(createMenuSchema),
-      defaultValues: {
-        ...menu,
-        vigencia: {
-          inicio: dayjs(menu.data),
-          fim: null,
-        },
-        horario: {
-          inicio: dayjs(menu.horario.inicio),
-          fim: dayjs(menu.horario.fim),
-        },
-        observacao: menu.observacao || "",
-      },
-    });
-
-  React.useEffect(() => {
-    if (open && menu) {
-      reset({
-        ...menu,
-        vigencia: {
-          inicio: dayjs(menu.data),
-          fim: null,
-        },
-        horario: {
-          inicio: dayjs(menu.horario.inicio),
-          fim: dayjs(menu.horario.fim),
-        },
-        observacao: menu.observacao || "",
-      })
-    }
-  }, [open, menu, reset]);
-
-  const watchRefeicoes = watch("refeicoes");
-
-  const {
-    register: registerSearch,
-    watch: watchSearch
-  } = useForm<{ menuItemSearch: string }>({
+  } = useForm<EditMenuSchemaFormData>({
+    resolver: yupResolver(editMenuSchema),
     defaultValues: {
-      menuItemSearch: "",
+      dataRefeicao: dayjs(menu.dataRefeicao),
+      numeroPrevistoRefeicoes: menu.numeroPrevistoRefeicoes,
+      observacao: menu.observacoes ?? "",
     },
   });
 
-  const searchTerm = watchSearch("menuItemSearch")?.toLowerCase() || "";
+  React.useEffect(() => {
+    if (open) {
+      reset({
+        dataRefeicao: dayjs(menu.dataRefeicao),
+        numeroPrevistoRefeicoes: menu.numeroPrevistoRefeicoes,
+        observacao: menu.observacoes ?? "",
+      });
+      setSubmitError(null);
+    }
+  }, [open, menu, reset]);
 
-  const filteredItems = mockMenuItems.filter(item =>
-    item.nome.toLowerCase().includes(searchTerm) ||
-    item.descricao.toLowerCase().includes(searchTerm) ||
-    item.restricoes.some(c => c.toLowerCase().includes(searchTerm)) ||
-    item.categoria.toLowerCase().includes(searchTerm)
-  );
+  const onSubmit = async (data: EditMenuSchemaFormData) => {
+    setSubmitError(null);
+    setIsSubmitting(true);
 
-  const onSubmit = (data: CreateMenuSchemaFormData) => {
-    onSave(data);
+    try {
+      const response = await fetch(`/api/cardapio/${menu.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data_refeicao: (data.dataRefeicao as Dayjs).format("YYYY-MM-DD"),
+          numero_previsto_refeicoes: data.numeroPrevistoRefeicoes,
+          observacoes: data.observacao || null,
+        }),
+      });
 
-    onClose();
-    setCurrentStep(0);
-    reset();
+      if (!response.ok) {
+        const errData = await response
+          .json()
+          .catch(() => ({ detail: "Erro ao salvar cardápio" }));
+        throw new Error(errData.detail ?? "Erro ao salvar cardápio");
+      }
+
+      onSaved();
+      onClose();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao salvar cardápio");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={() => {
-        onClose();
-
-        setCurrentStep(0);
-        reset();
-      }}
-      title="Editar Menu"
-      subtitle="Preencha as informações do cardápio"
-      maxWidth="md"
-    >
+    <Modal open={open} onClose={onClose} title="Editar Cardápio">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        {
-          currentStep === 0 && (
-            <PeriodStep
-              errors={errors}
-              trigger={trigger}
-              setCurrentStep={setCurrentStep}
-              onClose={onClose}
-              control={control}
-              setValue={setValue}
-            />
-          )
-        }
-        {
-          currentStep === 1 && (
-            <BasicInfoStep
-              register={register}
-              errors={errors}
-              trigger={trigger}
-              setCurrentStep={setCurrentStep}
-              control={control}
-            />
-          )
-        }
-        {
-          currentStep === 2 && (
-            <MealsStep
-              registerSearch={registerSearch}
-              filteredItems={filteredItems}
-              watchRefeicoes={watchRefeicoes}
-              setValue={setValue}
-              reset={reset}
-              errors={errors}
-              setCurrentStep={setCurrentStep}
-            />
-          )
-        }
+        {submitError && <Alert severity="error">{submitError}</Alert>}
+
+        <DatePicker label="Data da Refeição" name="dataRefeicao" control={control} />
+
+        <Input
+          label="Refeições Previstas"
+          placeholder="0"
+          type="number"
+          register={register("numeroPrevistoRefeicoes")}
+          error={errors.numeroPrevistoRefeicoes?.message}
+        />
+
+        <Input
+          label="Observações"
+          placeholder="Ex: Opção vegetariana disponível"
+          multiline
+          register={register("observacao")}
+          error={errors.observacao?.message}
+        />
+
+        <Stack direction="row" gap={2}>
+          <Button
+            variant="outlined"
+            sx={{
+              flex: 1,
+              border: "1px solid",
+              borderColor: "divider",
+              color: "text.secondary",
+            }}
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            Cancelar
+          </Button>
+          <Button sx={{ flex: 1 }} variant="contained" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+          </Button>
+        </Stack>
       </Stack>
     </Modal>
   );

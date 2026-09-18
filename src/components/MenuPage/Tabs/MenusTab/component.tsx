@@ -4,46 +4,109 @@ import Card from "@/components/Cards/Card";
 import Input from "@/components/FormControl/Input";
 import { EyeIcon, FilterIcon, SearchIcon, TrashIcon } from "@/components/Icons";
 import Table from "@/components/Tables/Table";
-import { Button, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
+import { Alert, Button, CircularProgress, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { useForm } from "react-hook-form";
 import React from "react";
 import { MenusTabProps } from "./";
-import { IMenu } from "@/Interfaces/Menu/menu";
+import { IMenu, mapApiCardapio } from "@/Interfaces/Menu/menu";
 import MenuItemCard from "./MenuItemCard";
 import { menuColumns } from "@/data/tableColumns";
-import { mockTiposCardapio } from "@/data/menuItems";
 import Select from "@/components/FormControl/Select";
-import { mockMenus } from "@/data/menus";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 import { ActionModal } from "@/components/Modals/ActionModal/component";
-import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDate";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
+import { useTipoRefeicaoOptions } from "@/hooks/useTipoRefeicaoOptions/hook";
+import { useDebounce } from "@/hooks/useDebounce/hook";
+
+const STATUS_OPTIONS = [
+  { label: "Todos os status", value: "" },
+  { label: "Planejado", value: "planejado" },
+  { label: "Confirmado", value: "confirmado" },
+  { label: "Servido", value: "servido" },
+];
 
 export function MenusTab({ }: MenusTabProps) {
   const theme = useTheme();
   const { unitOptions } = useUnitFilterOptions();
-
   const [openDeleteMenuModal, setOpenDeleteMenuModal] = React.useState(false);
   const [openViewMenuModal, setOpenViewMenuModal] = React.useState(false);
   const [selectedMenu, setSelectedMenu] = React.useState<IMenu | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const [menus, setMenus] = React.useState<IMenu[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const {
     register,
     control,
     watch
-  } = useForm<{ menuSearch: string; unidade: string; tipos: string }>({
+  } = useForm<{ menuSearch: string; unidade: string; tipo: string; status: string }>({
     defaultValues: {
       menuSearch: "",
       unidade: "all",
-      tipos: mockTiposCardapio[0].value,
+      tipo: "",
+      status: "",
     },
   });
 
-  const filters = watch()
+  const filters = watch();
+  const { tipoRefeicaoOptions } = useTipoRefeicaoOptions(
+    filters.unidade !== "all" ? filters.unidade : undefined,
+  );
+  const debouncedSearch = useDebounce(filters.menuSearch, 500);
+
+  const loadMenus = React.useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (filters.unidade && filters.unidade !== "all") params.set("unidade", filters.unidade);
+      if (filters.tipo) params.set("tipo_refeicao", filters.tipo);
+      if (filters.status) params.set("status", filters.status);
+      if (debouncedSearch) params.set("unidade_nome", debouncedSearch);
+      params.set("page_size", "200");
+
+      const response = await fetch(`/api/cardapio?${params}`);
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || "Erro ao carregar cardápios");
+      }
+      const results = Array.isArray(payload.results) ? payload.results : [];
+      setMenus(results.map(mapApiCardapio));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar cardápios");
+      setMenus([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filters.unidade, filters.tipo, filters.status, debouncedSearch]);
 
   React.useEffect(() => {
-    console.log(filters);
-  }, [filters]);
+    loadMenus();
+  }, [loadMenus]);
+
+  const handleDelete = async () => {
+    if (!selectedMenu || isDeleting) return;
+    setIsDeleting(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/cardapio/${selectedMenu.id}`, { method: "DELETE" });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({ message: "Erro ao excluir cardápio" }));
+        throw new Error(payload.message || "Erro ao excluir cardápio");
+      }
+      setOpenDeleteMenuModal(false);
+      await loadMenus();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao excluir cardápio");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const recentMenus = menus.slice(0, 8);
 
   return (
     <React.Fragment>
@@ -58,7 +121,7 @@ export function MenusTab({ }: MenusTabProps) {
       >
         <Stack gap={{ xs: 1, sm: 2 }} direction={"row"}>
           <Input
-            placeholder="Buscar por nome, matrícula..."
+            placeholder="Buscar por unidade..."
             icon={<SearchIcon />}
             register={register("menuSearch")}
           />
@@ -70,8 +133,14 @@ export function MenusTab({ }: MenusTabProps) {
           />
 
           <Select
-            options={mockTiposCardapio}
-            name="tipos"
+            options={[{ label: "Todos os tipos", value: "" }, ...tipoRefeicaoOptions.filter((o) => o.value !== "")]}
+            name="tipo"
+            control={control}
+            formControlSx={{ maxWidth: "250px" }}
+          />
+          <Select
+            options={STATUS_OPTIONS}
+            name="status"
             control={control}
             formControlSx={{ maxWidth: "250px" }}
           />
@@ -79,24 +148,36 @@ export function MenusTab({ }: MenusTabProps) {
             variant="outlined"
             startIcon={<FilterIcon />}
             sx={{ fontWeight: "400", minWidth: "120px" }}
-            onClick={() => { }}
+            onClick={() => loadMenus()}
           >
             Filtrar
           </Button>
         </Stack>
 
-        <Stack
-          gap={2}
-          direction={{ xs: "column", sm: "row" }}
-          sx={{ overflowX: "auto", paddingBottom: 1, marginBottom: -1 }}
-        >
-          {mockMenus.map((item, i) => (
-            <MenuItemCard
-              key={i}
-              item={item}
-            />
-          ))}
-        </Stack>
+        {error && <Alert severity="error">{error}</Alert>}
+
+        {isLoading ? (
+          <Stack alignItems="center" padding={4}>
+            <CircularProgress size={28} />
+          </Stack>
+        ) : (
+          <Stack
+            gap={2}
+            direction={{ xs: "column", sm: "row" }}
+            sx={{ overflowX: "auto", paddingBottom: 1, marginBottom: -1 }}
+          >
+            {recentMenus.length === 0 && (
+              <Typography variant="body2" color="text.secondary">Nenhum cardápio encontrado.</Typography>
+            )}
+            {recentMenus.map((item) => (
+              <MenuItemCard
+                key={item.id}
+                item={item}
+                onChanged={loadMenus}
+              />
+            ))}
+          </Stack>
+        )}
 
       </Stack >
 
@@ -146,8 +227,9 @@ export function MenusTab({ }: MenusTabProps) {
               }
               : col
           )}
-          rows={mockMenus}
+          rows={menus}
           initialRowsPerPage={5}
+          isLoading={isLoading}
         />
       </Card>
 
@@ -156,7 +238,8 @@ export function MenusTab({ }: MenusTabProps) {
         <ViewMenuModal
           isOpen={openViewMenuModal}
           onClose={() => setOpenViewMenuModal(false)}
-          data={selectedMenu}
+          cardapioId={selectedMenu.id}
+          onChanged={loadMenus}
         />
       }
 
@@ -165,10 +248,10 @@ export function MenusTab({ }: MenusTabProps) {
           <ActionModal
             open={openDeleteMenuModal}
             onCancel={() => setOpenDeleteMenuModal(false)}
-            onConfirm={() => console.log("Menu deleted:", selectedMenu)}
+            onConfirm={handleDelete}
             title="Tem certeza?"
-            subtitle={`Essa ação irá deletar o cardápio da data "${formatDate(new Date(selectedMenu.data), "dd/MM/yyyy")}", deseja continuar?`}
-            confirmLabel="Confirmar"
+            subtitle={`Essa ação irá deletar o cardápio da data "${formatDateOnly(selectedMenu.dataRefeicao)}", deseja continuar?`}
+            confirmLabel={isDeleting ? "Excluindo..." : "Confirmar"}
             cancelLabel="Cancelar"
             color="error"
             icon={<TrashIcon width={60} height={60} />}

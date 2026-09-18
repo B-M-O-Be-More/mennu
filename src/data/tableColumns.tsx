@@ -2,12 +2,14 @@ import { IColumn } from "@/components/Tables/Table";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
+import { ISaldoEstoqueItem, ISaldoEstoqueConsolidado } from "@/Interfaces/Stock/saldoEstoque";
 import { IUsuarioListItem } from "@/Interfaces/User/user";
 import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
 import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
-import { formatDate } from "@/utils/formatDate";
-import { IConsumptionHistory, IMenu, IReportMenu } from "@/Interfaces/Menu/menu";
+import { formatDate, formatDateOnly } from "@/utils/formatDate";
+import { IConsumptionHistory, IMenu } from "@/Interfaces/Menu/menu";
+import { ICardapioPlanejamentoRow } from "@/Interfaces/Reports/cardapioPlanejamento";
 import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
@@ -288,29 +290,41 @@ const mealRecordsColumns: IColumn<MealRecordsResponse>[] = [
   },
 ];
 
+const cardapioStatusColorMap: Record<string, "warning" | "info" | "success"> = {
+  planejado: "warning",
+  confirmado: "info",
+  servido: "success",
+};
+
+const cardapioStatusLabelMap: Record<string, string> = {
+  planejado: "Planejado",
+  confirmado: "Confirmado",
+  servido: "Servido",
+};
+
 const menuColumns: IColumn<IMenu>[] = [
   {
-    key: "data",
+    key: "dataRefeicao",
     label: "Data",
     render: (row) => (
       <Typography variant="body2">
-        {formatDate(new Date(row.data), "dd/MM/yyyy")}
+        {formatDateOnly(row.dataRefeicao)}
       </Typography>
     ),
   },
   {
-    key: "unidade",
+    key: "unidadeNome",
     label: "Unidade",
   },
   {
-    key: "tipo",
+    key: "tipoRefeicaoNome",
     label: "Tipo de Refeição",
   },
   {
-    key: "refeicoes",
-    label: "Refeições",
+    key: "pratos",
+    label: "Pratos",
     render: (row) => (
-      <Typography variant="body2">{row.refeicoes.length} refeição{row.refeicoes.length > 1 ? "s" : ""}</Typography>
+      <Typography variant="body2">{row.pratos.length} prato{row.pratos.length > 1 ? "s" : ""}</Typography>
     ),
   },
   {
@@ -318,10 +332,10 @@ const menuColumns: IColumn<IMenu>[] = [
     label: "Status",
     render: (row) => (
       <Chip
-        label={row.status}
-        color={row.status === "ativo" ? "success" : row.status === "programado" ? "info" : "default"}
+        label={cardapioStatusLabelMap[row.status] ?? row.status}
+        color={cardapioStatusColorMap[row.status] ?? "default"}
         size="small"
-        sx={{ ...statusChipSx, textTransform: "capitalize" }}
+        sx={statusChipSx}
       />
     ),
   },
@@ -401,61 +415,52 @@ const consumptionHistoryColumns: IColumn<IConsumptionHistory>[] = [
   }
 ];
 
-const reportsMenuColumns: IColumn<IReportMenu>[] = [
+const reportsMenuColumns: IColumn<ICardapioPlanejamentoRow>[] = [
   {
     key: "data",
     label: "Data",
     render: (row) => (
-      <Typography variant="body2">{formatDate(new Date(row.data), "dd/MM/yyyy")}</Typography>
+      <Typography variant="body2">{formatDateOnly(row.data)}</Typography>
     ),
   },
   {
-    key: "categoria",
+    key: "unidade",
+    label: "Unidade",
+  },
+  {
+    key: "tipoRefeicao",
     label: "Tipo de Refeição",
   },
   {
-    key: "planejado",
-    label: "Planejado",
+    key: "previsto",
+    label: "Previsto",
   },
   {
     key: "realizado",
     label: "Realizado",
   },
   {
-    key: "variacao",
-    label: "Variação",
+    key: "aderencia",
+    label: "Aderência",
     render: (row) => (
-      <Chip
-        label={row.variacao > 0 ? `+${row.variacao}%` : `${row.variacao}%`}
-        color={row.variacao > 0 ? "success" : row.variacao < 0 ? "error" : "default"}
-        size="small"
-      />
+      <PercentageLineChart value={row.aderencia} />
     ),
   },
-  {
-    key: "eficiencia",
-    label: "Eficiência",
-    render: (row) => (
-      <PercentageLineChart value={row.eficiencia} />
-    ),
-  }
-
-
 ];
 
 const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[] = [
   {
-    key: "data_hora",
+    key: "dataHora",
     label: "Data/Hora",
-    render: (row) => formatDateTime(row.data_hora),
+    render: (row) => formatDateTime(row.dataHora),
   },
   {
-    key: "usuario",
+    key: "usuarioNome",
     label: "Usuário",
     render: (row) => (
       <Stack direction={{ md: "row" }} alignItems="center" gap={0.5}>
-        <Typography variant="body2">{row.usuario}</Typography>
-        {row.isManual && (
+        <Typography variant="body2">{row.usuarioNome ?? "—"}</Typography>
+        {row.manual && (
           <Chip
             icon={<PaperIcon color="#8200DB" height={18} />}
             color="purple"
@@ -466,28 +471,8 @@ const reportsConsumptionHistoryColumns: IColumn<ReportsConsumptionHistoryItem>[]
       </Stack>
     ),
   },
-  { key: "terminal", label: "Terminal" },
-  { key: "tipo", label: "Tipo de Refeição" },
-  { key: "unidade", label: "Unidade" },
-  { key: "matricula", label: "Matrícula" },
-  {
-    key: "status",
-    label: "Status",
-    render: (row) => {
-      const colorMap: Record<string, "success" | "error"> = {
-        Servida: "success",
-        Cancelada: "error",
-      };
-      return (
-        <Chip
-          label={row.status}
-          color={colorMap[row.status]}
-          size="small"
-          sx={{ ...statusChipSx, textTransform: "capitalize" }}
-        />
-      );
-    },
-  },
+  { key: "unidadeNome", label: "Unidade", render: (row) => row.unidadeNome ?? "—" },
+  { key: "usuarioMatricula", label: "Matrícula", render: (row) => row.usuarioMatricula ?? "—" },
 ];
 
 const permissionsColumns: IColumn<IProfilePermissionsItems>[] = [
@@ -715,6 +700,26 @@ const auditNormalizeColumns: IColumn<IStockAuditDetailItem>[] = [
   { key: "ajuste", label: "Ajuste", align: "center", render: () => null },
 ];
 
+const saldoEstoqueColumns: IColumn<ISaldoEstoqueItem>[] = [
+  { key: "insumoNome", label: "Insumo", render: (row) => row.insumoNome ?? "—" },
+  { key: "unidadeNome", label: "Unidade", render: (row) => row.unidadeNome ?? "—" },
+  { key: "lote", label: "Lote", render: (row) => row.lote ?? "—" },
+  { key: "validade", label: "Validade", render: (row) => formatDateOnly(row.validade) },
+  { key: "quantidade", label: "Quantidade", align: "right" },
+  { key: "unidadeMedida", label: "Un. Medida", render: (row) => row.unidadeMedida ?? "—" },
+];
+
+const saldoEstoqueConsolidadoColumns: IColumn<ISaldoEstoqueConsolidado>[] = [
+  { key: "insumoNome", label: "Insumo" },
+  { key: "quantidade", label: "Quantidade", align: "right" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  {
+    key: "validadeMaisProxima",
+    label: "Validade Mais Próxima",
+    render: (row) => formatDateOnly(row.validadeMaisProxima),
+  },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -731,4 +736,6 @@ export {
   stockAuditColumns,
   auditConferenceColumns,
   auditNormalizeColumns,
+  saldoEstoqueColumns,
+  saldoEstoqueConsolidadoColumns,
 };

@@ -1,34 +1,28 @@
 "use client";
 
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Tooltip } from "@mui/material";
 import { MenuPageProps } from "./";
 import PageHeader from "../PageHeader";
-import { CalendarIcon, CookHatIcon, CopyIcon, MarkedCalendarIcon, PaperIcon, PlusIcon, StatsIcon } from "../Icons";
+import { CalendarIcon, PaperIcon, PlusIcon, StatsIcon } from "../Icons";
 import React from "react";
 import TabButton from "../TabButton";
 import MenusTab from "./Tabs/MenusTab";
-import ItemsTab from "./Tabs/ItemsTab";
 import ConsumptionTab from "./Tabs/ConsumptionTab";
 import ReportsTab from "./Tabs/ReportsTab";
 import NewMenuModal from "../Modals/NewMenuModal";
-import NewMenuItemModal from "../Modals/NewMenuItemModal";
 import NewManualRegisterModal from "../Modals/NewManualRegisterModal";
 
 const tabs = [
   { label: "Cardápios", icon: <CalendarIcon height={24} /> },
-  { label: "Itens", icon: <CookHatIcon height={24} /> },
   { label: "Consumo", icon: <PaperIcon height={24} /> },
   { label: "Relatórios", icon: <StatsIcon height={24} /> },
 ];
 
 export function MenuPage({ }: MenuPageProps) {
   const [activeTab, setActiveTab] = React.useState(0);
+  const [menusRefreshKey, setMenusRefreshKey] = React.useState(0);
 
   const [openCreateMenuModal, setOpenCreateMenuModal] = React.useState(false);
-  const [openCopyMenuModal, setOpenCopyMenuModal] = React.useState(false);
-  const [openMenuPeriodModal, setOpenMenuPeriodModal] = React.useState(false);
-
-  const [openCreateMenuItemModal, setOpenCreateMenuItemModal] = React.useState(false);
   const [openManualRegisterModal, setOpenManualRegisterModal] = React.useState(false);
 
   return (
@@ -40,20 +34,13 @@ export function MenuPage({ }: MenuPageProps) {
         {
           activeTab === 0 &&
           <React.Fragment>
-            <Button
-              variant="outlined"
-              startIcon={<CopyIcon />}
-              onClick={() => setOpenCopyMenuModal(true)}
-            >
-              Copiar
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<MarkedCalendarIcon />}
-              onClick={() => setOpenMenuPeriodModal(true)}
-            >
-              Período
-            </Button>
+            <Tooltip title="Em breve">
+              <span>
+                <Button variant="outlined" disabled>
+                  Copiar
+                </Button>
+              </span>
+            </Tooltip>
 
             <Button
               variant="contained"
@@ -66,30 +53,13 @@ export function MenuPage({ }: MenuPageProps) {
             <NewMenuModal
               open={openCreateMenuModal}
               onClose={() => setOpenCreateMenuModal(false)}
+              onCreated={() => setMenusRefreshKey((prev) => prev + 1)}
             />
           </React.Fragment>
         }
 
         {
           activeTab === 1 &&
-          <React.Fragment>
-            <Button
-              variant="contained"
-              startIcon={<PlusIcon />}
-              onClick={() => setOpenCreateMenuItemModal(true)}
-            >
-              Novo Item
-            </Button>
-
-            <NewMenuItemModal
-              open={openCreateMenuItemModal}
-              onClose={() => setOpenCreateMenuItemModal(false)}
-            />
-          </React.Fragment>
-        }
-
-        {
-          activeTab === 2 &&
           <React.Fragment>
             <Button
               variant="contained"
@@ -103,21 +73,6 @@ export function MenuPage({ }: MenuPageProps) {
               open={openManualRegisterModal}
               onClose={() => setOpenManualRegisterModal(false)}
             />
-          </React.Fragment>
-        }
-
-        {
-          activeTab === 3 &&
-          <React.Fragment>
-            <Button
-              variant="contained"
-              startIcon={<PlusIcon />}
-              onClick={() => {
-                console.log("Exportar CSV");
-              }}
-            >
-              Exportar CSV
-            </Button>
           </React.Fragment>
         }
 
@@ -136,10 +91,9 @@ export function MenuPage({ }: MenuPageProps) {
         ))}
       </Stack>
 
-      {activeTab === 0 && <MenusTab />}
-      {activeTab === 1 && <ItemsTab />}
-      {activeTab === 2 && <ConsumptionTab />}
-      {activeTab === 3 && <ReportsTab />}
+      {activeTab === 0 && <MenusTab key={menusRefreshKey} />}
+      {activeTab === 1 && <ConsumptionTab />}
+      {activeTab === 2 && <ReportsTab />}
     </Stack >
   );
 }

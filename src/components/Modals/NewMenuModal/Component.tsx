@@ -1,5 +1,4 @@
-import { Stack } from "@mui/material";
-import { mockStatuses } from "../../../data/menuItems";
+import { Stack, Alert } from "@mui/material";
 import { NewMenuModalProps } from ".";
 import Modal from "../Modal";
 import { useForm } from "react-hook-form";
@@ -7,23 +6,23 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { createMenuSchema, CreateMenuSchemaFormData } from "@/schemas/menuSchema";
 import React from "react";
 import BasicInfoStep from "./Steps/BasicInfoStep";
-import MealsStep from "./Steps/MealsStep";
-import { mockMenuItems } from "@/data/menus";
 import PeriodStep from "./Steps/PeriodStep";
 import dayjs from "dayjs";
+import { computeCardapioDates } from "@/utils/menuDates";
 
 export const mockTiposIntervalo = [
-  { label: "Personalizado", value: "Personalizado" },
-  { label: "Semanal", value: "semanal" }
+  { label: "Personalizado", value: "personalizado" },
+  { label: "Semanal", value: "semanal" },
 ];
 
-export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
+export default function NewMenuModal({ open, onClose, onCreated }: NewMenuModalProps) {
   const [currentStep, setCurrentStep] = React.useState(0);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   const {
     handleSubmit,
     register,
-    watch,
     reset,
     setValue,
     trigger,
@@ -38,65 +37,81 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
       },
       unidade: "",
       tipo: "",
-      horario: {
-        inicio: dayjs().hour(0).minute(0),
-        fim: dayjs().hour(0).minute(0),
-      },
-      refeicoes: [],
-      status: mockStatuses[0].value,
+      numeroPrevistoRefeicoes: 0,
       observacao: "",
       tipoIntervalo: mockTiposIntervalo[0].value,
       diasSemana: [],
     },
   });
 
-  const watchRefeicoes = watch("refeicoes");
-
-  const {
-    register: registerSearch,
-    watch: watchSearch
-  } = useForm<{ menuItemSearch: string }>({
-    defaultValues: {
-      menuItemSearch: "",
-    },
-  });
-
-  const searchTerm = watchSearch("menuItemSearch")?.toLowerCase() || "";
-
-  const filteredItems = mockMenuItems.filter(item =>
-    item.nome.toLowerCase().includes(searchTerm) ||
-    item.descricao.toLowerCase().includes(searchTerm) ||
-    item.restricoes.some(c => c.toLowerCase().includes(searchTerm)) ||
-    item.categoria.toLowerCase().includes(searchTerm)
-  );
-
-  const onSubmit = (data: CreateMenuSchemaFormData) => {
-    console.log("Novo cardápio:", data);
-
-    onClose();
+  function resetAndClose() {
+    setSubmitError(null);
     setCurrentStep(0);
+    reset();
+    onClose();
+  }
+
+  const onSubmit = async (data: CreateMenuSchemaFormData) => {
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const datas = computeCardapioDates(
+        data.vigencia.inicio,
+        data.vigencia.fim,
+        data.tipoIntervalo,
+        (data.diasSemana ?? []).filter((d): d is string => !!d),
+      );
+
+      if (datas.length === 0) {
+        throw new Error("Nenhuma data válida para o período informado.");
+      }
+
+      const response = await fetch("/api/cardapio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          unidade_id: Number(data.unidade),
+          tipo_refeicao_id: Number(data.tipo),
+          data_refeicao: datas,
+          numero_previsto_refeicoes: data.numeroPrevistoRefeicoes,
+          observacoes: data.observacao || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response
+          .json()
+          .catch(() => ({ detail: "Erro ao criar cardápio" }));
+        throw new Error(errData.detail ?? "Erro ao criar cardápio");
+      }
+
+      onCreated();
+      resetAndClose();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Erro ao criar cardápio");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Modal
       open={open}
-      onClose={() => {
-        onClose();
-
-        setCurrentStep(0);
-        reset();
-      }}
+      onClose={resetAndClose}
       title="Novo Cardápio"
       subtitle="Preencha as informações do cardápio"
       maxWidth="md"
     >
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        {submitError && <Alert severity="error">{submitError}</Alert>}
+
         {
           currentStep === 0 && (
             <PeriodStep
               errors={errors}
               trigger={trigger}
-              onClose={onClose}
+              onClose={resetAndClose}
               setCurrentStep={setCurrentStep}
               control={control}
               setValue={setValue}
@@ -112,24 +127,11 @@ export default function NewMenuModal({ open, onClose }: NewMenuModalProps) {
               trigger={trigger}
               setCurrentStep={setCurrentStep}
               control={control}
-            />
-          )
-        }
-
-        {
-          currentStep === 2 && (
-            <MealsStep
-              registerSearch={registerSearch}
-              filteredItems={filteredItems}
-              watchRefeicoes={watchRefeicoes}
-              setValue={setValue}
-              reset={reset}
-              errors={errors}
-              setCurrentStep={setCurrentStep}
+              isSubmitting={isSubmitting}
             />
           )
         }
       </Stack>
-    </Modal >
+    </Modal>
   );
 }

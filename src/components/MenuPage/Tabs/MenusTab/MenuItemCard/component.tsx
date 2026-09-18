@@ -14,9 +14,22 @@ import { MenuItemCardProps } from "./";
 import React from "react";
 import ViewMenuModal from "@/components/Modals/ViewMenuModal";
 import EditMenuModal from "@/components/Modals/EditMenuModal";
-import { formatDate } from "@/utils/formatDate";
+import { formatDateOnly } from "@/utils/formatDate";
+import { StatusCardapio } from "@/Interfaces/Menu/menu";
 
-const MenuItemCard = ({ item }: MenuItemCardProps) => {
+const statusColorMap: Record<StatusCardapio, "warning" | "info" | "success"> = {
+  planejado: "warning",
+  confirmado: "info",
+  servido: "success",
+};
+
+const statusLabelMap: Record<StatusCardapio, string> = {
+  planejado: "Planejado",
+  confirmado: "Confirmado",
+  servido: "Servido",
+};
+
+const MenuItemCard = ({ item, onChanged }: MenuItemCardProps) => {
   const theme = useTheme();
 
   const [openEditMenuModal, setOpenEditMenuModal] = React.useState(false);
@@ -40,14 +53,14 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
         />
         <Box>
           <Typography variant="body2">
-            {formatDate(new Date(item.data), "dd/MM/yyyy")}
+            {formatDateOnly(item.dataRefeicao)}
           </Typography>
           <Typography
             variant="caption"
             color="text.secondary"
             fontWeight={"400"}
           >
-            {item.unidade}
+            {item.unidadeNome}
           </Typography>
         </Box>
       </Stack>
@@ -56,12 +69,12 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
         <Typography variant="body2" color="text.secondary">
           Tipo:
         </Typography>
-        <Typography variant="body2">{item.tipo}</Typography>
+        <Typography variant="body2">{item.tipoRefeicaoNome}</Typography>
       </Stack>
 
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="text.secondary">
-          Horário:
+          Refeições Previstas:
         </Typography>
         <Typography variant="body2" component="span">
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
@@ -70,18 +83,17 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
               height={16}
               color={theme.palette.text.secondary}
             />
-            {item.horario.inicio} - {item.horario.fim}
+            {item.numeroPrevistoRefeicoes}
           </span>
         </Typography>
-
       </Stack>
 
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="body2" color="text.secondary">
-          Itens:
+          Pratos:
         </Typography>
         <Typography variant="body2">
-          {item.refeicoes.length} ite{item.refeicoes.length > 1 ? "ns" : "m"}
+          {item.pratos.length} ite{item.pratos.length > 1 ? "ns" : "m"}
         </Typography>
       </Stack>
 
@@ -94,19 +106,12 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
         gap={1}
       >
         <Chip
-          color={
-            item.status === "ativo"
-              ? "success"
-              : item.status === "programado"
-                ? "info"
-                : "default"
-          }
-          label={item.status}
+          color={statusColorMap[item.status]}
+          label={statusLabelMap[item.status]}
           size="medium"
           sx={{
             minWidth: "fit-content",
             paddingX: 0,
-            textTransform: "capitalize",
           }}
         />
         <Stack direction="row" alignItems="center">
@@ -121,7 +126,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
           </Tooltip>
 
           {
-            item.status !== "finalizado" && (
+            item.status !== "servido" && (
               <Tooltip title="Editar cardápio" arrow>
                 <IconButton
                   size="small"
@@ -139,16 +144,15 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
       <ViewMenuModal
         isOpen={openViewMenuModal}
         onClose={() => setOpenViewMenuModal(false)}
-        data={item}
+        cardapioId={item.id}
+        onChanged={onChanged}
       />
 
       <EditMenuModal
         open={openEditMenuModal}
         onClose={() => setOpenEditMenuModal(false)}
-        onSave={(data) => {
-          console.log(data);
-        }}
         menu={item}
+        onSaved={onChanged}
       />
     </Stack>
   );
