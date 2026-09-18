@@ -37,6 +37,34 @@ export default function StockBalancePanel({ refreshToken = 0 }: StockBalancePane
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  const fetchSaldoDeUmaUnidade = React.useCallback(async (unidadeId?: string) => {
+    const params = new URLSearchParams();
+    if (unidadeId) params.set("unidade_id", unidadeId);
+    if (debouncedLote) params.set("lote", debouncedLote);
+    params.set("com_saldo", String(filters.comSaldo ?? true));
+    params.set("page_size", "200");
+
+    const results: ISaldoEstoqueItem[] = [];
+    let page = 1;
+    let totalPages = 1;
+
+    do {
+      const pageParams = new URLSearchParams(params);
+      pageParams.set("page", String(page));
+      const response = await fetch(`/api/saldo-estoque?${pageParams}`);
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.message || "Erro ao carregar saldo de estoque");
+      }
+      const pageResults = Array.isArray(payload.results) ? payload.results : [];
+      results.push(...pageResults.map(mapApiSaldoEstoqueItem));
+      totalPages = payload.metadados?.total_pages ?? 1;
+      page += 1;
+    } while (page <= totalPages);
+
+    return results;
+  }, [debouncedLote, filters.comSaldo]);
+
   React.useEffect(() => {
     let cancelled = false;
 
@@ -45,31 +73,15 @@ export default function StockBalancePanel({ refreshToken = 0 }: StockBalancePane
       setError(null);
 
       try {
-        const params = new URLSearchParams();
-        if (filters.unidadeId && filters.unidadeId !== "all") {
-          params.set("unidade_id", filters.unidadeId);
-        }
-        if (debouncedLote) params.set("lote", debouncedLote);
-        params.set("com_saldo", String(filters.comSaldo ?? true));
-        params.set("page_size", "200");
-
-        const allResults: ISaldoEstoqueItem[] = [];
-        let page = 1;
-        let totalPages = 1;
-
-        do {
-          const pageParams = new URLSearchParams(params);
-          pageParams.set("page", String(page));
-          const response = await fetch(`/api/saldo-estoque?${pageParams}`);
-          const payload = await response.json();
-          if (!response.ok) {
-            throw new Error(payload.message || "Erro ao carregar saldo de estoque");
-          }
-          const results = Array.isArray(payload.results) ? payload.results : [];
-          allResults.push(...results.map(mapApiSaldoEstoqueItem));
-          totalPages = payload.metadados?.total_pages ?? 1;
-          page += 1;
-        } while (page <= totalPages);
+        // Backend nunca mistura unidades num request só: sem `unidade_id`
+        // explícito, `/saldo-estoque/` cai no header `Unidade-id-x` da
+        // sessão (só a unidade ativa), nunca "a rede toda". "Todas as
+        // unidades" aqui, então, busca uma vez por unidade e junta.
+        const unidadesReais = unitOptions.filter((o) => o.value !== "all");
+        const allResults =
+          filters.unidadeId && filters.unidadeId !== "all"
+            ? await fetchSaldoDeUmaUnidade(filters.unidadeId)
+            : (await Promise.all(unidadesReais.map((o) => fetchSaldoDeUmaUnidade(o.value)))).flat();
 
         let consolidadoResults: ISaldoEstoqueConsolidado[] = [];
         if (filters.unidadeId && filters.unidadeId !== "all") {
@@ -97,7 +109,7 @@ export default function StockBalancePanel({ refreshToken = 0 }: StockBalancePane
     return () => {
       cancelled = true;
     };
-  }, [filters.unidadeId, debouncedLote, filters.comSaldo, refreshToken]);
+  }, [filters.unidadeId, debouncedLote, filters.comSaldo, refreshToken, unitOptions, fetchSaldoDeUmaUnidade]);
 
   return (
     <Card>
