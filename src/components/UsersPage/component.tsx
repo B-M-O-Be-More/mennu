@@ -21,6 +21,7 @@ import PageHeader from "../PageHeader";
 import ExportModal from "../Modals/ExportModal";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useDebounce } from "@/hooks/useDebounce/hook";
+import Can from "@/components/Can";
 
 interface PaginationMetadados {
   total_pages?: number;
@@ -183,13 +184,15 @@ export function UsersPage({ }: UsersPageProps) {
           Exportar
         </Button>
 
-        <Button
-          variant="contained"
-          startIcon={<PlusIcon />}
-          onClick={() => setOpenCreateUserModal(true)}
-        >
-          Adicionar Usuário
-        </Button>
+        <Can module="usuario" action="create">
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            onClick={() => setOpenCreateUserModal(true)}
+          >
+            Adicionar Usuário
+          </Button>
+        </Can>
       </PageHeader>
 
       <ExportModal
@@ -296,13 +299,15 @@ export function UsersPage({ }: UsersPageProps) {
               ? {
                 ...col,
                 render: (row: IUsuarioListItem) => (
-                  <ActionCell
-                    checked={row.is_active}
-                    tooltipToggle="Ativar/Desativar usuário"
-                    onToggle={(newState) => handleToggleUser(row, newState)}
-                    tooltipEdit="Editar usuário"
-                    onEdit={() => setEditingUser(row)}
-                  />
+                  <Can module="usuario" action="edit">
+                    <ActionCell
+                      checked={row.is_active}
+                      tooltipToggle="Ativar/Desativar usuário"
+                      onToggle={(newState) => handleToggleUser(row, newState)}
+                      tooltipEdit="Editar usuário"
+                      onEdit={() => setEditingUser(row)}
+                    />
+                  </Can>
                 ),
               }
               : col

@@ -12,6 +12,7 @@ import { GeneralSettingsFormData, generalSettingsSchema } from "@/schemas/genera
 import { GeneralSettingsApi } from "@/Interfaces/Settings/settings";
 import { resolveLogoUrl, settingsService } from "@/services/settingsService";
 import { theme } from "@/theme/theme";
+import Can from "@/components/Can";
 
 function toFormValues(settings: GeneralSettingsApi): GeneralSettingsFormData {
   return { systemName: settings.nome_sistema, description: settings.descricao ?? "", emailNotifications: settings.notificacoes_email, maintenanceMode: settings.modo_manutencao, image: null };
@@ -84,7 +85,9 @@ export default function GeneralTab({}: GeneralTabProps) {
           <Divider sx={{ my: 1, borderColor: "grey.100" }} />
           <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Modo Manutenção</Typography><Typography variant="body2" color="text.secondary">Ativar modo de manutenção do sistema</Typography></Box><Controller name="maintenanceMode" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
         </Stack>
-        <Button variant="contained" sx={{ borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Alterações"}</Button>
+        <Can permissions="configuracao.edit.geral" message="Você não tem permissão para editar as configurações gerais.">
+          <Button variant="contained" sx={{ borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Alterações"}</Button>
+        </Can>
       </Box>
     </>
   );

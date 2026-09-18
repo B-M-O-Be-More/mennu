@@ -15,6 +15,7 @@ import { LogAuditFilters as LogAuditFiltersBar } from "./LogAuditFilters";
 import { LogAuditSummaryCards } from "./LogAuditSummaryCards";
 import { LogDetailsDialog } from "./LogDetailsDialog";
 import { LogsAuditPageProps } from "./interface";
+import Can from "@/components/Can";
 
 const PAGE_SIZE = 5;
 const STATUS_OPTIONS = [
@@ -161,7 +162,9 @@ export default function LogsAuditPage({}: LogsAuditPageProps) {
   return (
     <Stack gap={2.5}>
       <PageHeader title="Logs e Auditoria" subtitle="Registros de atividades e eventos do sistema">
-        <Button variant="contained" startIcon={<DownloadIcon width={18} height={18} />} onClick={handleExport} sx={{ minWidth: 188, py: 1.6 }}>Exportar Logs</Button>
+        <Can permissions="log.export.csv">
+          <Button variant="contained" startIcon={<DownloadIcon width={18} height={18} />} onClick={handleExport} sx={{ minWidth: 188, py: 1.6 }}>Exportar Logs</Button>
+        </Can>
       </PageHeader>
 
       <Card sx={{ bgcolor: "info.main", borderColor: "info.light", p: 0, overflow: "hidden" }}>

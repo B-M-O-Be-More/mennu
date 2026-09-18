@@ -27,6 +27,7 @@ import {
 } from "@/utils/decimalInputAdapter";
 import AuditMarginInfo from "./AuditMarginInfo";
 import ToleranceTypeSelector from "./ToleranceTypeSelector";
+import Can from "@/components/Can";
 
 const DEFAULT_VALUES: StockSettingsFormData = {
   toleranceType: "absoluto",
@@ -189,22 +190,24 @@ export default function AuditTab() {
           </Grid>
         </Grid>
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={saveDisabled}
-          sx={{
-            width: { xs: "100%", sm: 238 },
-            mt: 3,
-            "&.Mui-disabled": {
-              bgcolor: "#FFC2B0",
-              color: "primary.contrastText",
-            },
-          }}
-        >
-          {isSaving && <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
-          {isSaving ? "Salvando..." : "Salvar Configurações"}
-        </Button>
+        <Can permissions="configuracao.edit.estoque" message="Você não tem permissão para editar as configurações de auditoria.">
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={saveDisabled}
+            sx={{
+              width: { xs: "100%", sm: 238 },
+              mt: 3,
+              "&.Mui-disabled": {
+                bgcolor: "#FFC2B0",
+                color: "primary.contrastText",
+              },
+            }}
+          >
+            {isSaving && <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />}
+            {isSaving ? "Salvando..." : "Salvar Configurações"}
+          </Button>
+        </Can>
       </Box>
 
       <Toast

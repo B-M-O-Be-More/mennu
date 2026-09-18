@@ -21,6 +21,7 @@ import { useUser } from "@/context/AuthContext";
 import { UnitListItem } from "@/Interfaces/Settings/settings";
 import { settingsService } from "@/services/settingsService";
 import { UnitsTabProps } from "./interface";
+import Can from "@/components/Can";
 
 export default function UnitsTab({}: UnitsTabProps) {
   const { activeContext, clearContext } = useUser();
@@ -104,15 +105,17 @@ export default function UnitsTab({}: UnitsTabProps) {
         <Typography variant="h6" fontWeight={400}>
           Unidades Cadastradas
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<PlusIcon />}
-          sx={{ fontWeight: 400, paddingY: 1.5 }}
-          onClick={() => setOpenNewUnitModal(true)}
-          disabled={isDeleting}
-        >
-          Nova Unidade
-        </Button>
+        <Can module="unidade" action="create">
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            sx={{ fontWeight: 400, paddingY: 1.5 }}
+            onClick={() => setOpenNewUnitModal(true)}
+            disabled={isDeleting}
+          >
+            Nova Unidade
+          </Button>
+        </Can>
       </Stack>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -171,62 +174,68 @@ export default function UnitsTab({}: UnitsTabProps) {
                 flex={1}
                 justifyContent="flex-end"
               >
-                <Button
-                  variant="outlined"
-                  sx={{
-                    minWidth: 0,
-                    height: 40,
-                    color: "#155DFC",
-                    borderRadius: 3,
-                    fontSize: 14,
-                  }}
-                  disabled={isDeleting}
-                  onClick={() => {
-                    setSelectedUnit(unit);
-                    setOpenUnitPoliciesModal(true);
-                  }}
-                >
-                  Políticas
-                </Button>
-                <Tooltip title="Editar unidade" arrow>
-                  <span>
-                    <IconButton
-                      aria-label="Editar unidade"
-                      size="medium"
-                      sx={{
-                        border: "1px solid",
-                        borderColor: "divider",
-                        borderRadius: 3,
-                        color: "text.secondary",
-                      }}
-                      disabled={isDeleting}
-                      onClick={() => {
-                        setSelectedUnit(unit);
-                        setOpenEditUnitModal(true);
-                      }}
-                    >
-                      <EditIcon width={22} height={22} />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title="Excluir unidade" arrow>
-                  <span>
-                    <IconButton
-                      aria-label="Excluir unidade"
-                      size="medium"
-                      sx={{
-                        border: "1px solid",
-                        borderColor: "divider",
-                        borderRadius: 3,
-                        color: "error.contrastText",
-                      }}
-                      disabled={isDeleting}
-                      onClick={() => setDeleteCandidate(unit)}
-                    >
-                      <TrashIcon width={22} height={22} />
-                    </IconButton>
-                  </span>
-                </Tooltip>
+                <Can module="unidade" action="edit">
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      minWidth: 0,
+                      height: 40,
+                      color: "#155DFC",
+                      borderRadius: 3,
+                      fontSize: 14,
+                    }}
+                    disabled={isDeleting}
+                    onClick={() => {
+                      setSelectedUnit(unit);
+                      setOpenUnitPoliciesModal(true);
+                    }}
+                  >
+                    Políticas
+                  </Button>
+                </Can>
+                <Can module="unidade" action="edit">
+                  <Tooltip title="Editar unidade" arrow>
+                    <span>
+                      <IconButton
+                        aria-label="Editar unidade"
+                        size="medium"
+                        sx={{
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: 3,
+                          color: "text.secondary",
+                        }}
+                        disabled={isDeleting}
+                        onClick={() => {
+                          setSelectedUnit(unit);
+                          setOpenEditUnitModal(true);
+                        }}
+                      >
+                        <EditIcon width={22} height={22} />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </Can>
+                <Can module="unidade" action="delete">
+                  <Tooltip title="Excluir unidade" arrow>
+                    <span>
+                      <IconButton
+                        aria-label="Excluir unidade"
+                        size="medium"
+                        sx={{
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: 3,
+                          color: "error.contrastText",
+                        }}
+                        disabled={isDeleting}
+                        onClick={() => setDeleteCandidate(unit)}
+                      >
+                        <TrashIcon width={22} height={22} />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                </Can>
               </Stack>
             </Stack>
           ))}

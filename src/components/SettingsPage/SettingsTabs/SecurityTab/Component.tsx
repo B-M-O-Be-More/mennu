@@ -9,6 +9,7 @@ import Input from "@/components/FormControl/Input";
 import { SafetySettingsFormData, safetySettingsSchema } from "@/schemas/safetySettings";
 import { SecuritySettingsApi } from "@/Interfaces/Settings/settings";
 import { settingsService } from "@/services/settingsService";
+import Can from "@/components/Can";
 
 function toFormValues(settings: SecuritySettingsApi): SafetySettingsFormData {
   return { SessionTime: settings.tempo_sessao_minutos, MaxLoginAttempts: settings.max_tentativas_login, TwoFactorAuth: settings.autenticacao_dois_fatores, ActivityLog: settings.log_atividades };
@@ -56,7 +57,9 @@ export default function SecurityTab({}: SecurityTabProps) {
           <Divider sx={{ my: 1, borderColor: "grey.100" }} />
           <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Log de atividades</Typography><Typography variant="body2" color="text.secondary">Registrar todas as ações dos usuários</Typography></Box><Controller name="ActivityLog" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
         </Stack>
-        <Button variant="contained" sx={{ width: "fit-content", borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Configurações"}</Button>
+        <Can permissions="configuracao.edit.seguranca" message="Você não tem permissão para editar as configurações de segurança.">
+          <Button variant="contained" sx={{ width: "fit-content", borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Configurações"}</Button>
+        </Can>
       </Box>
     </>
   );

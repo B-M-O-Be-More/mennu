@@ -12,6 +12,7 @@ import EditTerminalModal from "@/components/Modals/EditTerminalModal/Component";
 import { ITerminal, mapApiTerminalToUi } from "@/Interfaces/Terminal/terminal";
 import { CreateTerminalSchemaFormData } from "@/schemas/terminalSchema";
 import { formatDate } from "@/utils/formatDate";
+import Can from "@/components/Can";
 
 export default function TerminalsTab({ }: TerminalsTabProps) {
   const theme = useTheme();
@@ -152,17 +153,19 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
             Gerencie os terminais de acesso às refeições
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<PlusIcon />}
-          sx={{
-            fontWeight: '400',
-            paddingY: 1.5
-          }}
-          onClick={() => setOpenNewTerminalModal(true)}
-        >
-          Novo Terminal
-        </Button>
+        <Can module="terminal" action="create">
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            sx={{
+              fontWeight: '400',
+              paddingY: 1.5
+            }}
+            onClick={() => setOpenNewTerminalModal(true)}
+          >
+            Novo Terminal
+          </Button>
+        </Can>
       </Stack>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -244,40 +247,44 @@ export default function TerminalsTab({ }: TerminalsTabProps) {
               {terminal.status === "desatualizado" &&
                 <Chip label={"Revisar Configurações"} size="small" color="warning" />
               }
-              <Tooltip
-                title={
-                  terminal.status === "manutencao"
-                    ? "Retirar de manutenção (volta como offline)"
-                    : "Colocar em manutenção"
-                }
-                arrow
-              >
-                <IconButton
-                  type="button"
-                  aria-label="Alternar manutenção"
-                  size="small"
-                  onClick={() => handleToggleManutencao(terminal)}
-                  sx={{
-                    ml: "auto",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    color: terminal.status === "manutencao" ? "warning.contrastText" : "default.contrastText",
-                  }}
+              <Can module="terminal" action="edit">
+                <Tooltip
+                  title={
+                    terminal.status === "manutencao"
+                      ? "Retirar de manutenção (volta como offline)"
+                      : "Colocar em manutenção"
+                  }
+                  arrow
                 >
-                  <ConfiguracoesIcon width={20} />
-                </IconButton>
-              </Tooltip>
-              <ActionCell
-                checked={terminal.ativo}
-                tooltipToggle="Ativar/Desativar terminal"
-                onToggle={() => handleToggle(terminal)}
-                tooltipEdit="Editar terminal"
-                onEdit={() => {
-                  setSelectedTerminal(terminal)
-                  setOpenEditTerminalModal(true)
-                }}
-              />
+                  <IconButton
+                    type="button"
+                    aria-label="Alternar manutenção"
+                    size="small"
+                    onClick={() => handleToggleManutencao(terminal)}
+                    sx={{
+                      ml: "auto",
+                      border: "1px solid",
+                      borderColor: "divider",
+                      borderRadius: 2,
+                      color: terminal.status === "manutencao" ? "warning.contrastText" : "default.contrastText",
+                    }}
+                  >
+                    <ConfiguracoesIcon width={20} />
+                  </IconButton>
+                </Tooltip>
+              </Can>
+              <Can module="terminal" action="edit">
+                <ActionCell
+                  checked={terminal.ativo}
+                  tooltipToggle="Ativar/Desativar terminal"
+                  onToggle={() => handleToggle(terminal)}
+                  tooltipEdit="Editar terminal"
+                  onEdit={() => {
+                    setSelectedTerminal(terminal)
+                    setOpenEditTerminalModal(true)
+                  }}
+                />
+              </Can>
             </Stack>
 
           </Stack>

@@ -25,6 +25,7 @@ import { formatDate } from "@/utils/formatDate";
 import { IProfilePermissionsItems } from "@/Interfaces/ProfilePermissions/profilePermissions";
 import Input from "@/components/FormControl/Input";
 import { getApiMessage } from "@/utils/apiMessage";
+import Can from "@/components/Can";
 
 const permissionKeys = ["visualizar", "criar", "editar", "excluir"] as const;
 type PermissionKey = (typeof permissionKeys)[number];
@@ -234,54 +235,14 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
             </Typography>
           </Box>
           <Stack direction={"row"} gap={1} marginLeft={"auto"}>
-            <Tooltip title="Adicionar Perfil ao cargo">
-              <span>
-                <IconButton
-                  aria-label="add-profile"
-                  size="small"
-                  disabled={isEditing || isDeleting}
-                  onClick={() => onAddProfile?.(profile)}
-                  sx={{
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    height: "fit-content",
-                    color: "text.secondary",
-                  }}
-                >
-                  <UserPlusIcon width={20} height={20} />
-                </IconButton>
-              </span>
-            </Tooltip>
-            {profile.editavel && (
-              <Tooltip title={isEditing ? "Cancelar edição" : "Editar cargo"}>
+            <Can module="cargo" action="assign">
+              <Tooltip title="Adicionar Perfil ao cargo">
                 <span>
                   <IconButton
-                    aria-label="edit"
-                    size="small"
-                    disabled={isSaving}
-                    onClick={isEditing ? handleCancelEditing : handleStartEditing}
-                    sx={{
-                      border: "1px solid",
-                      borderColor: isEditing ? "primary.main" : "divider",
-                      borderRadius: 2,
-                      height: "fit-content",
-                      color: isEditing ? "primary.main" : "text.secondary",
-                    }}
-                  >
-                    <EditIcon width={20} />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )}
-            {profile.excluivel && (
-              <Tooltip title="Excluir perfil">
-                <span>
-                  <IconButton
-                    aria-label="delete"
+                    aria-label="add-profile"
                     size="small"
                     disabled={isEditing || isDeleting}
-                    onClick={() => setOpenDeleteProfileModal(true)}
+                    onClick={() => onAddProfile?.(profile)}
                     sx={{
                       border: "1px solid",
                       borderColor: "divider",
@@ -290,10 +251,56 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
                       color: "text.secondary",
                     }}
                   >
-                    <TrashIcon width={20} color={theme.palette.error.contrastText} />
+                    <UserPlusIcon width={20} height={20} />
                   </IconButton>
                 </span>
               </Tooltip>
+            </Can>
+            {profile.editavel && (
+              <Can module="cargo" action="edit">
+                <Tooltip title={isEditing ? "Cancelar edição" : "Editar cargo"}>
+                  <span>
+                    <IconButton
+                      aria-label="edit"
+                      size="small"
+                      disabled={isSaving}
+                      onClick={isEditing ? handleCancelEditing : handleStartEditing}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: isEditing ? "primary.main" : "divider",
+                        borderRadius: 2,
+                        height: "fit-content",
+                        color: isEditing ? "primary.main" : "text.secondary",
+                      }}
+                    >
+                      <EditIcon width={20} />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Can>
+            )}
+            {profile.excluivel && (
+              <Can module="cargo" action="delete">
+                <Tooltip title="Excluir perfil">
+                  <span>
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      disabled={isEditing || isDeleting}
+                      onClick={() => setOpenDeleteProfileModal(true)}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        height: "fit-content",
+                        color: "text.secondary",
+                      }}
+                    >
+                      <TrashIcon width={20} color={theme.palette.error.contrastText} />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Can>
             )}
             <Tooltip title={isOpen ? "Recolher" : "Expandir"}>
               <span>

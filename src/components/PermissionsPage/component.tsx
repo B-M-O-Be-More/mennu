@@ -18,6 +18,7 @@ import {
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import { useToast } from "@/hooks/useToast/hook";
 import Toast from "../Toast";
+import Can from "@/components/Can";
 
 export function PermissionsPage({ }: PermissionsPageProps) {
   const { toast, showToast, closeToast } = useToast();
@@ -98,13 +99,15 @@ export function PermissionsPage({ }: PermissionsPageProps) {
         title="Gerenciar Perfis e Permissões"
         subtitle="Configure permissões granulares para cada perfil de usuário"
       >
-        <Button
-          variant="contained"
-          startIcon={<PlusIcon />}
-          onClick={() => setOpenCreateProfileModal(true)}
-        >
-          Novo Perfil
-        </Button>
+        <Can module="cargo" action="create">
+          <Button
+            variant="contained"
+            startIcon={<PlusIcon />}
+            onClick={() => setOpenCreateProfileModal(true)}
+          >
+            Novo Perfil
+          </Button>
+        </Can>
       </PageHeader>
 
       <Card>

@@ -10,6 +10,7 @@ import { PoliciesTabProps } from "./interface";
 import { editAccessPolicySchema, EditAccessPolicySchemaFormData } from "@/schemas/policySchema";
 import { UnitPolicyConfigApi } from "@/Interfaces/Settings/settings";
 import { settingsService } from "@/services/settingsService";
+import Can from "@/components/Can";
 
 function toFormValues(config: UnitPolicyConfigApi): EditAccessPolicySchemaFormData {
   return { permitirMultiplasRefeicoes: config.permitir_multiplas_refeicoes ?? true, horarioFlexivel: { permitido: config.horario_flexivel ?? false, horarioInicio: config.horario_flexivel_inicio?.slice(0, 5) ?? "07:00", horarioFim: config.horario_flexivel_fim?.slice(0, 5) ?? "19:00" }, reservaObrigatoria: config.reserva_obrigatoria ?? false };
@@ -61,6 +62,6 @@ export default function PoliciesTab({}: PoliciesTabProps) {
       <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Horário flexível</Typography><Typography variant="body2" color="text.secondary">Permitir acesso fora do horário padrão</Typography></Box><Controller name="horarioFlexivel.permitido" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
       <Collapse in={permitido}><Stack border="1px solid" borderColor="info.light" borderRadius={3} padding={2} gap={2} bgcolor="info.main"><Typography variant="body1" color="info.dark">Configurar Horário Flexível</Typography><Grid container spacing={2}><Grid size={{ xs: 12, md: 6 }}><Input label="Horário de Início" type="time" optional={false} register={register("horarioFlexivel.horarioInicio")} error={errors.horarioFlexivel?.horarioInicio?.message} disabled={disabled} /></Grid><Grid size={{ xs: 12, md: 6 }}><Input label="Horário de Fim" type="time" optional={false} register={register("horarioFlexivel.horarioFim")} error={errors.horarioFlexivel?.horarioFim?.message} disabled={disabled} /></Grid></Grid><Typography variant="body2" color="info.contrastText">O horário será permitido de <strong>{horarioInicio}</strong> até <strong>{horarioFim}</strong></Typography></Stack></Collapse>
       <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Reserva obrigatória</Typography><Typography variant="body2" color="text.secondary">Exigir reserva prévia para refeições</Typography></Box><Controller name="reservaObrigatoria" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
-    </Stack><Button variant="contained" sx={{ width: "fit-content", borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Políticas"}</Button></Box>
+    </Stack><Can permissions="unidade.edit.item" message="Você não tem permissão para editar as políticas desta unidade."><Button variant="contained" sx={{ width: "fit-content", borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Políticas"}</Button></Can></Box>
   </>;
 }
