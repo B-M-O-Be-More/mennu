@@ -16,6 +16,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import dayjs from "dayjs";
+import Can from "@/components/Can";
 import Card from "@/components/Cards/Card";
 import PageHeader from "@/components/PageHeader";
 import Input from "@/components/FormControl/Input";
@@ -86,6 +87,17 @@ function SummaryRow({
 }
 
 export default function StockAuditNormalizePage() {
+  return (
+    <Can
+      permissions="auditoriaestoque.normalizar.item"
+      message="Você não tem permissão para normalizar auditorias de estoque."
+    >
+      <StockAuditNormalizePageContent />
+    </Can>
+  );
+}
+
+function StockAuditNormalizePageContent() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const auditId = params?.id;
