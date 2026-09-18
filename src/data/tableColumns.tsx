@@ -1,6 +1,6 @@
 import { IColumn } from "@/components/Tables/Table";
 import { IExtraRequest } from "@/Interfaces/ExtraRequest/extraRequestColumns";
-import { IMovement } from "@/Interfaces/Movement/movement";
+import { IMovement, MovementTipo } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { ISaldoEstoqueItem, ISaldoEstoqueConsolidado } from "@/Interfaces/Stock/saldoEstoque";
 import { IUsuarioListItem } from "@/Interfaces/User/user";
@@ -121,18 +121,28 @@ const movementColumns: IColumn<IMovement>[] = [
     label: "Tipo",
     render: (row) => {
       const colorMap: Record<
-        IMovement["tipo"],
+        MovementTipo,
         "success" | "info" | "error" | "purple"
       > = {
         entrada: "success",
+        transferencia_entrada: "success",
         saida: "info",
+        transferencia_saida: "info",
         perda: "error",
-        ajuste: "purple",
+        inventario: "purple",
+      };
+      const labelMap: Record<MovementTipo, string> = {
+        entrada: "Entrada",
+        saida: "Saída",
+        perda: "Perda",
+        inventario: "Inventário",
+        transferencia_saida: "Transferência (saída)",
+        transferencia_entrada: "Transferência (entrada)",
       };
 
       return (
         <Chip
-          label={row.tipo}
+          label={labelMap[row.tipo] ?? row.tipo}
           color={colorMap[row.tipo]}
           size="small"
           sx={{ minWidth: "100px" }}

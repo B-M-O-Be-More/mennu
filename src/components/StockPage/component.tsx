@@ -27,7 +27,7 @@ import TransferStockModal from "../Modals/TransferStockModal";
 import { useForm } from "react-hook-form";
 import { IStock, IStockData } from "@/Interfaces/Stock/stock";
 import { mapApiSaldoEstoqueConsolidado } from "@/Interfaces/Stock/saldoEstoque";
-import { IMovement } from "@/Interfaces/Movement/movement";
+import { IMovement, mapApiMovement } from "@/Interfaces/Movement/movement";
 import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
@@ -142,7 +142,8 @@ export function StockPage({}: StockPageProps) {
         throw new Error(`Erro ${response.status}: ${errData.message}`);
       }
       const data = await response.json();
-      setMovementData(data.results ?? data);
+      const results = Array.isArray(data.results) ? data.results : Array.isArray(data) ? data : [];
+      setMovementData(results.map(mapApiMovement));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
