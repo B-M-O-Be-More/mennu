@@ -17,6 +17,7 @@ import Card from "../Cards/Card";
 import Table from "../Tables/Table";
 import { movementColumns, stockColumns } from "@/data/tableColumns";
 import Input from "../FormControl/Input";
+import Select from "../FormControl/Select";
 import IconBox from "../Cards/IconBox";
 import NewStockModal from "../Modals/NewStockModal";
 import ActionCell from "../ActionCell";
@@ -25,12 +26,15 @@ import NewMovementModal from "../Modals/NewMovementModal";
 import TransferStockModal from "../Modals/TransferStockModal";
 import { useForm } from "react-hook-form";
 import { IStock, IStockData } from "@/Interfaces/Stock/stock";
+import { mapApiSaldoEstoqueConsolidado } from "@/Interfaces/Stock/saldoEstoque";
 import { IMovement } from "@/Interfaces/Movement/movement";
 import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import TabButton from "../TabButton";
 import StockAuditPanel from "./StockAuditPanel";
 import StockBalancePanel from "./StockBalancePanel";
+import Can from "@/components/Can";
 import { useSearchParams } from "next/navigation";
 
 /** Sub-abas da aba "Movimentações" — Auditoria já vem selecionada. */
@@ -68,14 +72,16 @@ export function StockPage({}: StockPageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { register, watch } = useForm<{ itemSearch: string }>({
-    defaultValues: { itemSearch: "" },
+  const { register, watch, control } = useForm<{ itemSearch: string; unidade: string }>({
+    defaultValues: { itemSearch: "", unidade: "all" },
   });
+  const { unitOptions } = useUnitFilterOptions();
 
   const searchTerm = watch("itemSearch");
+  const unidadeFiltro = watch("unidade");
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  const loadStockData = async (search?: string) => {
+  const loadStockData = async (search?: string, unidadeId?: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -88,8 +94,31 @@ export function StockPage({}: StockPageProps) {
         throw new Error(`Erro ${response.status}: ${errData.message}`);
       }
       const data = await response.json();
+      let results: IStock[] = Array.isArray(data) ? data : (data.results ?? []);
+
+      // `quantidade_atual` do /insumo é o total agregado da empresa (soma de
+      // todas as unidades) — com uma unidade selecionada, sobrepõe pelo saldo
+      // real daquela unidade (/saldo-estoque/unidade/{id}). Insumo sem saldo
+      // ali é 0, não "—": a ausência de linha significa estoque zerado nessa
+      // unidade, não dado desconhecido.
+      if (unidadeId && unidadeId !== "all") {
+        const saldoResponse = await fetch(`/api/saldo-estoque/unidade/${unidadeId}`);
+        if (saldoResponse.ok) {
+          const saldoPayload = await saldoResponse.json();
+          const saldoMap = new Map(
+            (Array.isArray(saldoPayload) ? saldoPayload : [])
+              .map(mapApiSaldoEstoqueConsolidado)
+              .map((item) => [item.insumoId, item.quantidade]),
+          );
+          results = results.map((item) => ({
+            ...item,
+            quantidade_atual: saldoMap.get(item.id) ?? "0.00",
+          }));
+        }
+      }
+
       setStockData({
-        results: Array.isArray(data) ? data : (data.results ?? []),
+        results,
         resumo: data.resumo ?? {
           total_ativos: 0,
           itens_criticos: 0,
@@ -125,14 +154,14 @@ export function StockPage({}: StockPageProps) {
 
   useEffect(() => {
     if (openTab === 0) {
-      loadStockData(debouncedSearch);
+      loadStockData(debouncedSearch, unidadeFiltro);
       return;
     }
 
     if (openTab === 1 && movementTab === MOVEMENT_TABS.historico) {
       loadMovementData();
     }
-  }, [openTab, movementTab, debouncedSearch]);
+  }, [openTab, movementTab, debouncedSearch, unidadeFiltro]);
 
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
@@ -140,7 +169,7 @@ export function StockPage({}: StockPageProps) {
   };
 
   const handleSaveStock = () => {
-    loadStockData(debouncedSearch);
+    loadStockData(debouncedSearch, unidadeFiltro);
   };
 
   const handleToggleStock = async (stock: IStock, newState: boolean) => {
@@ -213,7 +242,7 @@ export function StockPage({}: StockPageProps) {
           variant="outlined"
           startIcon={<UpdateIcon />}
           onClick={() => {
-            if (openTab === 0) return loadStockData(debouncedSearch);
+            if (openTab === 0) return loadStockData(debouncedSearch, unidadeFiltro);
             if (openTab === 2) return setBalanceRefreshToken((token) => token + 1);
             if (isAuditTab) return setAuditRefreshToken((token) => token + 1);
             return loadMovementData();
@@ -253,17 +282,19 @@ export function StockPage({}: StockPageProps) {
         >
           Movimentações
         </Button>
-        <Button
-          variant={openTab === 2 ? "contained" : "outlined"}
-          startIcon={<TwistedArrowIcon width={22} height={22} />}
-          onClick={() => setOpenTab(2)}
-          sx={{
-            transition: "all .4s ease-in-out",
-            color: openTab !== 2 ? "#4A5565" : "",
-          }}
-        >
-          Saldo de Estoque
-        </Button>
+        <Can permissions="estoque.view.saldo">
+          <Button
+            variant={openTab === 2 ? "contained" : "outlined"}
+            startIcon={<TwistedArrowIcon width={22} height={22} />}
+            onClick={() => setOpenTab(2)}
+            sx={{
+              transition: "all .4s ease-in-out",
+              color: openTab !== 2 ? "#4A5565" : "",
+            }}
+          >
+            Saldo de Estoque
+          </Button>
+        </Can>
       </Stack>
 
       {openTab === 1 && (
@@ -381,7 +412,9 @@ export function StockPage({}: StockPageProps) {
       {isAuditTab ? (
         <StockAuditPanel refreshToken={auditRefreshToken} />
       ) : openTab === 2 ? (
-        <StockBalancePanel refreshToken={balanceRefreshToken} />
+        <Can permissions="estoque.view.saldo" message="Você não tem permissão para ver o saldo de estoque.">
+          <StockBalancePanel refreshToken={balanceRefreshToken} />
+        </Can>
       ) : (
         <Card>
           {openTab === 0 ? (
@@ -401,6 +434,14 @@ export function StockPage({}: StockPageProps) {
                     icon={<SearchIcon />}
                     register={register("itemSearch")}
                   />
+                  <Can permissions="estoque.view.saldo">
+                    <Select
+                      options={unitOptions}
+                      name="unidade"
+                      control={control}
+                      formControlSx={{ minWidth: "200px" }}
+                    />
+                  </Can>
                   <Button
                     variant="contained"
                     startIcon={<PlusIcon />}
@@ -417,11 +458,17 @@ export function StockPage({}: StockPageProps) {
                     open={openNewStockModal}
                     onClose={() => {
                       setOpenNewStockModal(false);
-                      loadStockData(debouncedSearch);
+                      loadStockData(debouncedSearch, unidadeFiltro);
                     }}
                   />
                 </Stack>
               </Stack>
+
+              {unidadeFiltro !== "all" && (
+                <Typography variant="body2" color="text.secondary">
+                  Quantidade da unidade selecionada. Os totais dos cards acima são da empresa inteira.
+                </Typography>
+              )}
 
               <Table
                 columns={stockColumns.map((col) =>
@@ -497,7 +544,7 @@ export function StockPage({}: StockPageProps) {
                   onClose={() => setOpenTransferStockModal(false)}
                   onSave={() => {
                     loadMovementData();
-                    loadStockData(debouncedSearch);
+                    loadStockData(debouncedSearch, unidadeFiltro);
                   }}
                 />
               </Stack>
