@@ -35,6 +35,7 @@ import {
   SearchIcon,
 } from "@/components/Icons";
 import { useToast } from "@/hooks/useToast/hook";
+import Can from "@/components/Can";
 import {
   IStockAuditDetail,
   IStockAuditDetailItem,
@@ -149,6 +150,17 @@ function PhotoThumb({ photo, index }: { photo: IStockAuditPhoto; index: number }
 }
 
 export default function StockAuditConferencePage() {
+  return (
+    <Can
+      permissions="auditoriaestoque.submit.item"
+      message="Você não tem permissão para conferir auditorias de estoque."
+    >
+      <StockAuditConferencePageContent />
+    </Can>
+  );
+}
+
+function StockAuditConferencePageContent() {
   const theme = useTheme();
   const router = useRouter();
   const params = useParams<{ id: string }>();
