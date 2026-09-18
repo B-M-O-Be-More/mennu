@@ -6,6 +6,7 @@ import React from "react";
 import { CSVIcon, DownloadIcon, FileIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
 import { cardsUsers } from "../../data/infos";
 import NewUserModal from "../Modals/NewUserModal";
+import EditUserModal from "../Modals/EditUserModal";
 import Card from "../Cards/Card";
 import Input from "../FormControl/Input";
 import IconBox from "../Cards/IconBox";
@@ -38,6 +39,7 @@ export function UsersPage({ }: UsersPageProps) {
   const { unitOptions } = useUnitFilterOptions();
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
+  const [editingUser, setEditingUser] = React.useState<IUsuarioListItem | null>(null);
 
   const [users, setUsers] = React.useState<IUsuarioListItem[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -222,6 +224,13 @@ export function UsersPage({ }: UsersPageProps) {
         onCreated={loadUsers}
       />
 
+      <EditUserModal
+        open={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        onUpdated={loadUsers}
+        user={editingUser}
+      />
+
       <Card>
         <Stack gap={2} direction={"row"}>
           <Input
@@ -292,6 +301,7 @@ export function UsersPage({ }: UsersPageProps) {
                     tooltipToggle="Ativar/Desativar usuário"
                     onToggle={(newState) => handleToggleUser(row, newState)}
                     tooltipEdit="Editar usuário"
+                    onEdit={() => setEditingUser(row)}
                   />
                 ),
               }

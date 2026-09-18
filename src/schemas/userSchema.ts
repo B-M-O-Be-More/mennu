@@ -64,3 +64,39 @@ export const createUserSchema = yup.object({
 });
 
 export type CreateUserSchemaFormData = yup.InferType<typeof createUserSchema>;
+
+export const editUserSchema = yup.object({
+  nome: yup
+    .string()
+    .required("O nome é obrigatório")
+    .min(3, "O nome deve ter pelo menos 3 caracteres"),
+
+  password: yup
+    .string()
+    .default("")
+    .test(
+      "password-min-length",
+      "A senha deve ter pelo menos 6 caracteres",
+      (value) => !value || value.length >= 6,
+    ),
+
+  numero_cartao: yup
+    .string()
+    .default("")
+    .test(
+      "numero-cartao-digits",
+      "O número do cartão deve conter apenas dígitos",
+      (value) => !value || /^\d+$/.test(value),
+    ),
+
+  email: yup
+    .string()
+    .default("")
+    .test(
+      "email-format",
+      "E-mail inválido",
+      (value) => !value || yup.string().email().isValidSync(value),
+    ),
+});
+
+export type EditUserSchemaFormData = yup.InferType<typeof editUserSchema>;
