@@ -39,7 +39,10 @@ export function useUnitFilterOptions() {
     setUnitsError(null);
 
     try {
-      const response = await fetch("/api/unidades");
+      // `/opcoes` só devolve {id, nome} e não exige `unidade.view.list` —
+      // cargo com permissão de ação (transferir estoque, criar auditoria)
+      // mas sem essa visão de rede também precisa popular este dropdown.
+      const response = await fetch("/api/unidades/opcoes");
 
       if (!response.ok) {
         const errData = await response
