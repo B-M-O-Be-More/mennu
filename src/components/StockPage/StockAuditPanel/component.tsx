@@ -275,8 +275,10 @@ export default function StockAuditPanel({
               );
             }
 
-            const opensDetails =
-              flow === "nutricionista" && statusKey !== "desconhecido";
+            // Chegar aqui já exclui auditor+rascunho (tratado acima), então
+            // isto cobre nutricionista em qualquer status e auditor fora do
+            // rascunho — ambos usam o mesmo modal de detalhes somente leitura.
+            const opensDetails = statusKey !== "desconhecido";
 
             if (opensDetails) {
               return (
