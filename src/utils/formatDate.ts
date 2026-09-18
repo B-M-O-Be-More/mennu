@@ -16,3 +16,15 @@ export function formatDate(date: Date, format: string): string {
     .replace("mm", mm)
     .replace("ss", ss);
 }
+
+/**
+ * Formata uma data-only ISO ("YYYY-MM-DD") sem passar por `new Date(string)` —
+ * essa forma interpreta a string como UTC e `date.getDate()` lê em horário
+ * local, podendo exibir o dia anterior em fusos negativos (ex. Brasil).
+ */
+export function formatDateOnly(value: string | null | undefined): string {
+  if (!value) return "—";
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return value;
+  return `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
+}

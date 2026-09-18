@@ -22,6 +22,7 @@ import NewStockModal from "../Modals/NewStockModal";
 import ActionCell from "../ActionCell";
 import EditStockModal from "../Modals/EditStockModal";
 import NewMovementModal from "../Modals/NewMovementModal";
+import TransferStockModal from "../Modals/TransferStockModal";
 import { useForm } from "react-hook-form";
 import { IStock, IStockData } from "@/Interfaces/Stock/stock";
 import { IMovement } from "@/Interfaces/Movement/movement";
@@ -29,13 +30,14 @@ import PageHeader from "../PageHeader";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import TabButton from "../TabButton";
 import StockAuditPanel from "./StockAuditPanel";
+import StockBalancePanel from "./StockBalancePanel";
 import { useSearchParams } from "next/navigation";
 
 /** Sub-abas da aba "Movimentações" — Auditoria já vem selecionada. */
 const MOVEMENT_TABS = { auditoria: 0, historico: 1 } as const;
 
 /** Abas principais da tela de estoque. */
-const MAIN_TABS = { estoque: 0, movimentacoes: 1 } as const;
+const MAIN_TABS = { estoque: 0, movimentacoes: 1, saldo: 2 } as const;
 
 export function StockPage({}: StockPageProps) {
   const searchParams = useSearchParams();
@@ -43,17 +45,19 @@ export function StockPage({}: StockPageProps) {
   // de normalização devolve o usuário depois de normalizar o estoque.
   const startsOnAudit = searchParams.get("tab") === "auditoria";
 
-  const [openTab, setOpenTab] = React.useState(
+  const [openTab, setOpenTab] = React.useState<typeof MAIN_TABS[keyof typeof MAIN_TABS]>(
     startsOnAudit ? MAIN_TABS.movimentacoes : MAIN_TABS.estoque,
   );
   const [movementTab, setMovementTab] = React.useState<number>(
     MOVEMENT_TABS.auditoria,
   );
   const [auditRefreshToken, setAuditRefreshToken] = React.useState(0);
+  const [balanceRefreshToken, setBalanceRefreshToken] = React.useState(0);
 
   const [openEditStockModal, setOpenEditStockModal] = React.useState(false);
   const [openNewStockModal, setOpenNewStockModal] = React.useState(false);
   const [openNewMovementModal, setOpenNewMovementModal] = React.useState(false);
+  const [openTransferStockModal, setOpenTransferStockModal] = React.useState(false);
 
   const [selectedStock, setSelectedStock] = React.useState<IStock | null>(null);
   const [stockData, setStockData] = useState<IStockData>({
@@ -63,8 +67,6 @@ export function StockPage({}: StockPageProps) {
   const [movementData, setMovementData] = useState<IMovement[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  console.log(stockData);
 
   const { register, watch } = useForm<{ itemSearch: string }>({
     defaultValues: { itemSearch: "" },
@@ -127,7 +129,7 @@ export function StockPage({}: StockPageProps) {
       return;
     }
 
-    if (movementTab === MOVEMENT_TABS.historico) {
+    if (openTab === 1 && movementTab === MOVEMENT_TABS.historico) {
       loadMovementData();
     }
   }, [openTab, movementTab, debouncedSearch]);
@@ -212,6 +214,7 @@ export function StockPage({}: StockPageProps) {
           startIcon={<UpdateIcon />}
           onClick={() => {
             if (openTab === 0) return loadStockData(debouncedSearch);
+            if (openTab === 2) return setBalanceRefreshToken((token) => token + 1);
             if (isAuditTab) return setAuditRefreshToken((token) => token + 1);
             return loadMovementData();
           }}
@@ -234,7 +237,7 @@ export function StockPage({}: StockPageProps) {
           onClick={() => setOpenTab(0)}
           sx={{
             transition: "all .4s ease-in-out",
-            color: openTab === 1 ? "#4A5565" : "",
+            color: openTab !== 0 ? "#4A5565" : "",
           }}
         >
           Itens de Estoque
@@ -245,10 +248,21 @@ export function StockPage({}: StockPageProps) {
           onClick={() => setOpenTab(1)}
           sx={{
             transition: "all .4s ease-in-out",
-            color: openTab === 0 ? "#4A5565" : "",
+            color: openTab !== 1 ? "#4A5565" : "",
           }}
         >
           Movimentações
+        </Button>
+        <Button
+          variant={openTab === 2 ? "contained" : "outlined"}
+          startIcon={<TwistedArrowIcon width={22} height={22} />}
+          onClick={() => setOpenTab(2)}
+          sx={{
+            transition: "all .4s ease-in-out",
+            color: openTab !== 2 ? "#4A5565" : "",
+          }}
+        >
+          Saldo de Estoque
         </Button>
       </Stack>
 
@@ -269,9 +283,9 @@ export function StockPage({}: StockPageProps) {
         </Stack>
       )}
 
-      {/* Os totalizadores de insumos não se aplicam à auditoria, que tem os
-          próprios cards de resumo. */}
-      {!isAuditTab && (
+      {/* Os totalizadores de insumos não se aplicam à auditoria nem ao saldo
+          por lote, que têm os próprios resumos. */}
+      {!isAuditTab && openTab !== 2 && (
         <Box
           display="grid"
           gap={2}
@@ -366,6 +380,8 @@ export function StockPage({}: StockPageProps) {
 
       {isAuditTab ? (
         <StockAuditPanel refreshToken={auditRefreshToken} />
+      ) : openTab === 2 ? (
+        <StockBalancePanel refreshToken={balanceRefreshToken} />
       ) : (
         <Card>
           {openTab === 0 ? (
@@ -454,18 +470,35 @@ export function StockPage({}: StockPageProps) {
                 alignItems="center"
               >
                 <Typography>Histórico de Movimentações</Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<PlusIcon />}
-                  onClick={() => setOpenNewMovementModal(true)}
-                  sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
-                >
-                  Nova Movimentação
-                </Button>
+                <Stack direction="row" gap={2}>
+                  <Button
+                    variant="contained"
+                    onClick={() => setOpenTransferStockModal(true)}
+                    sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
+                  >
+                    Transferir estoque
+                  </Button>
+                  <Button
+                    variant="contained"
+                    startIcon={<PlusIcon />}
+                    onClick={() => setOpenNewMovementModal(true)}
+                    sx={{ height: "50px", whiteSpace: "nowrap", paddingX: "2rem" }}
+                  >
+                    Nova Movimentação
+                  </Button>
+                </Stack>
                 <NewMovementModal
                   open={openNewMovementModal}
                   onClose={() => setOpenNewMovementModal(false)}
                   onSave={loadMovementData}
+                />
+                <TransferStockModal
+                  open={openTransferStockModal}
+                  onClose={() => setOpenTransferStockModal(false)}
+                  onSave={() => {
+                    loadMovementData();
+                    loadStockData(debouncedSearch);
+                  }}
                 />
               </Stack>
 
