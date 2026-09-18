@@ -2,6 +2,11 @@ import { IUser } from "@/Interfaces/User/user";
 import { IUserContext } from "@/Interfaces/User/context";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
 
+export interface ClearContextOptions {
+  /** Unidade definitivamente removida e que não pode voltar à seleção. */
+  removedUnitId?: number;
+}
+
 export interface UserContextProps {
   login: (params: LoginSchemaFormData) => Promise<IUser | null>;
   logout: () => Promise<void>;
@@ -21,10 +26,14 @@ export interface UserContextProps {
   activeContext: IUserContext | null;
   /** Seleção/troca de unidade em andamento. */
   isLoadingContext: boolean;
+  /** Atualização da lista de unidades acessíveis em andamento. */
+  isRefreshingContexts: boolean;
   /** Fixa a unidade ativa da sessão e segue para o dashboard. */
   selectContext: (context: IUserContext) => Promise<void>;
+  /** Reconsulta as unidades acessíveis sem exigir um novo login. */
+  refreshContexts: () => Promise<void>;
   /** Descarta a unidade ativa e volta para a tela de seleção. */
-  clearContext: () => Promise<void>;
+  clearContext: (options?: ClearContextOptions) => Promise<void>;
 }
 
 export interface UserProviderProps {

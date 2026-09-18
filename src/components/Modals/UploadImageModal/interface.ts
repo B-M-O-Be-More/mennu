@@ -4,5 +4,5 @@ export interface UploadImageModalProps {
   title: string;
   subtitle?: string;
   image: File | null;
-  onSave: (file: File) => void;
+  onSave: (file: File) => Promise<void>;
 }

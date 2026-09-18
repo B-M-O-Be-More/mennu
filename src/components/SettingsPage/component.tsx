@@ -7,7 +7,9 @@ import Card from "../Cards/Card";
 import { tabsSettings } from "@/data/infos";
 import PageHeader from "../PageHeader";
 export function SettingsPage({ }: SettingsPageProps) {
-  const [tab, setTab] = React.useState(0);
+  const [activeTabId, setActiveTabId] = React.useState(tabsSettings[0].id);
+  const activeTab =
+    tabsSettings.find((tabItem) => tabItem.id === activeTabId) ?? tabsSettings[0];
 
   return (
     <Stack gap={2} height={"100%"} maxHeight={"100%"}>
@@ -15,16 +17,33 @@ export function SettingsPage({ }: SettingsPageProps) {
         title="Configurações"
         subtitle="Gerencie as configurações do sistema"
       />
-      <Stack direction={"row"} gap={2} height={"100%"}>
-        <Card sx={{ flex: 0.3, minWidth: "200px", height: "100%" }} >
-          {tabsSettings.map((tabItem, index) => {
-            const color = index === tab ? "primary.main" : "#4A5565";
-            const backgroundColor = index === tab ? "#FFE9E3" : "transparent";
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        gap={2}
+        height={"100%"}
+        minWidth={0}
+      >
+        <Card
+          sx={{
+            flex: { xs: "none", md: 0.3 },
+            flexDirection: { xs: "row", md: "column" },
+            minWidth: { xs: 0, md: "200px" },
+            maxWidth: "100%",
+            height: { xs: "auto", md: "100%" },
+            overflowX: { xs: "auto", md: "visible" },
+            "& > button": { flexShrink: 0 },
+          }}
+        >
+          {tabsSettings.map((tabItem) => {
+            const selected = tabItem.id === activeTabId;
+            const color = selected ? "primary.main" : "#4A5565";
+            const backgroundColor = selected ? "#FFE9E3" : "transparent";
             return (
               <Button
-                key={index}
+                key={tabItem.id}
                 startIcon={tabItem.icon}
                 variant="text"
+                aria-pressed={selected}
                 sx={{
                   color,
                   backgroundColor,
@@ -36,15 +55,15 @@ export function SettingsPage({ }: SettingsPageProps) {
                   fontSize: 16,
                   fontWeight: 400
                 }}
-                onClick={() => setTab(index)}
+                onClick={() => setActiveTabId(tabItem.id)}
               >
                 {tabItem.label}
               </Button>
             );
           })}
         </Card>
-        <Card sx={{ flex: 1, height: "fit-content", padding: 2 }} >
-          {tabsSettings[tab].tabComponent}
+        <Card sx={{ flex: 1, minWidth: 0, height: "fit-content", padding: 2 }} >
+          {activeTab.tabComponent}
         </Card>
       </Stack>
     </Stack>

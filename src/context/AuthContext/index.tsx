@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { UserContextProps, UserProviderProps } from "./interface";
+import {
+  ClearContextOptions,
+  UserContextProps,
+  UserProviderProps,
+} from "./interface";
 import useFetch from "@/hooks/useFetch/hook";
 import { LoginSchemaFormData } from "@/schemas/loginSchema";
 import { useRouter } from "next/navigation";
@@ -19,6 +23,7 @@ import { UNIDADE_COOKIE, USER_DATA_COOKIE } from "@/utils/authCookies";
 import { getCookie, setCookie, removeCookie } from "../../utils/cookieUtils";
 import Toast from "@/components/Toast";
 import { AlertColor } from "@mui/material";
+import { authContextService } from "@/services/authContextService";
 
 const UserContext = React.createContext<UserContextProps>({
   isAuthenticated: false,
@@ -32,7 +37,9 @@ const UserContext = React.createContext<UserContextProps>({
   contexts: [],
   activeContext: null,
   isLoadingContext: false,
+  isRefreshingContexts: false,
   selectContext: async () => {},
+  refreshContexts: async () => {},
   clearContext: async () => {},
 });
 
@@ -102,7 +109,10 @@ const UserProvider: React.FC<UserProviderProps> = ({
   );
 
   const [isLoadingPages, setLoadingPages] = React.useState<boolean>(!serverUser);
+  const [isRefreshingContexts, setIsRefreshingContexts] = React.useState(false);
   const hasValidatedSessionRef = React.useRef(false);
+  const contextsRefreshRef = React.useRef<Promise<void> | null>(null);
+  const removedContextIdsRef = React.useRef(new Set<number>());
 
   const [toast, setToast] = React.useState<{
     open: boolean;
@@ -235,16 +245,64 @@ const UserProvider: React.FC<UserProviderProps> = ({
     [requestContext, router, showToast],
   );
 
-  /** "Trocar unidade": derruba o escopo atual sem encerrar a sessão. */
-  const clearContext = React.useCallback(async () => {
-    await requestContext("/api/auth/contexto", { method: "DELETE" }).catch(
-      () => {},
-    );
+  const refreshContexts = React.useCallback((): Promise<void> => {
+    if (contextsRefreshRef.current) return contextsRefreshRef.current;
 
+    setIsRefreshingContexts(true);
+    const refreshPromise = authContextService
+      .listContexts()
+      .then((freshContexts) => {
+        setSessionUser((currentUser) => ({
+          ...currentUser,
+          contextos: freshContexts.filter(
+            (contexto) =>
+              !removedContextIdsRef.current.has(contexto.unidade_id),
+          ),
+        }));
+      })
+      .catch(() => {
+        showToast(
+          "Não foi possível atualizar as unidades disponíveis. Tente novamente.",
+          "error",
+          6000,
+        );
+      })
+      .finally(() => {
+        contextsRefreshRef.current = null;
+        setIsRefreshingContexts(false);
+      });
+
+    contextsRefreshRef.current = refreshPromise;
+    return refreshPromise;
+  }, [showToast]);
+
+  /** "Trocar unidade": derruba o escopo atual sem encerrar a sessão. */
+  const clearContext = React.useCallback(async (options?: ClearContextOptions) => {
+    const removedUnitId = options?.removedUnitId;
+
+    if (removedUnitId !== undefined) {
+      removedContextIdsRef.current.add(removedUnitId);
+      setSessionUser((currentUser) => ({
+        ...currentUser,
+        contextos: getUserContexts(currentUser).filter(
+          (contexto) => contexto.unidade_id !== removedUnitId,
+        ),
+      }));
+    }
+
+    // Bloqueia as telas protegidas antes de qualquer chamada de rede.
     removeCookie(UNIDADE_COOKIE);
     setActiveUnidadeId(null);
-    router.push(SELECT_UNIT_ROUTE);
-  }, [requestContext, router]);
+    router.replace(SELECT_UNIT_ROUTE);
+
+    const cleanupRequest = requestContext("/api/auth/contexto", {
+      method: "DELETE",
+    }).catch(() => undefined);
+
+    const refreshRequest = refreshContexts();
+
+    await Promise.all([cleanupRequest, refreshRequest]);
+  }, [refreshContexts, requestContext, router]);
 
   const handleValidateToken = React.useCallback(async () => {
     const resp = await requestValidateToken(`/api/auth/ativo`, {
@@ -309,7 +367,9 @@ const UserProvider: React.FC<UserProviderProps> = ({
         contexts,
         activeContext,
         isLoadingContext,
+        isRefreshingContexts,
         selectContext,
+        refreshContexts,
         clearContext,
         handleValidateToken,
       }}

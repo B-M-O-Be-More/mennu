@@ -11,7 +11,12 @@ import { createTerminalSchema, CreateTerminalSchemaFormData } from "@/schemas/te
 import Card from "@/components/Cards/Card";
 import { AlertIcon, CopyIcon } from "@/components/Icons";
 import React from "react";
-import { CATEGORIA_USUARIO_OPTIONS, TERMINAL_TIPO_OPTIONS } from "@/Interfaces/Terminal/terminal";
+import {
+  CATEGORIA_USUARIO_OPTIONS,
+  ITerminalCreationResponseApi,
+  TERMINAL_TIPO_OPTIONS,
+} from "@/Interfaces/Terminal/terminal";
+import { getApiMessage } from "@/utils/apiMessage";
 
 interface IUnidadeOption {
   id: number;
@@ -22,6 +27,70 @@ interface ITipoRefeicaoOption {
   id: number;
   nome: string;
   unidade: { id: number; nome: string };
+}
+
+type CreatedTerminalCredentials = {
+  serviceToken: string;
+  terminalUid: string;
+};
+
+type CopiedCredential = {
+  token: boolean;
+  uid: boolean;
+};
+
+function isTerminalCreationResponse(
+  payload: unknown,
+): payload is ITerminalCreationResponseApi {
+  if (!payload || typeof payload !== "object") return false;
+
+  const response = payload as {
+    service_token?: unknown;
+    terminal?: { uid?: unknown };
+  };
+
+  return (
+    typeof response.service_token === "string" &&
+    response.service_token.length > 0 &&
+    typeof response.terminal?.uid === "string" &&
+    response.terminal.uid.length > 0
+  );
+}
+
+interface CredentialCopyBlockProps {
+  label: string;
+  value: string;
+  copyLabel: string;
+  copied: boolean;
+  onCopy: () => void;
+}
+
+function CredentialCopyBlock({
+  label,
+  value,
+  copyLabel,
+  copied,
+  onCopy,
+}: CredentialCopyBlockProps) {
+  return (
+    <Stack gap={1}>
+      <Typography variant="body2" fontWeight={500}>
+        {label}
+      </Typography>
+      <Card sx={{ wordBreak: "break-all" }}>
+        <Typography fontFamily="monospace" fontSize={14}>
+          {value}
+        </Typography>
+      </Card>
+      <Button
+        variant="outlined"
+        startIcon={<CopyIcon />}
+        onClick={onCopy}
+      >
+        {copied ? "Copiado!" : copyLabel}
+      </Button>
+    </Stack>
+  );
 }
 
 export default function NewTerminalModal({ open, onClose, onCreated }: NewTerminalModalProps) {
@@ -46,8 +115,12 @@ export default function NewTerminalModal({ open, onClose, onCreated }: NewTermin
   const [unidades, setUnidades] = React.useState<IUnidadeOption[]>([]);
   const [tiposRefeicao, setTiposRefeicao] = React.useState<ITipoRefeicaoOption[]>([]);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
-  const [createdToken, setCreatedToken] = React.useState<string | null>(null);
-  const [copied, setCopied] = React.useState(false);
+  const [createdCredentials, setCreatedCredentials] =
+    React.useState<CreatedTerminalCredentials | null>(null);
+  const [copied, setCopied] = React.useState<CopiedCredential>({
+    token: false,
+    uid: false,
+  });
 
   const selectedUnidadeId = watch("unidadeId");
 
@@ -55,8 +128,8 @@ export default function NewTerminalModal({ open, onClose, onCreated }: NewTermin
     if (!open) return;
 
     setSubmitError(null);
-    setCreatedToken(null);
-    setCopied(false);
+    setCreatedCredentials(null);
+    setCopied({ token: false, uid: false });
     reset({
       nome: "",
       unidadeId: "",
@@ -105,21 +178,33 @@ export default function NewTerminalModal({ open, onClose, onCreated }: NewTermin
         }),
       });
 
-      const result = await response.json();
+      const result: unknown = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(result.message || "Erro ao cadastrar terminal");
+        throw new Error(
+          getApiMessage(result, "Erro ao cadastrar terminal"),
+        );
       }
 
-      setCreatedToken(result.service_token);
+      if (!isTerminalCreationResponse(result)) {
+        throw new Error(
+          "O terminal foi cadastrado, mas a API não retornou o token e o UUID.",
+        );
+      }
+
+      setCreatedCredentials({
+        serviceToken: result.service_token,
+        terminalUid: result.terminal.uid,
+      });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Erro ao cadastrar terminal");
     }
   };
 
-  const handleCopyToken = () => {
-    if (!createdToken) return;
-    navigator.clipboard.writeText(createdToken).then(() => setCopied(true));
+  const handleCopy = (type: keyof CopiedCredential, value: string) => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied((current) => ({ ...current, [type]: true }));
+    });
   };
 
   const handleFinish = () => {
@@ -127,32 +212,35 @@ export default function NewTerminalModal({ open, onClose, onCreated }: NewTermin
     onClose();
   };
 
-  if (createdToken) {
+  if (createdCredentials) {
     return (
       <Modal open={open} onClose={handleFinish} title="Terminal cadastrado">
         <Stack gap={2}>
           <Alert severity="warning" icon={<AlertIcon />}>
-            Copie o token de serviço agora — ele não será exibido novamente. Configure-o no
+            Copie o token de serviço e o UUID do terminal agora — eles não serão exibidos novamente. Configure-os no
             <code> appsettings.json</code> do serviço do terminal.
           </Alert>
-          <Card sx={{ wordBreak: "break-all" }}>
-            <Typography fontFamily="monospace" fontSize={14}>
-              {createdToken}
-            </Typography>
-          </Card>
-          <Stack direction="row" gap={2}>
-            <Button
-              variant="outlined"
-              startIcon={<CopyIcon />}
-              sx={{ flex: 1 }}
-              onClick={handleCopyToken}
-            >
-              {copied ? "Copiado!" : "Copiar Token"}
-            </Button>
-            <Button variant="contained" sx={{ flex: 1 }} onClick={handleFinish}>
-              Concluir
-            </Button>
-          </Stack>
+          <CredentialCopyBlock
+            label="Token de serviço"
+            value={createdCredentials.serviceToken}
+            copyLabel="Copiar Token"
+            copied={copied.token}
+            onCopy={() =>
+              handleCopy("token", createdCredentials.serviceToken)
+            }
+          />
+          <CredentialCopyBlock
+            label="UUID do Terminal"
+            value={createdCredentials.terminalUid}
+            copyLabel="Copiar UUID"
+            copied={copied.uid}
+            onCopy={() =>
+              handleCopy("uid", createdCredentials.terminalUid)
+            }
+          />
+          <Button variant="contained" onClick={handleFinish}>
+            Concluir
+          </Button>
         </Stack>
       </Modal>
     );

@@ -18,5 +18,7 @@ export interface InputProps {
   disabled?: boolean;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-  mask?: string
+  mask?: string;
+  suffix?: React.ReactNode;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }

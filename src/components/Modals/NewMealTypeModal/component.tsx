@@ -16,17 +16,9 @@ import { mealValidations } from "@/data/meals";
 import TimePicker from "@/components/FormControl/TimePicker";
 import dayjs from "dayjs";
 import React from "react";
-
-interface CreateTipoRefeicaoPayload {
-  nome: string;
-  unidade_id: number;
-  horario_inicio: string;
-  horario_fim: string;
-  ordem?: number;
-  exige_pesagem?: boolean;
-  leitura_cartao?: boolean;
-  confirmacao_manual?: boolean;
-}
+import { TipoRefeicaoCreateApi } from "@/Interfaces/Meals/MealTypes";
+import { mealTypeService } from "@/services/mealTypeService";
+import { authContextService } from "@/services/authContextService";
 
 interface UnidadeApiItem {
   id?: number | null;
@@ -141,7 +133,7 @@ export function NewMealTypeModal({
         throw new Error("Preencha horário de início e horário de fim.");
       }
 
-      const payload: CreateTipoRefeicaoPayload = {
+      const payload: TipoRefeicaoCreateApi = {
         nome: data.typeName,
         unidade_id: unidadeId,
         horario_inicio: horarioInicio,
@@ -152,20 +144,8 @@ export function NewMealTypeModal({
         confirmacao_manual: data.validations?.includes("extra") ?? false,
       };
 
-      const response = await fetch("/api/tipo-refeicao", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errData = await response
-          .json()
-          .catch(() => ({ message: "Erro ao criar tipo de refeição" }));
-        throw new Error(errData.message ?? "Erro ao criar tipo de refeição");
-      }
+      const context = await authContextService.getContextForUnit(unidadeId);
+      await mealTypeService.createMealType(payload, context);
 
       onNotify?.("Tipo de refeição criado com sucesso", "success");
       onSuccess?.();

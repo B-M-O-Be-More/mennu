@@ -131,9 +131,12 @@ export function SelectUnitPage({}: SelectUnitPageProps) {
     activeContext,
     isLoadingPages,
     isLoadingContext,
+    isRefreshingContexts,
     selectContext,
+    refreshContexts,
     logout,
   } = useUser();
+  const hasRequestedContextsRef = React.useRef(false);
 
   // Uma única unidade já vem marcada — a confirmação continua explícita,
   // mas sem obrigar o clique na única opção possível.
@@ -142,7 +145,19 @@ export function SelectUnitPage({}: SelectUnitPageProps) {
   );
 
   React.useEffect(() => {
-    if (selectedUnidadeId !== null) return;
+    if (hasRequestedContextsRef.current) return;
+    hasRequestedContextsRef.current = true;
+    void refreshContexts();
+  }, [refreshContexts]);
+
+  React.useEffect(() => {
+    if (selectedUnidadeId !== null) {
+      const isStillAvailable = contexts.some(
+        (contexto) => contexto.unidade_id === selectedUnidadeId,
+      );
+      if (!isStillAvailable) setSelectedUnidadeId(null);
+      return;
+    }
     if (activeContext) {
       setSelectedUnidadeId(activeContext.unidade_id);
       return;
@@ -211,7 +226,7 @@ export function SelectUnitPage({}: SelectUnitPageProps) {
           </Typography>
         </Stack>
 
-        {isLoadingPages ? (
+        {isLoadingPages || isRefreshingContexts ? (
           <Stack alignItems="center" py={4} width="100%">
             <CircularProgress size={28} />
           </Stack>

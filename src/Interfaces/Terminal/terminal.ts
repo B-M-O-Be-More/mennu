@@ -31,6 +31,14 @@ export interface ITerminalTokenRotation {
   serviceToken: string;
 }
 
+/** Resposta bruta da API ao criar um terminal. */
+export interface ITerminalCreationResponseApi {
+  terminal: {
+    uid: string;
+  };
+  service_token: string;
+}
+
 export interface ITerminalAccessResult {
   authorized: boolean;
   message: string;

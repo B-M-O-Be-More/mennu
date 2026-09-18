@@ -2,50 +2,23 @@
 
 import Card from "@/components/Cards/Card";
 import EmptyState from "@/components/EmptyState";
-import { MealTypeResponse, ValidationProps } from "@/Interfaces/Meals/MealTypes";
+import {
+  MealTypeResponse,
+  TipoRefeicaoApi,
+  ValidationProps,
+} from "@/Interfaces/Meals/MealTypes";
 import { MealTypesTabProps } from "./interface";
 import MealTypeCard from "../../../Cards/MealTypeCard";
 import { Alert, Stack, Typography } from "@mui/material";
 import { mealValidations } from "@/data/meals";
 import React from "react";
-
-interface ApiMealType {
-  id: number;
-  nome: string;
-  unidade?: {
-    id?: number | null;
-    nome: string;
-  } | null;
-  horario_inicio?: string;
-  horario_fim?: string;
-  exige_pesagem?: boolean;
-  leitura_cartao?: boolean;
-  confirmacao_manual?: boolean;
-  ativo?: boolean;
-}
-
-function normalizeMealTypes(payload: unknown): ApiMealType[] {
-  if (Array.isArray(payload)) return payload as ApiMealType[];
-
-  if (payload && typeof payload === "object") {
-    const root = payload as { results?: unknown; data?: unknown };
-
-    if (Array.isArray(root.results)) return root.results as ApiMealType[];
-
-    if (root.data && typeof root.data === "object") {
-      const data = root.data as { results?: unknown };
-      if (Array.isArray(data.results)) return data.results as ApiMealType[];
-    }
-  }
-
-  return [];
-}
+import { mealTypeService } from "@/services/mealTypeService";
 
 function getValidationById(id: string): ValidationProps | undefined {
   return mealValidations.find((validation) => validation.id === id);
 }
 
-function mapApiMealTypeToUi(mealType: ApiMealType): MealTypeResponse {
+function mapApiMealTypeToUi(mealType: TipoRefeicaoApi): MealTypeResponse {
   const validations: ValidationProps[] = [];
 
   if (mealType.exige_pesagem) {
@@ -63,14 +36,7 @@ function mapApiMealTypeToUi(mealType: ApiMealType): MealTypeResponse {
     if (extraValidation) validations.push(extraValidation);
   }
 
-  const units = mealType.unidade
-    ? [
-        {
-          id: String(mealType.unidade.id ?? mealType.id),
-          label: mealType.unidade.nome,
-        },
-      ]
-    : [];
+  const units = [{ id: String(mealType.unidade.id), label: mealType.unidade.nome }];
 
   const startTime = mealType.horario_inicio
     ? `1970-01-01T${mealType.horario_inicio}`
@@ -103,20 +69,7 @@ export function MealTypesTab({ refreshKey = 0, onNotify }: MealTypesTabProps) {
     setError(null);
 
     try {
-      const response = await fetch("/api/tipo-refeicao");
-
-      if (!response.ok) {
-        const errData = await response
-          .json()
-          .catch(() => ({ message: "Erro ao carregar tipos de refeição" }));
-        throw new Error(errData.message ?? "Erro ao carregar tipos de refeição");
-      }
-
-      const payload = await response.json();
-      const rawTypes = normalizeMealTypes(payload);
-      const mappedTypes = rawTypes.map(mapApiMealTypeToUi);
-
-      setMealTypes(mappedTypes);
+      setMealTypes((await mealTypeService.listMealTypes()).map(mapApiMealTypeToUi));
     } catch (err) {
       setError(
         err instanceof Error

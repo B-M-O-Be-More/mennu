@@ -1,203 +1,265 @@
-import { Stack, Typography, Button, useTheme } from "@mui/material";
-import Modal from "../Modal";
-import Input from "@/components/FormControl/Input";
-import { UnitPoliciesModalProps } from "./";
-import { useForm } from "react-hook-form";
+"use client";
+
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { createPolicySchema, CreatePolicySchemaFormData } from "@/schemas/unitSchema";
+import React from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
-import { CircledCheckIcon } from "@/components/Icons";
+import Toast from "@/components/Toast";
+import { IUserContext } from "@/Interfaces/User/context";
+import { UnitPolicyConfigApi, UnitPoliciesFormValues } from "@/Interfaces/Settings/settings";
+import { useToast } from "@/hooks/useToast/hook";
+import { createPolicySchema } from "@/schemas/unitSchema";
+import { authContextService } from "@/services/authContextService";
+import { mealTypeService } from "@/services/mealTypeService";
+import { settingsService } from "@/services/settingsService";
+import { inputTimeToApi } from "@/utils/timeRangeAdapter";
+import {
+  getMealTimeSnapshot,
+  mergeDynamicUnitPolicies,
+  toUnitPoliciesForm,
+} from "@/utils/unitPoliciesUtils";
+import Modal from "../Modal";
+import { UnitPoliciesModalProps } from ".";
+import ConsumptionLimitsSection from "./ConsumptionLimitsSection";
+import MealScheduleSection from "./MealScheduleSection";
+
+const EMPTY_FORM: UnitPoliciesFormValues = {
+  tiposRefeicao: [],
+  limites: { diario: 0, semanal: 0, mensal: 0 },
+};
 
 export default function UnitPoliciesModal({
   open,
   onClose,
   unitItem,
-  onSave,
+  onSaved,
 }: UnitPoliciesModalProps) {
-  const theme = useTheme();
-
-  const { register,
+  const { toast, showToast, closeToast } = useToast();
+  const {
+    control,
+    register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<CreatePolicySchemaFormData>(
-    {
-      resolver:
-        yupResolver(createPolicySchema),
-      defaultValues: unitItem?.politicas ||
-      {
-        horarios:
-        {
-          cafeManha: { inicio: "", fim: "" },
-          almoco: { inicio: "", fim: "" },
-          jantar: { inicio: "", fim: "" },
-        },
-        limites: { diario: 0, semanal: 0, mensal: 0 },
-      },
-    });
+  } = useForm<UnitPoliciesFormValues>({
+    resolver: yupResolver(createPolicySchema),
+    defaultValues: EMPTY_FORM,
+  });
+  const { fields, append } = useFieldArray({ control, name: "tiposRefeicao" });
+  const [currentPolicies, setCurrentPolicies] = React.useState<UnitPolicyConfigApi>({});
+  const [requestContext, setRequestContext] = React.useState<IUserContext | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
+  const mealTimeSnapshot = React.useRef(
+    new Map<number, { horarioInicio: string; horarioFim: string }>(),
+  );
+  const loadRequest = React.useRef(0);
 
-  const onSubmit = (data: CreatePolicySchemaFormData) => {
-    console.log("Políticas atualizadas:", data);
-    const updatedUnit = { ...unitItem, politicas: data };
+  const loadData = React.useCallback(async (unitId: number, clearError = true) => {
+    const requestId = ++loadRequest.current;
+    setIsLoading(true);
+    setRequestContext(null);
+    if (clearError) setError(null);
 
-    onSave(updatedUnit);
+    try {
+      const context = await authContextService.getContextForUnit(unitId);
+      const [policies, allMealTypes] = await Promise.all([
+        settingsService.getUnitPolicies(unitId, context),
+        mealTypeService.listMealTypes(200, context),
+      ]);
+      if (requestId !== loadRequest.current) return;
+
+      const unitMealTypes = allMealTypes
+        .filter((mealType) => Number(mealType.unidade?.id) === unitId)
+        .sort((left, right) => left.ordem - right.ordem);
+
+      setCurrentPolicies(policies);
+      setRequestContext(context);
+      mealTimeSnapshot.current = getMealTimeSnapshot(unitMealTypes);
+      reset(toUnitPoliciesForm(policies, unitMealTypes));
+    } catch (loadError) {
+      if (requestId === loadRequest.current) {
+        setError(loadError instanceof Error ? loadError.message : "Erro ao carregar políticas");
+      }
+    } finally {
+      if (requestId === loadRequest.current) setIsLoading(false);
+    }
+  }, [reset]);
+
+  React.useEffect(() => {
+    if (!open || !unitItem) return;
+    void loadData(unitItem.id);
+
+    return () => {
+      loadRequest.current += 1;
+    };
+  }, [loadData, open, unitItem]);
+
+  const handleClose = () => {
+    if (isSaving) return;
+    loadRequest.current += 1;
+    setError(null);
+    setRequestContext(null);
+    reset(EMPTY_FORM);
     onClose();
   };
 
+  const handleAddMeal = () => {
+    const nextOrder = fields.reduce((highest, meal) => Math.max(highest, meal.ordem), -1) + 1;
+    append({
+      tipoRefeicaoId: null,
+      nome: "",
+      horarioInicio: "",
+      horarioFim: "",
+      ordem: nextOrder,
+      isNew: true,
+    });
+  };
+
+  const reconcileAfterFailure = async (unitId: number, message: string) => {
+    await loadData(unitId, false);
+    setError(message);
+  };
+
+  const onSubmit = async (data: UnitPoliciesFormValues) => {
+    if (!unitItem) return;
+    setError(null);
+    setIsSaving(true);
+
+    try {
+      if (!requestContext || requestContext.unidade_id !== unitItem.id) {
+        throw new Error("O contexto desta unidade precisa ser recarregado antes de salvar.");
+      }
+
+      const newMeals = data.tiposRefeicao.filter((meal) => meal.isNew);
+      for (const meal of newMeals) {
+        await mealTypeService.createMealType({
+          nome: meal.nome.trim(),
+          unidade_id: unitItem.id,
+          horario_inicio: inputTimeToApi(meal.horarioInicio),
+          horario_fim: inputTimeToApi(meal.horarioFim),
+          ordem: meal.ordem,
+          exige_pesagem: false,
+          leitura_cartao: false,
+          confirmacao_manual: false,
+        }, requestContext);
+      }
+
+      const changedMeals = data.tiposRefeicao.filter((meal) => {
+        if (meal.isNew || meal.tipoRefeicaoId === null) return false;
+        const initial = mealTimeSnapshot.current.get(meal.tipoRefeicaoId);
+        return initial?.horarioInicio !== meal.horarioInicio
+          || initial?.horarioFim !== meal.horarioFim;
+      });
+
+      await Promise.all(changedMeals.map((meal) =>
+        mealTypeService.updateMealType(
+          meal.tipoRefeicaoId as number,
+          {
+            horario_inicio: inputTimeToApi(meal.horarioInicio),
+            horario_fim: inputTimeToApi(meal.horarioFim),
+          },
+          requestContext,
+        ),
+      ));
+
+      await settingsService.updateUnitPolicies(
+        unitItem.id,
+        mergeDynamicUnitPolicies(currentPolicies, data),
+        requestContext,
+      );
+      await onSaved();
+      showToast("Políticas salvas e propagadas com sucesso", "success");
+      onClose();
+    } catch (saveError) {
+      const message = saveError instanceof Error ? saveError.message : "Erro ao salvar políticas";
+      await reconcileAfterFailure(unitItem.id, message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const disabled = isLoading || isSaving;
+  const hasPendingMeal = fields.some((meal) => meal.isNew);
+
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title="Políticas da Unidade"
-      subtitle={unitItem?.nome}
-      dialogSx={{ maxWidth: "md" }}
-    >
-      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={2} border="1px solid" borderColor="divider" padding={2} borderRadius={2}>
-          <Typography variant="h6" fontWeight={"400"}>Horários por Refeição</Typography>
-          <Stack
-            direction="row"
-            spacing={2}
-            bgcolor={"#F9FAFB"}
-            padding={2}
-            borderRadius={2}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Typography whiteSpace={"nowrap"}>Café da Manhã</Typography>
-            <Stack paddingX={3} minWidth={"300px"} direction="row" gap={2} width={"80%"}>
-              <Input
-                label="Início"
-                placeholder="HH:mm"
-                register={register("horarios.cafeManha.inicio")}
-                error={errors.horarios?.cafeManha?.inicio?.message}
-              />
-
-              <Input
-                label="Fim"
-                placeholder="HH:mm"
-                register={register("horarios.cafeManha.fim")}
-                error={errors.horarios?.cafeManha?.fim?.message}
-              />
-            </Stack>
+    <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        title="Políticas da Unidade"
+        subtitle={unitItem?.nome}
+        maxWidth="md"
+        dialogSx={{
+          width: "calc(100% - 32px)",
+          maxWidth: "1000px",
+          maxHeight: "calc(100% - 32px)",
+          borderRadius: 4,
+          "& .MuiDialogTitle-root": { px: 3, pt: 3, pb: 2 },
+          "& .MuiDialogContent-root": { p: 3 },
+        }}
+      >
+        {isLoading && fields.length === 0 ? (
+          <Stack alignItems="center" justifyContent="center" minHeight={320} gap={2}>
+            <CircularProgress size={32} />
+            <Typography color="text.secondary">Carregando políticas...</Typography>
           </Stack>
-          <Stack
-            direction="row"
-            spacing={2}
-            bgcolor={"#F9FAFB"}
-            padding={2}
-            borderRadius={2}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Typography whiteSpace={"nowrap"}>Almoço</Typography>
-            <Stack paddingX={3} minWidth={"300px"} direction="row" gap={2} width={"80%"}>
-              <Input
-                label="Início"
-                placeholder="HH:mm"
-                register={register("horarios.almoco.inicio")}
-                error={errors.horarios?.almoco?.inicio?.message}
-              />
+        ) : (
+          <Stack gap={2.25} component="form" onSubmit={handleSubmit(onSubmit)}>
+            {error && <Alert severity="error">{error}</Alert>}
 
-              <Input
-                label="Fim"
-                placeholder="HH:mm"
-                register={register("horarios.almoco.fim")}
-                error={errors.horarios?.almoco?.fim?.message}
-              />
-            </Stack>
-          </Stack>
-
-          <Stack
-            direction="row"
-            spacing={2}
-            bgcolor={"#F9FAFB"}
-            padding={2}
-            borderRadius={2}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <Typography whiteSpace={"nowrap"}>Jantar</Typography>
-            <Stack paddingX={3} minWidth={"300px"} direction="row" gap={2} width={"80%"}>
-              <Input
-                label="Início"
-                placeholder="HH:mm"
-                register={register("horarios.jantar.inicio")}
-                error={errors.horarios?.jantar?.inicio?.message}
-              />
-
-              <Input
-                label="Fim"
-                placeholder="HH:mm"
-                register={register("horarios.jantar.fim")}
-                error={errors.horarios?.jantar?.fim?.message}
-              />
-            </Stack>
-          </Stack>
-
-        </Stack>
-
-        <Stack gap={2} border="1px solid" borderColor="divider" padding={2} borderRadius={2}>
-          <Typography variant="h6" fontWeight={"400"}>Limites de Consumo</Typography>
-
-          <Stack direction="row" spacing={2}>
-            <Input
-              label="Limite Diário"
-              placeholder="0"
-              register={register("limites.diario")}
-              error={errors.limites?.diario?.message}
+            <MealScheduleSection
+              fields={fields}
+              register={register}
+              errors={errors}
+              disabled={disabled}
+              hasPendingMeal={hasPendingMeal}
+              onAddMeal={handleAddMeal}
             />
 
-            <Input
-              label="Limite Semanal"
-              placeholder="0"
-              register={register("limites.semanal")}
-              error={errors.limites?.semanal?.message}
+            <ConsumptionLimitsSection register={register} errors={errors} disabled={disabled} />
+
+            <ClosableAlertBox
+              severity="info"
+              icon={<InfoOutlinedIcon />}
+              title="Propagação Automática"
+              description="Todas as políticas definidas aqui serão automaticamente aplicadas aos terminais vinculados a esta unidade. Os terminais receberão as atualizações na próxima sincronização."
             />
 
-            <Input
-              label="Limite Mensal"
-              placeholder="0"
-              register={register("limites.mensal")}
-              error={errors.limites?.mensal?.message}
-            />
+            <Box sx={{ borderTop: "1px solid", borderColor: "divider", pt: 2 }}>
+              <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  sx={{ flex: 1, minHeight: 56 }}
+                  onClick={handleClose}
+                  disabled={disabled}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ flex: 1, minHeight: 56 }}
+                  disabled={disabled}
+                >
+                  {isSaving ? "Salvando..." : "Salvar e Propagar"}
+                </Button>
+              </Stack>
+            </Box>
           </Stack>
-        </Stack>
-
-        <ClosableAlertBox
-          severity="info"
-          icon={
-            <CircledCheckIcon color={theme.palette.info.contrastText} />
-          }
-          title="Propagação Automática"
-          description="Todas as políticas definidas aqui serão automaticamente aplicadas aos terminais vinculados a esta unidade. Os terminais receberão as atualizações na próxima sincronização."
-        />
-
-        <Stack direction="row" gap={2}>
-          <Button
-            variant="outlined"
-            sx={{
-              flex: 1,
-              fontSize: "1.2rem",
-              border: "1px solid",
-              borderColor: "divider",
-              color: "text.secondary",
-            }}
-            onClick={onClose}
-          >
-            Cancelar
-          </Button>
-          <Button
-            sx={{
-              flex: 1,
-              fontSize: "1.2rem",
-            }}
-            variant="contained"
-            type="submit"
-          >
-            Salvar Alterações
-          </Button>
-        </Stack>
-      </Stack>
-    </Modal>
+        )}
+      </Modal>
+      <Toast
+        open={toast.open}
+        message={toast.message}
+        severity={toast.severity}
+        autoHideDuration={toast.duration}
+        onClose={closeToast}
+      />
+    </>
   );
 }
