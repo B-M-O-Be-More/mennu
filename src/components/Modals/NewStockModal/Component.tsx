@@ -58,6 +58,18 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
         });
 
         if (!response.ok) {
+          // 403 aqui não é falha: cargo de unidade não tem
+          // `unidade.view.list` (só enxerga a própria unidade), e o campo
+          // Unidade é opcional — o backend resolve pelo contexto sozinho.
+          // Não é erro pra alarmar quem só pode cadastrar na própria escola.
+          if (response.status === 403) {
+            if (!isCancelled) {
+              setUnidades([]);
+              setUnidadesError(null);
+            }
+            return;
+          }
+
           throw new Error(
             response.status === 401
               ? "Sessão expirada. Faça login novamente."
