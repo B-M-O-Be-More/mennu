@@ -2,8 +2,8 @@ import * as yup from "yup";
 
 export const createMovementSchema = yup.object({
   tipo: yup
-    .mixed<"entrada" | "saida" | "perda" | "ajuste">()
-    .oneOf(["entrada", "saida", "perda", "ajuste"], "Tipo inválido")
+    .mixed<"entrada" | "saida" | "perda" | "inventario">()
+    .oneOf(["entrada", "saida", "perda", "inventario"], "Tipo inválido")
     .required("Tipo é obrigatório"),
   item: yup
     .string()
@@ -21,7 +21,7 @@ export const createMovementSchema = yup.object({
     .string()
     .default("")
     .when("tipo", {
-      is: (val: string) => val === "perda" || val === "ajuste",
+      is: (val: string) => val === "perda" || val === "inventario",
       then: schema => schema.required("Justificativa obrigatória para perdas e ajustes"),
       otherwise: schema => schema.notRequired(),
     }),

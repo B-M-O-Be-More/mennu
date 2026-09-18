@@ -13,10 +13,10 @@ import { useInsumoOptions } from "@/hooks/useInsumoOptions/hook";
 import { useState } from "react";
 
 const movementTypeItems = [
-  { id: 0, label: "Entrada", icon: <ArrowIcon style={{ transform: "rotate(90deg)" }} width={16} height={16} color="#00A63E" /> },
-  { id: 1, label: "Saída", icon: <ArrowIcon style={{ transform: "rotate(-90deg)" }} width={16} height={16} color="#155DFC" /> },
-  { id: 2, label: "Perda", icon: <TrashIcon width={16} height={16} color="#E7000B" /> },
-  { id: 3, label: "Ajuste", icon: <EditIcon width={16} height={16} color="#9810FA" /> },
+  { id: 0, label: "Entrada", value: "entrada", icon: <ArrowIcon style={{ transform: "rotate(90deg)" }} width={16} height={16} color="#00A63E" /> },
+  { id: 1, label: "Saída", value: "saida", icon: <ArrowIcon style={{ transform: "rotate(-90deg)" }} width={16} height={16} color="#155DFC" /> },
+  { id: 2, label: "Perda", value: "perda", icon: <TrashIcon width={16} height={16} color="#E7000B" /> },
+  { id: 3, label: "Ajuste", value: "inventario", icon: <EditIcon width={16} height={16} color="#9810FA" /> },
 ];
 
 export default function NewMovementModal({ open, onClose, onSave }: NewMovementModalProps) {
@@ -116,8 +116,8 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
                   cursor: "pointer",
                   transition: "all 0.2s ease-in-out",
                   border: "2px solid",
-                  borderColor: selectedTipo === item.label.toLowerCase() ? "primary.main" : "divider",
-                  backgroundColor: selectedTipo === item.label.toLowerCase() ? "#FFE9E3" : "",
+                  borderColor: selectedTipo === item.value ? "primary.main" : "divider",
+                  backgroundColor: selectedTipo === item.value ? "#FFE9E3" : "",
                   "&:hover":
                   {
                     boxShadow: 3,
@@ -127,7 +127,7 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
                 onClick={() =>
                   setValue(
                     "tipo",
-                    item.label.toLowerCase() as "entrada" | "saida" | "perda" | "ajuste"
+                    item.value as "entrada" | "saida" | "perda" | "inventario"
                   )
                 }
               >
@@ -171,7 +171,7 @@ export default function NewMovementModal({ open, onClose, onSave }: NewMovementM
           <Input
             label="Justificativa"
             placeholder="Descreva o motivo da perda ou ajuste..."
-            optional={selectedTipo === "perda" || selectedTipo === "ajuste" ? false : true}
+            optional={selectedTipo === "perda" || selectedTipo === "inventario" ? false : true}
             sx={{ flex: 1 }}
             register={register("justificativa")}
             error={errors.justificativa?.message}
