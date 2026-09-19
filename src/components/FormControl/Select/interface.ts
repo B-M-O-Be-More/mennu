@@ -22,4 +22,5 @@ export interface SelectGProps {
   name?: string;
   control?: Control<any>;
   register?: UseFormRegisterReturn;
+  size?: "small" | "medium";
 }

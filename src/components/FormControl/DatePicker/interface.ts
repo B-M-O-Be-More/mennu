@@ -7,4 +7,6 @@ export interface DatePickerProps {
   control?: Control<any>;
   minDate?: Dayjs;
   maxDate?: Dayjs;
+  size?: "small" | "medium";
+  labelPosition?: "top" | "bottom";
 }

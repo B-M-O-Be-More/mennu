@@ -47,6 +47,7 @@ export default function SelectG({
   name,
   control,
   register,
+  size = "medium",
 }: SelectGProps) {
   const startAdornment = icon ? (
     <InputAdornment position="start">{icon}</InputAdornment>
@@ -63,6 +64,7 @@ export default function SelectG({
         disabled={disabled}
         displayEmpty
         error={!!error}
+        size={size}
         startAdornment={startAdornment}
         MenuProps={{
           disableScrollLock: true,

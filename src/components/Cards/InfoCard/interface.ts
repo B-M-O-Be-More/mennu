@@ -3,5 +3,5 @@ export interface InfoCardProps {
   icon: React.ReactNode;
   bgColor?: string;
   label: string;
-  value: number;
+  value: number | string;
 }
