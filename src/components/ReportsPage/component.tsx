@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
 import PageHeader from "../PageHeader";
 import Card from "../Cards/Card";
 import IconBox from "../Cards/IconBox";
@@ -46,16 +46,23 @@ export function ReportsPage() {
 
   return (
     <Stack gap={2}>
-      <PageHeader
-        title="Relatórios"
-        subtitle={selectedCard ? selectedCard.titulo : "Relatórios disponíveis para o seu plano"}
-      >
+      <Stack direction="row" alignItems="flex-start" gap={1}>
         {selectedSlug && (
-          <Button variant="outlined" startIcon={<ArrowIcon style={{ transform: "rotate(180deg)" }} />} onClick={() => setSelectedSlug(null)}>
-            Voltar
-          </Button>
+          <IconButton
+            aria-label="Voltar para Relatórios"
+            onClick={() => setSelectedSlug(null)}
+            sx={{ ml: -1, mt: 0.5, color: "text.primary" }}
+          >
+            <ArrowIcon style={{ transform: "rotate(180deg)" }} width={24} height={24} />
+          </IconButton>
         )}
-      </PageHeader>
+        <Box flex={1} minWidth={0}>
+          <PageHeader
+            title={selectedCard ? selectedCard.titulo : "Relatórios"}
+            subtitle={selectedCard ? selectedCard.descricao : "Relatórios disponíveis para o seu plano"}
+          />
+        </Box>
+      </Stack>
 
       {!selectedSlug ? (
         <Box display="grid" gap={2} gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }}>
