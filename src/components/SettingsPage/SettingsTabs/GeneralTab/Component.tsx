@@ -13,6 +13,9 @@ import { GeneralSettingsApi } from "@/Interfaces/Settings/settings";
 import { resolveLogoUrl, settingsService } from "@/services/settingsService";
 import { theme } from "@/theme/theme";
 import Can from "@/components/Can";
+import { usePushNotifications } from "@/hooks/usePushNotifications/hook";
+import { useToast } from "@/hooks/useToast/hook";
+import Toast from "@/components/Toast";
 
 function toFormValues(settings: GeneralSettingsApi): GeneralSettingsFormData {
   return { systemName: settings.nome_sistema, description: settings.descricao ?? "", emailNotifications: settings.notificacoes_email, maintenanceMode: settings.modo_manutencao, image: null };
@@ -65,6 +68,31 @@ export default function GeneralTab({}: GeneralTabProps) {
   const previewUrl = localPreview ?? logoUrl;
   const disabled = isLoading || isSaving;
 
+  const { permission, isRegistering, requestPermission } = usePushNotifications();
+  const { toast, showToast, closeToast } = useToast();
+
+  const browserPushLabel =
+    permission === "denied"
+      ? "Bloqueadas nas configurações do navegador."
+      : permission === "unsupported"
+        ? "Este navegador não suporta notificações."
+        : permission === "granted"
+          ? "Ativadas — você recebe avisos mesmo com o navegador fechado."
+          : "Ative para receber avisos mesmo com o navegador fechado.";
+
+  // `Notification.requestPermission()` com permissão já concedida resolve
+  // "granted" sem reabrir prompt — então isso também serve pra reenviar o
+  // token quando a permissão foi concedida mas o registro no Novu falhou.
+  async function handleTogglePush() {
+    if (permission === "denied" || permission === "unsupported") return;
+    const result = await requestPermission();
+    if (result.success) {
+      showToast("Notificações do navegador ativadas", "success");
+    } else {
+      showToast(result.message ?? "Não foi possível ativar as notificações", "error");
+    }
+  }
+
   return (
     <>
       <Typography variant="h6" fontWeight={400}>Configurações Gerais</Typography>
@@ -83,12 +111,41 @@ export default function GeneralTab({}: GeneralTabProps) {
           <Input label="Descrição" placeholder="Sistema de Gestão Inteligente de Refeições" optional={false} register={register("description")} error={errors.description?.message} multiline disabled={disabled} />
           <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Notificações por E-mail</Typography><Typography variant="body2" color="text.secondary">Receba notificações importantes por e-mail</Typography></Box><Controller name="emailNotifications" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
           <Divider sx={{ my: 1, borderColor: "grey.100" }} />
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Box>
+              <Typography fontWeight={400}>Notificações do Navegador</Typography>
+              <Typography variant="body2" color="text.secondary">{browserPushLabel}</Typography>
+              {permission === "granted" && (
+                <Button
+                  size="small"
+                  onClick={handleTogglePush}
+                  disabled={isRegistering}
+                  sx={{ textTransform: "none", px: 0, mt: 0.5 }}
+                >
+                  {isRegistering ? "Registrando…" : "Reenviar registro"}
+                </Button>
+              )}
+            </Box>
+            <Switch
+              checked={permission === "granted"}
+              disabled={isRegistering || permission === "denied" || permission === "unsupported"}
+              onChange={handleTogglePush}
+            />
+          </Stack>
+          <Divider sx={{ my: 1, borderColor: "grey.100" }} />
           <Stack direction="row" justifyContent="space-between" alignItems="center"><Box><Typography fontWeight={400}>Modo Manutenção</Typography><Typography variant="body2" color="text.secondary">Ativar modo de manutenção do sistema</Typography></Box><Controller name="maintenanceMode" control={control} render={({ field }) => <Switch {...field} checked={field.value} onChange={(event) => field.onChange(event.target.checked)} disabled={disabled} />} /></Stack>
         </Stack>
         <Can permissions="configuracao.edit.geral" message="Você não tem permissão para editar as configurações gerais.">
           <Button variant="contained" sx={{ borderRadius: 3, mt: 2 }} type="submit" disabled={disabled}>{isSaving ? "Salvando..." : "Salvar Alterações"}</Button>
         </Can>
       </Box>
+      <Toast
+        open={toast.open}
+        message={toast.message}
+        severity={toast.severity}
+        autoHideDuration={toast.duration}
+        onClose={closeToast}
+      />
     </>
   );
 }

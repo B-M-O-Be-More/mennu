@@ -23,6 +23,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "color-mode": "^0.1.0",
     "dayjs": "^1.11.19",
+    "firebase": "^12.19.0",
     "gsap": "^3.13.0",
     "i18next": "^25.6.1",
     "i18next-http-backend": "^3.0.2",
