@@ -3,6 +3,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { SidebarComponent } from "@/components/Sidebar";
+import { BottomNavComponent } from "@/components/BottomNav";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
 import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
@@ -51,6 +52,12 @@ export default function MainLayout({
     { id: "logs-auditoria", label: "Logs & Auditoria", icon: <LogsAuditoriaIcon />, path: "/admin/logs-auditoria", permissions: viewPermission("log") },
     { id: "configuracoes", label: "Configurações", icon: <ConfiguracoesIcon />, path: "/admin/configuracoes", permissions: viewPermission("configuracao") },
   ];
+
+  // Na BottomNav do celular só cabem 5 botões — 4 seções fixas + "Mais" com o
+  // resto (inclui a seção Admin). As mais usadas no dia a dia ficam fixas.
+  const MOBILE_PRIMARY_IDS = ["dashboard", "cardapios", "estoque", "refeicoes"];
+  const mobilePrimaryItems = menuItems.filter((item) => MOBILE_PRIMARY_IDS.includes(item.id));
+  const mobileMoreItems = menuItems.filter((item) => !MOBILE_PRIMARY_IDS.includes(item.id));
 
   // A seleção de unidade também exige sessão: entra na lista para herdar o
   // redirect de não autenticado.
@@ -175,6 +182,11 @@ export default function MainLayout({
           height: "100%",
           overflowY: "auto",
           p: shouldShowSidebar ? { xs: 1.5, sm: 2, md: 2.5, lg: 3 } : 0,
+          // Espaço extra embaixo no celular pra BottomNav fixa não cobrir o
+          // fim do conteúdo.
+          pb: shouldShowSidebar
+            ? { xs: "calc(64px + env(safe-area-inset-bottom) + 12px)", sm: 2, md: 2.5, lg: 3 }
+            : 0,
           backgroundColor: (theme) => theme.palette.background.default,
 
           "&::-webkit-scrollbar": {
@@ -188,6 +200,21 @@ export default function MainLayout({
         {!shouldBlockProtectedContent && children}
       </Box>
 
+      {shouldShowSidebar && (
+        <BottomNavComponent
+          primaryItems={mobilePrimaryItems}
+          moreItems={mobileMoreItems}
+          adminMenuItems={adminMenuItems}
+          showAdminSection={hasAdminAccess(user)}
+          user={sidebarUser}
+          onLogout={logout}
+          logoutIcon={<SairIcon />}
+          activeUnit={activeUnit}
+          onSwitchUnit={clearContext}
+          switchUnitIcon={<BuildingIcon />}
+          activePath={pathname}
+        />
+      )}
     </Box>
   );
 }

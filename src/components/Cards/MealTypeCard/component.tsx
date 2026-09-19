@@ -66,10 +66,10 @@ export function MealTypeCard({ type, onUpdated, onNotify }: MealTypeCardProps) {
   return (
     <Card
       variant="compact"
-      sx={{ padding: "1rem", maxWidth: { md: "49%" }, minWidth: "49%" }}>
+      sx={{ padding: "1rem", maxWidth: { md: "49%" }, minWidth: { xs: "100%", md: "49%" } }}>
       {deleteError && <Alert severity="error">{deleteError}</Alert>}
 
-      <Stack direction={"row"} justifyContent={"space-between"}>
+      <Stack direction={"row"} justifyContent={"space-between"} flexWrap="wrap" gap={1}>
         <Stack gap={2} direction={"row"}>
           <IconBox
             icon={<RefeicoesIcon color={theme.palette.primary.main} />}

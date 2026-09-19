@@ -173,7 +173,7 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
 
       <NewExtraRequestModal open={openNewExtraRequestModal} onClose={() => setOpenNewExtraRequestModal(false)} />
 
-      <Stack gap={2} direction={"row"}>
+      <Stack gap={2} direction={"row"} flexWrap="wrap">
         <Button
           variant={openTab === 0 ? "contained" : "outlined"}
           startIcon={<ClockIcon width={22} height={22} />}
@@ -225,7 +225,7 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
           <Typography >Filtros</Typography>
         </Stack>
 
-        <Stack gap={2} direction={"row"}>
+        <Stack gap={2} direction={{ xs: "column", lg: "row" }} flexWrap="wrap">
           <Input
             label="Buscar"
             placeholder="Nome, matrícula ou motivo..."
@@ -237,21 +237,21 @@ export function ExtraRequestsPage({ }: ExtraRequestsPageProps) {
             options={mockUsers}
             name="user"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
           <Select
             label="Unidade"
             options={mockUnidades}
             name="unit"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
           <Select
             label="Status"
             options={mockStatuses}
             name="status"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
         </Stack>
 

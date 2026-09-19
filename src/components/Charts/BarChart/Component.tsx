@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { Box } from "@mui/material";
 import { BarChartProps } from "./";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -22,6 +23,7 @@ export default function BarChart({ labels, datasets, title }: BarChartProps) {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -44,5 +46,20 @@ export default function BarChart({ labels, datasets, title }: BarChartProps) {
     },
   };
 
-  return <Bar data={data} options={options} />;
+  return (
+    <Box
+      height={300}
+      maxWidth={"100%"}
+      position={"relative"}
+      sx={{
+        "& canvas": {
+          display: "block",
+          width: "100% !important",
+          height: "100% !important",
+        },
+      }}
+    >
+      <Bar data={data} options={options} />
+    </Box>
+  );
 }

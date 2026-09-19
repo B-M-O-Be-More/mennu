@@ -22,6 +22,7 @@ import Image from "next/image";
 import { SidebarProps } from "./interface";
 import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
 import Can from "@/components/Can";
+import { isNavPathActive } from "@/utils/navUtils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -190,12 +191,7 @@ export function SidebarComponent({
   const sidebarColors = (theme.palette as any).sidebar;
 
   const isActive = React.useCallback(
-    (path: string) => {
-      if (!activePath) return false;
-      if (activePath === path) return true;
-      if (path !== "/dashboard" && activePath.startsWith(path + "/")) return true;
-      return false;
-    },
+    (path: string) => isNavPathActive(path, activePath),
     [activePath]
   );
 
@@ -237,13 +233,14 @@ export function SidebarComponent({
       role="navigation"
       aria-label="Menu principal"
       sx={{
-        width: { xs: 224, sm: 240, lg: 256 },
+        width: { sm: 240, lg: 256 },
         flexShrink: 0,
         height: "100%",
         maxHeight: "100dvh",
         overflow: "hidden",
         bgcolor: "sidebar.background",
-        display: "flex",
+        // Em telas de celular a navegação vira a BottomNav — a sidebar some.
+        display: { xs: "none", sm: "flex" },
         flexDirection: "column",
         position: "relative",
         pt: { xs: 2, sm: 2.5, lg: 3 },

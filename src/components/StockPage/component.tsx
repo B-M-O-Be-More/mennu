@@ -260,7 +260,7 @@ export function StockPage({}: StockPageProps) {
         </Tooltip>
       </PageHeader>
 
-      <Stack gap={2} direction="row">
+      <Stack gap={2} direction="row" flexWrap="wrap">
         <Button
           variant={openTab === 0 ? "contained" : "outlined"}
           startIcon={<EstoqueIcon width={22} height={22} />}
@@ -299,7 +299,7 @@ export function StockPage({}: StockPageProps) {
       </Stack>
 
       {openTab === 1 && (
-        <Stack gap={2} direction="row">
+        <Stack gap={2} direction="row" flexWrap="wrap">
           <TabButton
             label="Auditoria"
             tabIndex={MOVEMENT_TABS.auditoria}
@@ -423,13 +423,18 @@ export function StockPage({}: StockPageProps) {
               {error && <Alert severity="error">{error}</Alert>}
 
               <Stack
-                direction="row"
+                direction={{ xs: "column", md: "row" }}
                 justifyContent="space-between"
                 gap={2}
-                alignItems="center"
+                alignItems={{ xs: "stretch", md: "center" }}
               >
                 <Typography>Itens Cadastrados</Typography>
-                <Stack direction="row" gap={2} minWidth="450px">
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  gap={2}
+                  flexWrap="wrap"
+                  minWidth={{ md: "450px" }}
+                >
                   <Input
                     placeholder="Buscar item..."
                     icon={<SearchIcon />}
@@ -440,7 +445,7 @@ export function StockPage({}: StockPageProps) {
                       options={unitOptions}
                       name="unidade"
                       control={control}
-                      formControlSx={{ minWidth: "200px" }}
+                      formControlSx={{ minWidth: { sm: "200px" } }}
                     />
                   </Can>
                   <Button
@@ -512,13 +517,13 @@ export function StockPage({}: StockPageProps) {
               {error && <Alert severity="error">{error}</Alert>}
 
               <Stack
-                direction="row"
+                direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
                 gap={2}
-                alignItems="center"
+                alignItems={{ xs: "stretch", sm: "center" }}
               >
                 <Typography>Histórico de Movimentações</Typography>
-                <Stack direction="row" gap={2}>
+                <Stack direction={{ xs: "column", sm: "row" }} gap={2} flexWrap="wrap">
                   <Button
                     variant="contained"
                     onClick={() => setOpenTransferStockModal(true)}

@@ -262,7 +262,7 @@ export function ConsumptionTab({ }: ConsumptionTabProps) {
       >
         {error && <Alert severity="error">{error}</Alert>}
 
-        <Stack gap={{ xs: 1, sm: 2 }} direction={"row"}>
+        <Stack gap={{ xs: 1, sm: 2 }} direction={{ xs: "column", sm: "row" }} flexWrap="wrap">
           <Input
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
@@ -272,14 +272,14 @@ export function ConsumptionTab({ }: ConsumptionTabProps) {
             options={unitOptions}
             name="unidade"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", sm: "250px" } }}
           />
 
           <Select
             options={mealTypeOptions}
             name="tipos"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", sm: "250px" } }}
           />
           <Button
             variant="outlined"

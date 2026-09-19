@@ -2,7 +2,6 @@
 
 import {
   Alert,
-  Box,
   Button,
   Chip,
   IconButton,
@@ -129,7 +128,7 @@ export default function UnitsTab({}: UnitsTabProps) {
               key={unit.id}
               gap={2}
               direction="row"
-              alignItems="center"
+              alignItems="flex-start"
               border="1px solid"
               borderColor="divider"
               borderRadius={3}
@@ -145,35 +144,33 @@ export default function UnitsTab({}: UnitsTabProps) {
                 }
                 bgColor={unit.ativo ? "#F0FDF4" : "background.default"}
               />
-              <Stack gap={0.6}>
-                <Box display="inline-flex" alignItems="center" height={18}>
-                  <Typography variant="body1">{unit.nome}</Typography>
-                  <Chip
-                    label={unit.status}
-                    color={unit.ativo ? "success" : "default"}
-                    size="small"
-                    sx={{
-                      marginLeft: 1,
-                      textTransform: "capitalize",
-                      fontSize: 12,
-                    }}
-                  />
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                  {unit.endereco}
-                </Typography>
-                <Typography variant="body2" color="#4A5565">
-                  Responsável: {unit.responsavelNome}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                marginLeft="auto"
-                gap={1}
-                alignItems="center"
-                flex={1}
-                justifyContent="flex-end"
-              >
+              <Stack gap={1.5} flex={1} minWidth={0}>
+                <Stack gap={0.6}>
+                  <Stack direction="row" flexWrap="wrap" alignItems="center" columnGap={1} rowGap={0.5}>
+                    <Typography variant="body1">{unit.nome}</Typography>
+                    <Chip
+                      label={unit.status}
+                      color={unit.ativo ? "success" : "default"}
+                      size="small"
+                      sx={{
+                        textTransform: "capitalize",
+                        fontSize: 12,
+                      }}
+                    />
+                  </Stack>
+                  <Typography variant="body2" color="text.secondary">
+                    {unit.endereco}
+                  </Typography>
+                  <Typography variant="body2" color="#4A5565">
+                    Responsável: {unit.responsavelNome}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  gap={1}
+                  alignItems="center"
+                  flexWrap="wrap"
+                >
                 <Can module="unidade" action="edit">
                   <Button
                     variant="outlined"
@@ -236,6 +233,7 @@ export default function UnitsTab({}: UnitsTabProps) {
                     </span>
                   </Tooltip>
                 </Can>
+                </Stack>
               </Stack>
             </Stack>
           ))}

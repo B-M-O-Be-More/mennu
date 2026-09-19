@@ -1,6 +1,6 @@
 import KPICard from "@/components/Cards/KPICard";
 import { RelatoriosIcon, PaperIcon } from "@/components/Icons";
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import { TrendingUp } from "@mui/icons-material";
 import Vertical7DaysChart from "@/components/Charts/Vertical7DaysChart";
 import RankingChart from "@/components/Charts/RankingChart";
@@ -176,12 +176,7 @@ export function DashboardTab({ }: DashboardTabProps) {
       </ReportSection>
 
       <ReportSection id="dashboard-rankings" title="Rankings do período" plain>
-        <Stack
-          direction={"row"}
-          maxWidth={"100%"}
-          gap={2}
-          flexWrap={"wrap"}
-          justifyContent={"space-between"}>
+        <Box display="grid" gap={2} gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}>
           <RankingChart
             title="Top 5 Tipos de Refeição"
             data={rankingTipos}
@@ -193,7 +188,7 @@ export function DashboardTab({ }: DashboardTabProps) {
             barColor="info.contrastText"
             isLoading={isLoading}
           />
-        </Stack>
+        </Box>
       </ReportSection>
     </>
   );

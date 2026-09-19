@@ -363,7 +363,7 @@ export default function StockAuditPanel({
         ))}
       </Box>
 
-      <Stack gap={2} direction="row">
+      <Stack gap={2} direction={{ xs: "column", lg: "row" }} flexWrap="wrap">
         <Input
           placeholder="Buscar por..."
           icon={<SearchIcon />}
@@ -374,28 +374,28 @@ export default function StockAuditPanel({
           options={unitOptions}
           name="unidade"
           control={control}
-          formControlSx={{ maxWidth: "250px" }}
+          formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
         />
 
         <Select
           options={statusOptions}
           name="status"
           control={control}
-          formControlSx={{ maxWidth: "200px" }}
+          formControlSx={{ maxWidth: { xs: "100%", lg: "200px" } }}
         />
 
         <Select
           options={auditorOptions}
           name="auditor"
           control={control}
-          formControlSx={{ maxWidth: "200px" }}
+          formControlSx={{ maxWidth: { xs: "100%", lg: "200px" } }}
         />
 
         <Select
           options={periodOptions}
           name="periodo"
           control={control}
-          formControlSx={{ maxWidth: "200px" }}
+          formControlSx={{ maxWidth: { xs: "100%", lg: "200px" } }}
         />
 
         <Button
@@ -412,12 +412,12 @@ export default function StockAuditPanel({
 
       <Card>
         <Stack
-          direction="row"
+          direction={{ xs: "column", sm: "row" }}
           justifyContent="space-between"
-          alignItems="center"
+          alignItems={{ xs: "stretch", sm: "center" }}
           gap={2}
         >
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack direction="row" alignItems="center" gap={2} flexWrap="wrap">
             <Typography variant="h6" fontWeight={400}>
               Auditoria do Estoque
             </Typography>
