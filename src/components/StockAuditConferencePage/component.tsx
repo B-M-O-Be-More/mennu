@@ -1035,7 +1035,6 @@ function StockAuditConferencePageContent() {
                   onClick={() => setListFilter(filter.value)}
                   sx={{
                     flex: 1,
-                    whiteSpace: "nowrap",
                     bgcolor: isActive ? undefined : "background.default",
                     color: isActive ? undefined : "text.secondary",
                   }}

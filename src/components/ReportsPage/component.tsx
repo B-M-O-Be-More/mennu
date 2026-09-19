@@ -36,7 +36,7 @@ export function ReportsPage() {
         </Button>
       </PageHeader>
 
-      <Stack direction={"row"} gap={2}>
+      <Stack direction={"row"} gap={2} flexWrap="wrap">
         <TabButton
           label={"Histórico de Consumo"}
           icon={<PaperIcon height={24} />}

@@ -235,7 +235,7 @@ export function UsersPage({ }: UsersPageProps) {
       />
 
       <Card>
-        <Stack gap={2} direction={"row"}>
+        <Stack gap={2} direction={{ xs: "column", sm: "row" }} flexWrap="wrap">
           <Input
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
@@ -246,14 +246,14 @@ export function UsersPage({ }: UsersPageProps) {
             options={unitOptions}
             name="unidade"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", sm: "250px" } }}
           />
 
           <Select
             options={mockStatuses}
             name="status"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", sm: "250px" } }}
           />
 
           <Button

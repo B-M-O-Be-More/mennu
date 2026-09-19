@@ -7,6 +7,7 @@ import {
   TooltipItem
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Last7DaysChartProps } from "./interface";
 
@@ -42,6 +43,7 @@ export default function Last7DaysChart({ data }: Last7DaysChartProps) {
   const options = {
     indexAxis: "y" as const,
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -68,5 +70,20 @@ export default function Last7DaysChart({ data }: Last7DaysChartProps) {
     },
   };
 
-  return <Bar data={chartData} options={options} />;
+  return (
+    <Box
+      height={220}
+      maxWidth={"100%"}
+      position={"relative"}
+      sx={{
+        "& canvas": {
+          display: "block",
+          width: "100% !important",
+          height: "100% !important",
+        },
+      }}
+    >
+      <Bar data={chartData} options={options} />
+    </Box>
+  );
 }

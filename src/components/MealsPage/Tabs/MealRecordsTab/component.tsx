@@ -215,7 +215,7 @@ export function MealRecordsTab({ refreshKey = 0 }: MealRecordsTabProps) {
     <Card>
       {error && <Alert severity="error">{error}</Alert>}
 
-      <Stack direction={"row"} gap={2}>
+      <Stack direction={{ xs: "column", sm: "row" }} gap={2} flexWrap="wrap">
         <Input
           placeholder="Buscar por nome, matrícula..."
           icon={<SearchIcon />}
@@ -224,13 +224,13 @@ export function MealRecordsTab({ refreshKey = 0 }: MealRecordsTabProps) {
 
         <Select
           options={unitFilterOptions}
-          formControlSx={{ maxWidth: "18%" }}
+          formControlSx={{ maxWidth: { xs: "100%", sm: "18%" } }}
           name="unit"
           control={control}
         />
         <Select
           options={statusOptions}
-          formControlSx={{ maxWidth: "18%" }}
+          formControlSx={{ maxWidth: { xs: "100%", sm: "18%" } }}
           name="status"
           control={control}
         />
@@ -239,7 +239,7 @@ export function MealRecordsTab({ refreshKey = 0 }: MealRecordsTabProps) {
           type="button"
           variant="outlined"
           startIcon={<FilterIcon />}
-          sx={{ width: "15%" }}>
+          sx={{ width: { xs: "100%", sm: "15%" }, minWidth: { sm: "120px" } }}>
           Filtrar
         </Button>
       </Stack>

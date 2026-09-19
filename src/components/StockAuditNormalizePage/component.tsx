@@ -409,7 +409,7 @@ function StockAuditNormalizePageContent() {
           value={audit?.observacao_geral || "Sem observações do auditor"}
         />
 
-        <Stack direction="row" gap={2}>
+        <Stack direction={{ xs: "column", sm: "row" }} gap={2} flexWrap="wrap">
           <Input
             placeholder="Buscar por..."
             icon={<SearchIcon />}
@@ -420,7 +420,7 @@ function StockAuditNormalizePageContent() {
             options={itemFilterOptions}
             name="tipo"
             control={control}
-            formControlSx={{ maxWidth: "220px" }}
+            formControlSx={{ maxWidth: { xs: "100%", sm: "220px" } }}
           />
 
           <Button

@@ -102,7 +102,7 @@ export function MealsPage() {
         onNotify={handleNotify}
       />
 
-      <Stack direction={"row"} gap={2}>
+      <Stack direction={"row"} gap={2} flexWrap="wrap">
         {tabs.map((tab, index) => (
           <TabButton
             key={index}

@@ -327,7 +327,7 @@ export default function AddUsersToCargoModal({
               Adicionar usuários
             </Typography>
 
-            <Stack gap={2} direction={"row"}>
+            <Stack gap={2} direction={{ xs: "column", sm: "row" }} flexWrap="wrap">
               <Input
                 placeholder="Buscar por nome, matrícula..."
                 icon={<SearchIcon />}
@@ -338,7 +338,7 @@ export default function AddUsersToCargoModal({
                 options={mockStatuses}
                 name="status"
                 control={control}
-                formControlSx={{ maxWidth: "250px" }}
+                formControlSx={{ maxWidth: { xs: "100%", sm: "250px" } }}
               />
             </Stack>
 

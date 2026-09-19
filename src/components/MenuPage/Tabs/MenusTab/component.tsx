@@ -119,7 +119,7 @@ export function MenusTab({ }: MenusTabProps) {
         borderRadius={2}
         bgcolor="background.paper"
       >
-        <Stack gap={{ xs: 1, sm: 2 }} direction={"row"}>
+        <Stack gap={{ xs: 1, sm: 2 }} direction={{ xs: "column", lg: "row" }} flexWrap="wrap">
           <Input
             placeholder="Buscar por unidade..."
             icon={<SearchIcon />}
@@ -129,20 +129,20 @@ export function MenusTab({ }: MenusTabProps) {
             options={unitOptions}
             name="unidade"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
 
           <Select
             options={[{ label: "Todos os tipos", value: "" }, ...tipoRefeicaoOptions.filter((o) => o.value !== "")]}
             name="tipo"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
           <Select
             options={STATUS_OPTIONS}
             name="status"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
+            formControlSx={{ maxWidth: { xs: "100%", lg: "250px" } }}
           />
           <Button
             variant="outlined"

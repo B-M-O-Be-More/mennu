@@ -16,12 +16,14 @@ export function MealRulesCard({ rule }: MealRulesCardProps) {
   return (
     <Card
       variant="compact"
-      sx={{ padding: "1rem", maxWidth: { md: "49%" }, minWidth: "49%" }}>
+      sx={{ padding: "1rem", maxWidth: { md: "49%" }, minWidth: { xs: "100%", md: "49%" } }}>
       <Stack gap={3}>
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
-          alignItems={"center"}>
+          alignItems={"center"}
+          flexWrap="wrap"
+          gap={1}>
           <Stack direction={"row"} gap={2}>
             <IconBox
               icon={<ConfiguracoesIcon color={theme.palette.info.light} />}

@@ -127,7 +127,11 @@ export function DashBoardPage({ }: DashBoardPageProps) {
             </Typography>
           </Card>
 
-          <Stack direction={"row"} gap={2}>
+          <Box
+            display="grid"
+            gap={2}
+            gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)" }}
+          >
             <Card>
               <Stack direction={"row"} justifyContent={"space-between"}>
                 <Box component="span">
@@ -170,9 +174,13 @@ export function DashBoardPage({ }: DashBoardPageProps) {
                 {dashboard ? dashboard.refeicoesServidas : "–"}
               </Typography>
             </Card>
-          </Stack>
+          </Box>
 
-          <Stack direction={"row"} flexWrap="wrap" gap={2}>
+          <Box
+            display="grid"
+            gap={2}
+            gridTemplateColumns={{ xs: "1fr", md: "repeat(3, 1fr)" }}
+          >
             <Card>
               <Stack
                 direction={"row"}
@@ -306,7 +314,7 @@ export function DashBoardPage({ }: DashBoardPageProps) {
               </Typography>
               <Last7DaysChart data={chartData} />
             </Card>
-          </Stack>
+          </Box>
         </>
       )}
     </Stack>

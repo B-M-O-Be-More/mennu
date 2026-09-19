@@ -184,7 +184,7 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
   return (
     <React.Fragment>
       <Card
-        sx={{ padding: { sm: 1, md: 1.5 }, maxWidth: "auto" }}
+        sx={{ padding: { xs: 1, sm: 1, md: 1.5 }, maxWidth: "auto" }}
         variant="compact"
       >
         <Stack direction={"row"} gap={2} >

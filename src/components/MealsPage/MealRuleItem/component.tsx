@@ -6,7 +6,7 @@ export function MealRuleItem({ label, description, value }: MealRuleItemProps) {
   return (
     <Card
       variant={"compact"}
-      sx={{ padding: "1rem", maxWidth: { lg: "48%" }, minWidth: "48%" }}>
+      sx={{ padding: "1rem", maxWidth: { lg: "48%" }, minWidth: { xs: "100%", lg: "48%" } }}>
       <Typography variant={"body2"} color="text.secondary">
         {label}
       </Typography>

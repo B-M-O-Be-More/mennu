@@ -118,7 +118,6 @@ export default function ReviewExtraRequestModal({
               flex: 1,
               fontSize: "1.2rem",
               backgroundColor: isApprove ? 'success.light' : 'error.contrastText',
-              whiteSpace: "nowrap",
               "&:hover": {
                 backgroundColor: isApprove ? 'success.contrastText' : 'error.dark',
               }
