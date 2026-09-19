@@ -21,4 +21,5 @@ export interface InputProps {
   mask?: string;
   suffix?: React.ReactNode;
   inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  size?: "small" | "medium";
 }

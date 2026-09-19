@@ -30,6 +30,7 @@ export default function Input({
   onChange,
   suffix,
   inputMode,
+  size = "medium",
 }: InputProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -109,6 +110,7 @@ export default function Input({
         variant="outlined"
         type={inputType}
         placeholder={placeholder}
+        size={size}
         value={value}
         onChange={onChange}
         {...register}

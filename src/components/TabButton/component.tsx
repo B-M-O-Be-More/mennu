@@ -13,6 +13,7 @@ export function TabButton({
   return (
     <Button
       variant={isActive ? "contained" : "outlined"}
+      aria-pressed={isActive}
       onClick={() => onChange(tabIndex)}
       startIcon={icon}
       size="medium"

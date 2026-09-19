@@ -50,3 +50,25 @@ export function mapApiRowCardapioPlanejamento(raw: any): ICardapioPlanejamentoRo
     aderencia: raw.aderencia ?? 0,
   };
 }
+
+/** `/cardapio-planejamento/insumos-variacao` — aba extra do relatório de Cardápio, previsto x real por insumo. */
+export interface IInsumoVariacaoRow {
+  insumo: string;
+  unidadeMedida: string;
+  qtdPrevista: string;
+  qtdReal: string | null;
+  variacao: string | null;
+  variacaoPercentual: number | null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function mapApiRowInsumoVariacao(raw: any): IInsumoVariacaoRow {
+  return {
+    insumo: raw.insumo ?? "—",
+    unidadeMedida: raw.unidade_medida ?? "",
+    qtdPrevista: raw.qtd_prevista ?? "0",
+    qtdReal: raw.qtd_real ?? null,
+    variacao: raw.variacao ?? null,
+    variacaoPercentual: raw.variacao_percentual ?? null,
+  };
+}

@@ -1,12 +1,16 @@
 import KPICard from "@/components/Cards/KPICard";
 import { RelatoriosIcon, PaperIcon } from "@/components/Icons";
-import { Alert, Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import { TrendingUp } from "@mui/icons-material";
 import Vertical7DaysChart from "@/components/Charts/Vertical7DaysChart";
 import RankingChart from "@/components/Charts/RankingChart";
 import React from "react";
 import dayjs from "dayjs";
 import KPICardSkeleton from "@/components/Skeletons/Cards/KPICardSkeleton";
+import ReportSection from "../../ReportSection";
+import ReportErrorState from "../../ReportErrorState";
+import Select from "@/components/FormControl/Select";
+import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { DashboardTabProps, KPICardData } from "./interface";
 import {
   IRefeicoesServidasResumo,
@@ -18,6 +22,7 @@ import {
 
 const DATA_FIM = dayjs();
 const DATA_INICIO = DATA_FIM.subtract(6, "day");
+const PERIODO_LABEL = `${DATA_INICIO.format("DD/MM")} a ${DATA_FIM.format("DD/MM")}`;
 
 async function fetchJson(url: string) {
   const response = await fetch(url);
@@ -37,6 +42,8 @@ function topN(rows: IRefeicoesServidasRow[], labelField: "tipoRefeicao" | "unida
 }
 
 export function DashboardTab({ }: DashboardTabProps) {
+  const { unitOptions } = useUnitFilterOptions();
+  const [unidadeId, setUnidadeId] = React.useState("all");
   const [resumo, setResumo] = React.useState<IRefeicoesServidasResumo | null>(null);
   const [chartData, setChartData] = React.useState<{ label: string; value: number }[]>([]);
   const [rankingTipos, setRankingTipos] = React.useState<{ label: string; value: number }[]>([]);
@@ -44,37 +51,44 @@ export function DashboardTab({ }: DashboardTabProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  /** Um único ponto de carga, pra que o "Tentar novamente" refaça tudo. */
+  const load = React.useCallback(async () => {
     const params = new URLSearchParams({
       data_inicio: DATA_INICIO.format("YYYY-MM-DD"),
       data_fim: DATA_FIM.format("YYYY-MM-DD"),
     });
 
-    (async () => {
-      setIsLoading(true);
-      setError(null);
+    if (unidadeId !== "all") {
+      params.set("unidade_id", unidadeId);
+    }
 
-      try {
-        const [resumoData, previewData, porTipo, porUnidade] = await Promise.all([
-          fetchJson(`/api/relatorio/refeicoes-servidas/resumo?${params}`),
-          fetchJson(`/api/relatorio/refeicoes-servidas/preview?${params}`),
-          fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=tipo_refeicao`),
-          fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=unidade`),
-        ]);
+    setIsLoading(true);
+    setError(null);
 
-        setResumo(mapApiResumoRefeicoesServidas(resumoData));
-        setChartData(
-          mapApiPreviewRefeicoesServidas(previewData).grafico.map((p) => ({ label: p.label, value: p.valor })),
-        );
-        setRankingTipos(topN((porTipo as unknown[]).map(mapApiRowRefeicoesServidas), "tipoRefeicao", 5));
-        setRankingUnidades(topN((porUnidade as unknown[]).map(mapApiRowRefeicoesServidas), "unidade", 10));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao carregar dashboard de relatórios");
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
+    try {
+      const [resumoData, previewData, porTipo, porUnidade] = await Promise.all([
+        fetchJson(`/api/relatorio/refeicoes-servidas/resumo?${params}`),
+        fetchJson(`/api/relatorio/refeicoes-servidas/preview?${params}`),
+        fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=tipo_refeicao`),
+        fetchJson(`/api/relatorio/refeicoes-servidas?${params}&agrupamento=unidade`),
+      ]);
+
+      setResumo(mapApiResumoRefeicoesServidas(resumoData));
+      setChartData(
+        mapApiPreviewRefeicoesServidas(previewData).grafico.map((p) => ({ label: p.label, value: p.valor })),
+      );
+      setRankingTipos(topN((porTipo as unknown[]).map(mapApiRowRefeicoesServidas), "tipoRefeicao", 5));
+      setRankingUnidades(topN((porUnidade as unknown[]).map(mapApiRowRefeicoesServidas), "unidade", 10));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar dashboard de relatórios");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [unidadeId]);
+
+  React.useEffect(() => {
+    void load();
+  }, [load]);
 
   const kpis: KPICardData[] | null = resumo
     ? [
@@ -105,63 +119,77 @@ export function DashboardTab({ }: DashboardTabProps) {
 
   return (
     <>
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && <ReportErrorState message={error} onRetry={load} isRetrying={isLoading} />}
 
-      <Box
-        display={"grid"}
-        gap={3}
-        mb={2}
-        gridTemplateColumns={{
-          xs: "1fr",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(3, 1fr)",
-        }}
-        sx={{
-          "& > :last-of-type:nth-of-type(odd)": {
-            gridColumn: {
-              sm: "1 / -1",
-              md: "auto",
+      <ReportSection
+        id="dashboard-kpis"
+        title="Indicadores dos últimos 7 dias"
+        description={`Período fixo: ${PERIODO_LABEL}`}
+        plain
+        action={
+          <Select
+            label="Unidade"
+            options={unitOptions}
+            value={unidadeId}
+            onChange={setUnidadeId}
+            size="small"
+            formControlSx={{ width: { xs: "100%", sm: 220 } }}
+          />
+        }>
+        <Box
+          display={"grid"}
+          gap={3}
+          gridTemplateColumns={{
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+          }}
+          sx={{
+            "& > :last-of-type:nth-of-type(odd)": {
+              gridColumn: {
+                sm: "1 / -1",
+                md: "auto",
+              },
             },
-          },
-        }}>
-        {isLoading || !kpis
-          ? Array.from({ length: 3 }).map((_, index) => (
-            <KPICardSkeleton key={index} />
-          ))
-          : kpis.map((card) => (
-            <KPICard
-              key={card.id}
-              label={card.label}
-              icon={card.icon}
-              bgColor={card.bgColor}
-              value={card.value}
-              unit={card.unit}
-              trend={card.trend}
-              description={card.description}
-            />
-          ))}
-      </Box>
+          }}>
+          {isLoading || !kpis
+            ? Array.from({ length: 3 }).map((_, index) => (
+              <KPICardSkeleton key={index} />
+            ))
+            : kpis.map((card) => (
+              <KPICard
+                key={card.id}
+                label={card.label}
+                icon={card.icon}
+                bgColor={card.bgColor}
+                value={card.value}
+                unit={card.unit}
+                trend={card.trend}
+                description={card.description}
+              />
+            ))}
+        </Box>
+      </ReportSection>
 
-      <Vertical7DaysChart data={chartData} isLoading={isLoading} />
+      <ReportSection id="dashboard-evolucao" title="Evolução diária" plain>
+        <Vertical7DaysChart data={chartData} isLoading={isLoading} />
+      </ReportSection>
 
-      <Stack
-        direction={"row"}
-        maxWidth={"100%"}
-        gap={2}
-        flexWrap={"wrap"}
-        justifyContent={"space-between"}>
-        <RankingChart
-          title="Top 5 Tipos de Refeição"
-          data={rankingTipos}
-          isLoading={isLoading}
-        />
-        <RankingChart
-          title="Distribuição por Unidade"
-          data={rankingUnidades}
-          barColor="info.contrastText"
-          isLoading={isLoading}
-        />
-      </Stack>
+      <ReportSection id="dashboard-rankings" title="Rankings do período" plain>
+        <Box display="grid" gap={2} gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }}>
+          <RankingChart
+            title="Top 5 Tipos de Refeição"
+            data={rankingTipos}
+            isLoading={isLoading}
+          />
+          <RankingChart
+            title="Distribuição por Unidade"
+            data={rankingUnidades}
+            barColor="info.contrastText"
+            isLoading={isLoading}
+          />
+        </Box>
+      </ReportSection>
     </>
   );
 }

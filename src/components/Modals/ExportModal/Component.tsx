@@ -12,12 +12,7 @@ export default function ExportModal({
   title,
   subtitle,
   options,
-  onPreview,
-  onDownload,
-}: ExportModalProps & {
-  onPreview?: (option: typeof options[number]) => void;
-  onDownload?: (option: typeof options[number]) => void;
-}) {
+}: ExportModalProps) {
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
 
   return (
@@ -73,7 +68,7 @@ export default function ExportModal({
               borderRadius: 2
             }}
             disabled={selectedIndex === null}
-            onClick={() => selectedIndex !== null && onPreview?.(options[selectedIndex])}
+            onClick={() => selectedIndex !== null && options[selectedIndex].onPreview()}
           >
             Visualizar
           </Button>
@@ -88,7 +83,7 @@ export default function ExportModal({
             variant="contained"
             startIcon={<DownloadIcon />}
             disabled={selectedIndex === null}
-            onClick={() => selectedIndex !== null && onDownload?.(options[selectedIndex])}
+            onClick={() => selectedIndex !== null && options[selectedIndex].onDownload()}
           >
             Baixar
           </Button>

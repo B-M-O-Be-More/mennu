@@ -9,7 +9,7 @@ import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 import { formatDate, formatDateOnly } from "@/utils/formatDate";
 import { IConsumptionHistory, IMenu } from "@/Interfaces/Menu/menu";
-import { ICardapioPlanejamentoRow } from "@/Interfaces/Reports/cardapioPlanejamento";
+import { ICardapioPlanejamentoRow, IInsumoVariacaoRow } from "@/Interfaces/Reports/cardapioPlanejamento";
 import PercentageLineChart from "@/components/Charts/PercentageLineChart";
 import { formatDateTime } from "@/utils/formatDateTime";
 import { ReportsConsumptionHistoryItem } from "@/Interfaces/Reports/reports";
@@ -23,6 +23,18 @@ import {
   resolveStatus,
 } from "@/utils/stockAuditUtils";
 import dayjs from "dayjs";
+import { IAcessoRow } from "@/Interfaces/Reports/acesso";
+import { IAuditoriaRow } from "@/Interfaces/Reports/auditoria";
+import { IPresencaRow } from "@/Interfaces/Reports/presenca";
+import { ITerminaisRow } from "@/Interfaces/Reports/terminais";
+import { IUsuariosReportRow } from "@/Interfaces/Reports/usuarios";
+import { IConsumoRow } from "@/Interfaces/Reports/consumo";
+import { IDesperdicioRow } from "@/Interfaces/Reports/desperdicio";
+import {
+  IInventarioRow,
+  IHistoricoMovimentacaoRow,
+  IConsumoEstoqueRow,
+} from "@/Interfaces/Reports/estoque";
 
 const statusChipSx = {
   width: 100,
@@ -442,6 +454,18 @@ const reportsMenuColumns: IColumn<ICardapioPlanejamentoRow>[] = [
     label: "Tipo de Refeição",
   },
   {
+    key: "status",
+    label: "Status",
+    render: (row) => (
+      <Chip
+        label={cardapioStatusLabelMap[row.status] ?? row.status}
+        color={cardapioStatusColorMap[row.status] ?? "default"}
+        size="small"
+        sx={statusChipSx}
+      />
+    ),
+  },
+  {
     key: "previsto",
     label: "Previsto",
   },
@@ -730,6 +754,246 @@ const saldoEstoqueConsolidadoColumns: IColumn<ISaldoEstoqueConsolidado>[] = [
   },
 ];
 
+const acessoColumns: IColumn<IAcessoRow>[] = [
+  { key: "dataHora", label: "Data/Hora", render: (row) => formatDateTime(row.dataHora) },
+  { key: "terminal", label: "Terminal" },
+  { key: "unidade", label: "Unidade" },
+  { key: "usuario", label: "Usuário" },
+  { key: "tipoRefeicao", label: "Tipo de Refeição" },
+  {
+    key: "sucesso",
+    label: "Resultado",
+    render: (row) => (
+      <Chip
+        label={row.sucesso ? "Sucesso" : "Falha"}
+        color={row.sucesso ? "success" : "error"}
+        size="small"
+      />
+    ),
+  },
+  { key: "mensagemErro", label: "Motivo da Falha", render: (row) => row.mensagemErro || "—" },
+];
+
+const auditoriaRelatorioColumns: IColumn<IAuditoriaRow>[] = [
+  { key: "dataReferencia", label: "Data", render: (row) => formatDateOnly(row.dataReferencia) },
+  { key: "unidade", label: "Unidade" },
+  { key: "auditor", label: "Auditor" },
+  { key: "insumo", label: "Insumo" },
+  {
+    key: "quantidadeTeorica",
+    label: "Teórico",
+    align: "right",
+    render: (row) => (row.quantidadeTeorica === null ? "—" : `${row.quantidadeTeorica} ${row.unidadeMedida}`),
+  },
+  {
+    key: "quantidadeEncontrada",
+    label: "Encontrado",
+    align: "right",
+    render: (row) => (row.quantidadeEncontrada === null ? "—" : `${row.quantidadeEncontrada} ${row.unidadeMedida}`),
+  },
+  {
+    key: "divergente",
+    label: "Divergência",
+    render: (row) => (
+      <Chip
+        label={row.divergente ? "Divergente" : "OK"}
+        color={row.divergente ? "warning" : "success"}
+        size="small"
+      />
+    ),
+  },
+  { key: "status", label: "Status" },
+];
+
+const presencaColumns: IColumn<IPresencaRow>[] = [
+  { key: "usuarioNome", label: "Usuário" },
+  { key: "matricula", label: "Matrícula" },
+  { key: "categoria", label: "Categoria" },
+  { key: "unidade", label: "Unidade" },
+  { key: "totalRefeicoes", label: "Total de Refeições", align: "right" },
+  { key: "diasComRefeicao", label: "Dias com Refeição", align: "right" },
+  { key: "frequenciaPercentual", label: "Frequência (%)", align: "right" },
+  {
+    key: "ultimaRefeicao",
+    label: "Última Refeição",
+    render: (row) => (row.ultimaRefeicao ? formatDateTime(row.ultimaRefeicao) : "—"),
+  },
+];
+
+const terminaisColumns: IColumn<ITerminaisRow>[] = [
+  { key: "nome", label: "Terminal" },
+  { key: "tipo", label: "Tipo" },
+  { key: "unidade", label: "Unidade" },
+  {
+    key: "statusAtual",
+    label: "Status",
+    render: (row) => (
+      <Chip
+        label={row.statusAtual}
+        color={row.statusAtual === "online" ? "success" : "default"}
+        size="small"
+        sx={{ textTransform: "capitalize" }}
+      />
+    ),
+  },
+  {
+    key: "ultimoPing",
+    label: "Último Ping",
+    render: (row) => (row.ultimoPing ? formatDateTime(row.ultimoPing) : "nunca"),
+  },
+  { key: "totalAcessos", label: "Total de Acessos", align: "right" },
+  { key: "taxaSucesso", label: "Taxa de Sucesso (%)", align: "right" },
+];
+
+const usuariosReportColumns: IColumn<IUsuariosReportRow>[] = [
+  { key: "nome", label: "Nome" },
+  { key: "email", label: "E-mail" },
+  { key: "matricula", label: "Matrícula" },
+  { key: "categoria", label: "Categoria" },
+  {
+    key: "ativo",
+    label: "Status",
+    render: (row) => (
+      <Chip label={row.ativo ? "Ativo" : "Inativo"} color={row.ativo ? "success" : "default"} size="small" />
+    ),
+  },
+  {
+    key: "possuiNfc",
+    label: "NFC",
+    render: (row) => (
+      <Chip label={row.possuiNfc ? "Sim" : "Não"} color={row.possuiNfc ? "info" : "default"} size="small" />
+    ),
+  },
+  { key: "unidades", label: "Unidades" },
+];
+
+const consumoColumns: IColumn<IConsumoRow>[] = [
+  { key: "nome", label: "Insumo" },
+  { key: "categoria", label: "Categoria" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  { key: "totalEntrada", label: "Total Entrada", align: "right" },
+  { key: "totalSaida", label: "Total Saída", align: "right" },
+  { key: "saldoPeriodo", label: "Saldo no Período", align: "right" },
+];
+
+const desperdicioColumns: IColumn<IDesperdicioRow>[] = [
+  { key: "nome", label: "Insumo" },
+  { key: "categoria", label: "Categoria" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  { key: "totalPerda", label: "Total Perdido", align: "right" },
+  { key: "percentualPerda", label: "% da Perda", align: "right" },
+];
+
+const inventarioColumns: IColumn<IInventarioRow>[] = [
+  { key: "nome", label: "Insumo" },
+  { key: "categoria", label: "Categoria" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  { key: "quantidadeAtual", label: "Quantidade Atual", align: "right" },
+  { key: "pontoReposicao", label: "Ponto de Reposição", align: "right" },
+  {
+    key: "statusEstoque",
+    label: "Status",
+    render: (row) => {
+      const colorMap: Record<IInventarioRow["statusEstoque"], "success" | "warning" | "error"> = {
+        normal: "success",
+        baixo: "warning",
+        critico: "error",
+      };
+      return (
+        <Chip
+          label={row.statusEstoque}
+          color={colorMap[row.statusEstoque]}
+          size="small"
+          sx={{ textTransform: "capitalize" }}
+        />
+      );
+    },
+  },
+];
+
+const historicoMovimentacaoColumns: IColumn<IHistoricoMovimentacaoRow>[] = [
+  { key: "data", label: "Data", render: (row) => formatDateTime(row.data) },
+  { key: "tipo", label: "Tipo" },
+  { key: "insumo", label: "Item" },
+  { key: "unidade", label: "Unidade" },
+  { key: "quantidade", label: "Quantidade", align: "right" },
+  { key: "responsavel", label: "Responsável" },
+];
+
+const consumoEstoqueColumns: IColumn<IConsumoEstoqueRow>[] = [
+  { key: "nome", label: "Insumo" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  { key: "totalEntrada", label: "Total Entrada", align: "right" },
+  { key: "totalSaida", label: "Total Saída", align: "right" },
+  { key: "totalPerda", label: "Total Perdido", align: "right" },
+  { key: "saldoPeriodo", label: "Saldo no Período", align: "right" },
+];
+
+// Colunas "extras" — ligadas via <ReportColumnsMenu/>, começam ocultas pra
+// manter a tabela padrão enxuta (menos scroll horizontal, menos ruído).
+const auditoriaOptionalColumns: IColumn<IAuditoriaRow>[] = [
+  {
+    key: "divergencia",
+    label: "Divergência (qtd)",
+    align: "right",
+    render: (row) => (row.divergencia === null ? "—" : `${row.divergencia} ${row.unidadeMedida}`),
+  },
+  { key: "observacao", label: "Observação", render: (row) => row.observacao || "—" },
+  {
+    key: "normalizada",
+    label: "Normalizada",
+    render: (row) =>
+      row.divergente ? (
+        <Chip label={row.normalizada ? "Normalizada" : "Pendente"} color={row.normalizada ? "success" : "warning"} size="small" />
+      ) : (
+        "—"
+      ),
+  },
+];
+
+const terminaisOptionalColumns: IColumn<ITerminaisRow>[] = [
+  { key: "versaoSoftware", label: "Versão", render: (row) => row.versaoSoftware ?? "—" },
+  { key: "ipAddress", label: "IP", render: (row) => row.ipAddress ?? "—" },
+  { key: "acessosSucesso", label: "Acessos com Sucesso", align: "right" },
+];
+
+const usuariosOptionalColumns: IColumn<IUsuariosReportRow>[] = [
+  {
+    key: "dataCadastro",
+    label: "Data de Cadastro",
+    render: (row) => (row.dataCadastro ? formatDateOnly(row.dataCadastro) : "—"),
+  },
+];
+
+const inventarioOptionalColumns: IColumn<IInventarioRow>[] = [
+  { key: "tipoPadrao", label: "Tipo Padrão" },
+];
+
+const historicoMovimentacaoOptionalColumns: IColumn<IHistoricoMovimentacaoRow>[] = [
+  { key: "motivo", label: "Motivo", render: (row) => row.motivo || "—" },
+  { key: "justificativa", label: "Justificativa", render: (row) => row.justificativa || "—" },
+  { key: "lote", label: "Lote", render: (row) => row.lote || "—" },
+  {
+    key: "validade",
+    label: "Validade",
+    render: (row) => (row.validade ? formatDateOnly(row.validade) : "—"),
+  },
+];
+
+const insumoVariacaoColumns: IColumn<IInsumoVariacaoRow>[] = [
+  { key: "insumo", label: "Insumo" },
+  { key: "unidadeMedida", label: "Un. Medida" },
+  { key: "qtdPrevista", label: "Qtd. Prevista", align: "right" },
+  { key: "qtdReal", label: "Qtd. Real", align: "right", render: (row) => row.qtdReal ?? "—" },
+  { key: "variacao", label: "Variação", align: "right", render: (row) => row.variacao ?? "—" },
+  {
+    key: "variacaoPercentual",
+    label: "Variação (%)",
+    align: "right",
+    render: (row) => (row.variacaoPercentual === null ? "—" : `${row.variacaoPercentual.toFixed(1)}%`),
+  },
+];
+
 export {
   userColumns,
   stockColumns,
@@ -748,4 +1012,20 @@ export {
   auditNormalizeColumns,
   saldoEstoqueColumns,
   saldoEstoqueConsolidadoColumns,
+  acessoColumns,
+  auditoriaRelatorioColumns,
+  presencaColumns,
+  terminaisColumns,
+  usuariosReportColumns,
+  consumoColumns,
+  desperdicioColumns,
+  inventarioColumns,
+  historicoMovimentacaoColumns,
+  consumoEstoqueColumns,
+  auditoriaOptionalColumns,
+  terminaisOptionalColumns,
+  usuariosOptionalColumns,
+  inventarioOptionalColumns,
+  historicoMovimentacaoOptionalColumns,
+  insumoVariacaoColumns,
 };

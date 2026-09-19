@@ -16,12 +16,18 @@ export default function DatePickerG({
   control,
   minDate,
   maxDate,
+  size = "medium",
+  labelPosition = "top",
 }: DatePickerProps) {
+  const labelEl = (
+    <Typography variant="body2" mb={labelPosition === "top" ? 1 : 0} mt={labelPosition === "bottom" ? 0.5 : 0} color="text.label" fontWeight={400}>
+      {label}
+    </Typography>
+  );
+
   return (
     <Stack width={"100%"}>
-      <Typography variant="body2" mb={1} color="text.label" fontWeight={400}>
-        {label}
-      </Typography>
+      {labelPosition === "top" && labelEl}
       <LocalizationProvider
         dateAdapter={AdapterDayjs}
         adapterLocale="pt-br"
@@ -40,11 +46,15 @@ export default function DatePickerG({
                 field: {
                   readOnly: true,
                 },
+                textField: {
+                  size,
+                },
               }}
             />
           )}
         />
       </LocalizationProvider>
+      {labelPosition === "bottom" && labelEl}
     </Stack>
   );
 }
