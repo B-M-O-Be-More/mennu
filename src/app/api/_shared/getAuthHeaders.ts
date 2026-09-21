@@ -4,6 +4,7 @@ import {
   TOKEN_COOKIE,
   UNIDADE_COOKIE,
 } from "@/utils/authCookies";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 /**
  * Headers de autenticação e escopo para chamar a API.
@@ -24,6 +25,8 @@ export async function getAuthHeaders(): Promise<Record<string, string> | null> {
   if (!token || !empresaId) return null;
 
   return {
+    // Vem primeiro para que nada do cliente sobreponha token ou tenant.
+    ...(await getForwardedHeaders()),
     "Content-Type": "application/json",
     Accept: "application/json",
     Authorization: token,

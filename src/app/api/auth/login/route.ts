@@ -6,6 +6,7 @@ import {
   TOKEN_COOKIE,
   UNIDADE_COOKIE,
 } from "@/utils/authCookies";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 export async function POST(req: Request) {
   const baseUrl = getApiBaseUrl();
@@ -18,6 +19,7 @@ export async function POST(req: Request) {
   const response = await fetch(authUrl, {
     method: "POST",
     headers: {
+      ...(await getForwardedHeaders()),
       "Content-Type": "application/json",
       Accept: "application/json",
     },

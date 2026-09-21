@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -23,6 +24,7 @@ export async function GET(req: Request) {
     const response = await fetch(backendUrl, {
       method: "GET",
       headers: {
+        ...(await getForwardedHeaders()),
         Accept: "application/json",
       },
     });

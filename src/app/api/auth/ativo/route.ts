@@ -7,6 +7,7 @@ import {
   TOKEN_COOKIE,
   UNIDADE_COOKIE,
 } from "@/utils/authCookies";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 export async function GET() {
   const baseUrl = getApiBaseUrl();
@@ -25,6 +26,7 @@ export async function GET() {
   const response = await fetch(`${baseUrl}/auth/ativo`, {
     method: "GET",
     headers: {
+      ...(await getForwardedHeaders()),
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: token,

@@ -9,6 +9,7 @@ import {
   UNIDADE_COOKIE,
 } from "@/utils/authCookies";
 import { parseUnidadeId } from "@/utils/userContextUtils";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 /**
  * Fetches the user session directly on the server to avoid client-side flickering.
@@ -26,6 +27,7 @@ export async function getServerUser(): Promise<IUser | null> {
     const response = await fetch(`${baseUrl}/auth/ativo`, {
       method: "GET",
       headers: {
+        ...(await getForwardedHeaders()),
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: token,

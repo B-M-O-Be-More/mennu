@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
+import { getForwardedHeaders } from "@/utils/forwardedHeaders";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -8,6 +9,7 @@ export async function POST(req: Request) {
   const response = await fetch(`${baseUrl}/auth/esqueci-senha`, {
     method: "POST",
     headers: {
+      ...(await getForwardedHeaders()),
       "Content-Type": "application/json",
       Accept: "application/json",
     },
