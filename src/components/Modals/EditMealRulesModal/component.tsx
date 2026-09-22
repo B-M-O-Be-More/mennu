@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Stack,
@@ -15,13 +16,28 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { MealRuleInput, mealRuleSchema } from "@/schemas/mealRulesSchema";
 import React from "react";
 import ClosableAlertBox from "@/components/ClosableAlertBox/Component";
+import { MealRuleResponse } from "@/Interfaces/Meals/MealTypes";
+import { formatMealSchedule } from "@/utils/mealRulesUtils";
+
+function toFormValues(rule: MealRuleResponse): MealRuleInput {
+  return {
+    dailyLimit: rule.dailyLimit,
+    weeklyLimit: rule.weeklyLimit,
+    monthlyLimit: rule.monthlyLimit,
+    minInterval: rule.minInterval,
+    isTimeRestricted: rule.isTimeRestricted,
+  };
+}
 
 export function EditMealRulesModal({
   isOpen,
   onClose,
   initialData,
+  onSave,
 }: EditMealRulesModalProps) {
   const theme = useTheme();
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const {
     register,
@@ -30,19 +46,38 @@ export function EditMealRulesModal({
     reset,
     setValue,
     control,
-  } = useForm({
+  } = useForm<MealRuleInput>({
     resolver: yupResolver(mealRuleSchema),
-    defaultValues: initialData,
+    defaultValues: toFormValues(initialData),
   });
 
   React.useEffect(() => {
     if (isOpen && initialData) {
-      reset(initialData);
+      setError(null);
+      reset(toFormValues(initialData));
     }
   }, [isOpen, initialData, reset]);
 
-  function handleEdit(data: MealRuleInput) {
-    reset();
+  async function handleEdit(data: MealRuleInput) {
+    setError(null);
+    setIsSaving(true);
+
+    try {
+      await onSave?.(data);
+      onClose();
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : "Erro ao salvar as regras de consumo",
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  function handleClose() {
+    if (isSaving) return;
     onClose();
   }
 
@@ -54,10 +89,12 @@ export function EditMealRulesModal({
   return (
     <Modal
       open={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={"Regras de Consumo"}
-      subtitle={initialData.unit}>
+      subtitle={`${initialData.mealTypeLabel} · ${formatMealSchedule(initialData.startTime, initialData.endTime)} · ${initialData.unit}`}>
       <Stack component={"form"} onSubmit={handleSubmit(handleEdit)} gap={2}>
+        {error && <Alert severity="error">{error}</Alert>}
+
         <Stack direction={"row"} flexWrap={"wrap"} gap={1}>
           <Box
             sx={{
@@ -67,6 +104,8 @@ export function EditMealRulesModal({
             <Input
               label="Limite diário"
               placeholder="3"
+              type="number"
+              disabled={isSaving}
               description="Máximo de refeições por dia"
               register={register("dailyLimit", {
                 setValueAs: (v) => (v === "" ? undefined : v),
@@ -83,7 +122,9 @@ export function EditMealRulesModal({
             <Input
               label="Limite Semanal"
               placeholder="15"
-              description="Máximo de refeições por semanaaaa"
+              type="number"
+              disabled={isSaving}
+              description="Máximo de refeições por semana"
               register={register("weeklyLimit", {
                 setValueAs: (v) => (v === "" ? undefined : v),
               })}
@@ -99,6 +140,8 @@ export function EditMealRulesModal({
             <Input
               label="Limite Mensal"
               placeholder="60"
+              type="number"
+              disabled={isSaving}
               description="Máximo de refeições por mês"
               register={register("monthlyLimit", {
                 setValueAs: (v) => (v === "" ? undefined : v),
@@ -112,6 +155,8 @@ export function EditMealRulesModal({
           <Input
             label="Intervalo Mínimo (minutos)"
             placeholder="240"
+            type="number"
+            disabled={isSaving}
             description="Tempo mínimo entre refeições (0 = sem restrição)"
             register={register("minInterval", {
               setValueAs: (v) => (v === "" ? undefined : v),
@@ -133,12 +178,13 @@ export function EditMealRulesModal({
             <Box component={"span"}>
               <Typography>Bloquear Fora do Horário</Typography>
               <Typography color="text.secondary" variant="body2">
-                Impedir acesso fora dos horários configurados
+                Impedir acesso fora dos horários configurados em toda a unidade
               </Typography>
             </Box>
           </Stack>
           <Switch
             checked={!!isTimeRestricted}
+            disabled={isSaving}
             onChange={(e) => setValue("isTimeRestricted", e.target.checked)}
           />
         </Stack>
@@ -151,11 +197,19 @@ export function EditMealRulesModal({
         />
 
         <Stack direction="row" gap={2} justifyContent={"space-between"}>
-          <Button variant="outlined" sx={{ flex: 1 }} onClick={onClose}>
+          <Button
+            variant="outlined"
+            sx={{ flex: 1 }}
+            onClick={handleClose}
+            disabled={isSaving}>
             Cancelar
           </Button>
-          <Button sx={{ flex: 1 }} variant="contained" type="submit">
-            Salvar Alterações
+          <Button
+            sx={{ flex: 1 }}
+            variant="contained"
+            type="submit"
+            disabled={isSaving}>
+            {isSaving ? "Salvando..." : "Salvar Alterações"}
           </Button>
         </Stack>
       </Stack>

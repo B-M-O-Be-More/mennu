@@ -8,8 +8,9 @@ import MealRuleItem from "../../MealsPage/MealRuleItem";
 import React from "react";
 import EditMealRulesModal from "@/components/Modals/EditMealRulesModal";
 import { ConfiguracoesIcon } from "@/components/Icons";
+import { formatMealSchedule } from "@/utils/mealRulesUtils";
 
-export function MealRulesCard({ rule }: MealRulesCardProps) {
+export function MealRulesCard({ rule, onSave }: MealRulesCardProps) {
   const [openEditModal, setOpenEditModal] = React.useState(false);
   const theme = useTheme();
 
@@ -30,12 +31,13 @@ export function MealRulesCard({ rule }: MealRulesCardProps) {
               bgColor="info.main"
             />
             <Box component="span" alignContent={"center"}>
-              <Typography>{rule.unit}</Typography>
+              <Typography>{rule.mealTypeLabel}</Typography>
               <Typography
                 variant="subtitle1"
                 fontWeight={400}
                 color="text.secondary">
-                Configurações de limite e controle
+                {formatMealSchedule(rule.startTime, rule.endTime)} ·{" "}
+                {rule.unit}
               </Typography>
             </Box>
           </Stack>
@@ -52,7 +54,7 @@ export function MealRulesCard({ rule }: MealRulesCardProps) {
             isOpen={openEditModal}
             onClose={() => setOpenEditModal(false)}
             initialData={rule}
-            id={rule.id}
+            onSave={onSave && ((values) => onSave(rule, values))}
           />
         </Stack>
 

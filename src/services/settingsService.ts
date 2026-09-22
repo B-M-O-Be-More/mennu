@@ -104,7 +104,7 @@ export const settingsService = {
     context?: ApiRequestContext | null,
   ) =>
     requestJson<UnitPolicyConfigApi>(`/api/unidades/${id}/politicas`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         ...getContextRequestHeaders(context),
