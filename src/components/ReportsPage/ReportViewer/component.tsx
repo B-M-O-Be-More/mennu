@@ -2,13 +2,14 @@
 
 import React from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { Controller } from "react-hook-form";
 import InfoCard from "@/components/Cards/InfoCard";
 import InfoCardSkeleton from "@/components/Skeletons/Cards/InfoCardSkeleton";
 import Table from "@/components/Tables/Table";
 import Select from "@/components/FormControl/Select";
 import TabButton from "@/components/TabButton";
-import { PaperIcon, StatsIcon, TwistedArrowIcon } from "@/components/Icons";
+import { BuildingIcon, CalendarIcon, PaperIcon, StatsIcon, TwistedArrowIcon } from "@/components/Icons";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useTipoRefeicaoOptions } from "@/hooks/useTipoRefeicaoOptions/hook";
 import { useInsumoOptions } from "@/hooks/useInsumoOptions/hook";
@@ -20,6 +21,9 @@ import { FilterFieldConfig, IReportResumoCard, mapPreviewCards, mapPreviewChart 
 import ReportChart from "../ReportChart";
 import ReportDateField from "../ReportDateField";
 import ReportFilterBar, { ReportFilterChip, ReportFilterGroup } from "../ReportFilterBar";
+import ReportFilterPanel from "../ReportFilterPanel";
+import ReportAppliedFilters, { ReportAppliedFilterPill } from "../ReportAppliedFilters";
+import { pillText, ReportPillDate, ReportPillSelect } from "../ReportFilterPill";
 import ReportPeriodPresets from "../ReportPeriodPresets";
 import ReportExportMenu, { ReportExportFormat } from "../ReportExportMenu";
 import ReportColumnsMenu from "../ReportColumnsMenu";
@@ -145,6 +149,85 @@ function buildChips({ fields, applied, bag, onClearField, onResetPeriod, periodI
   return chips;
 }
 
+/** Campo do formulário onde o valor daquele filtro é guardado. */
+function fieldName(field: FilterFieldConfig): string {
+  if (field.type === "unidade") return "unidade_id";
+  if (field.type === "tipoRefeicao") return "tipo_refeicao_id";
+  if (field.type === "insumo") return "insumo_id";
+  if (field.type === "terminal") return "terminal_id";
+  return field.type === "usuario" || field.type === "select" ? field.field : "";
+}
+
+/** Opções do campo, sempre com a entrada "sem filtro" na frente. */
+function fieldOptions(field: FilterFieldConfig, bag: OptionsBag): Option[] {
+  if (field.type === "unidade") return bag.unitOptions;
+  if (field.type === "tipoRefeicao") return bag.tipoRefeicaoOptions;
+  if (field.type === "insumo") return [{ label: "Todos os insumos", value: "" }, ...bag.insumoOptions];
+  if (field.type === "terminal") return [{ label: "Todos os terminais", value: "" }, ...bag.terminalOptions];
+  if (field.type === "usuario") return [{ label: `Todos (${field.label})`, value: "" }, ...bag.userOptions];
+  if (field.type === "select") return field.options;
+  return [];
+}
+
+/** Prefixo da pílula. Unidade não tem: o ícone de prédio já diz o campo. */
+function fieldPrefix(field: FilterFieldConfig): string | undefined {
+  if (field.type === "tipoRefeicao") return "Tipo";
+  if (field.type === "insumo") return "Insumo";
+  if (field.type === "terminal") return "Terminal";
+  return field.type === "usuario" || field.type === "select" ? field.label : undefined;
+}
+
+/** Só unidade e período têm ícone, como no desenho da faixa. */
+function fieldIcon(field: FilterFieldConfig) {
+  return field.type === "unidade" ? <BuildingIcon width={12} height={12} /> : undefined;
+}
+
+interface AppliedPillDeps {
+  fields: FilterFieldConfig[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  applied: Record<string, any>;
+  bag: OptionsBag;
+}
+
+/**
+ * Pílulas da faixa de recorte. Ao contrário dos chips da barra, entram
+ * também os campos sem valor: a faixa responde de onde vieram os números,
+ * e um campo omitido deixaria a resposta pela metade.
+ */
+function buildAppliedPills({ fields, applied, bag }: AppliedPillDeps): ReportAppliedFilterPill[] {
+  const pills: ReportAppliedFilterPill[] = [];
+
+  fields.forEach((field) => {
+    if (field.type === "dateRange") {
+      const dataInicio = applied.data_inicio as Dayjs | undefined;
+      const dataFim = applied.data_fim as Dayjs | undefined;
+      if (dataInicio && dataFim) {
+        pills.push({
+          key: "periodo",
+          icon: <CalendarIcon width={12} height={12} />,
+          label: `${dataInicio.format("DD/MM")} a ${dataFim.format("DD/MM/YYYY")}`,
+        });
+      }
+      return;
+    }
+
+    const name = fieldName(field);
+    const value = applied[name];
+
+    pills.push({
+      key: name,
+      icon: fieldIcon(field),
+      label: pillText(
+        fieldOptions(field, bag),
+        value === undefined || value === null ? "" : String(value),
+        fieldPrefix(field),
+      ),
+    });
+  });
+
+  return pills;
+}
+
 /** Fallback só usado quando o card não veio de `/preview` (sem `cor` do backend). */
 const CARD_PALETTE: { bg: string; color: string }[] = [
   { bg: "info.main", color: "#1447E6" },
@@ -243,6 +326,7 @@ interface FilterFieldProps {
 
 function FilterField({ control, field, bag }: FilterFieldProps) {
   const { unitOptions, tipoRefeicaoOptions, insumoOptions, terminalOptions, userOptions } = bag;
+  const visibleLabel = fieldLabel(field);
 
   if (field.type === "dateRange") {
     return (
@@ -254,13 +338,13 @@ function FilterField({ control, field, bag }: FilterFieldProps) {
   }
 
   if (field.type === "unidade") {
-    return <Select label={fieldLabel(field)} options={unitOptions} name="unidade_id" control={control} size="small" />;
+    return <Select label={visibleLabel} options={unitOptions} name="unidade_id" control={control} size="small" />;
   }
 
   if (field.type === "tipoRefeicao") {
     return (
       <Select
-        label={fieldLabel(field)}
+        label={visibleLabel}
         options={tipoRefeicaoOptions}
         name="tipo_refeicao_id"
         control={control}
@@ -272,7 +356,7 @@ function FilterField({ control, field, bag }: FilterFieldProps) {
   if (field.type === "insumo") {
     return (
       <Select
-        label={fieldLabel(field)}
+        label={visibleLabel}
         options={[{ label: "Todos os insumos", value: "" }, ...insumoOptions]}
         name="insumo_id"
         control={control}
@@ -284,7 +368,7 @@ function FilterField({ control, field, bag }: FilterFieldProps) {
   if (field.type === "terminal") {
     return (
       <Select
-        label={fieldLabel(field)}
+        label={visibleLabel}
         options={[{ label: "Todos os terminais", value: "" }, ...terminalOptions]}
         name="terminal_id"
         control={control}
@@ -296,7 +380,7 @@ function FilterField({ control, field, bag }: FilterFieldProps) {
   if (field.type === "usuario") {
     return (
       <Select
-        label={field.label}
+        label={visibleLabel}
         options={[{ label: `Todos (${field.label})`, value: "" }, ...userOptions]}
         name={field.field}
         control={control}
@@ -305,7 +389,62 @@ function FilterField({ control, field, bag }: FilterFieldProps) {
     );
   }
 
-  return <Select label={field.label} options={field.options} name={field.field} control={control} size="small" />;
+  return <Select label={visibleLabel} options={field.options} name={field.field} control={control} size="small" />;
+}
+
+interface DatePillProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: any;
+  name: string;
+  ariaLabel: string;
+}
+
+function DatePill({ control, name, ariaLabel }: DatePillProps) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <ReportPillDate
+          value={field.value ?? null}
+          onChange={field.onChange}
+          maxDate={dayjs()}
+          ariaLabel={ariaLabel}
+        />
+      )}
+    />
+  );
+}
+
+/** O mesmo campo do `FilterField`, na forma de pílula que o painel usa. */
+function FilterPill({ control, field, bag }: FilterFieldProps) {
+  if (field.type === "dateRange") {
+    return (
+      <>
+        <DatePill control={control} name="data_inicio" ariaLabel="Data inicial" />
+        <DatePill control={control} name="data_fim" ariaLabel="Data Final" />
+      </>
+    );
+  }
+
+  const options = fieldOptions(field, bag);
+
+  return (
+    <Controller
+      name={fieldName(field)}
+      control={control}
+      render={({ field: input }) => (
+        <ReportPillSelect
+          value={input.value === undefined || input.value === null ? "" : String(input.value)}
+          options={options}
+          onChange={input.onChange}
+          prefix={fieldPrefix(field)}
+          icon={fieldIcon(field)}
+          ariaLabel={fieldLabel(field)}
+        />
+      )}
+    />
+  );
 }
 
 const ESCOPO_TYPES = ["unidade", "tipoRefeicao", "insumo", "terminal", "usuario"];
@@ -351,6 +490,8 @@ export function ReportViewer({ entry }: ReportViewerProps) {
   const [chartTipo, setChartTipo] = React.useState("barra");
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  /** Quando os números na tela chegaram — é o "gerado em" da faixa. */
+  const [generatedAt, setGeneratedAt] = React.useState<Dayjs | null>(null);
   /** Bump manual do "Tentar novamente" — refaz a busca sem mexer no recorte. */
   const [reloadToken, setReloadToken] = React.useState(0);
 
@@ -382,6 +523,8 @@ export function ReportViewer({ entry }: ReportViewerProps) {
         } else if (entry.mapResumoCardsFallback) {
           setCards(entry.mapResumoCardsFallback(secondData));
         }
+
+        setGeneratedAt(dayjs());
       } catch (err) {
         if (cancelled) return;
         setError(err instanceof Error ? err.message : `Erro ao carregar ${entry.titulo}`);
@@ -496,6 +639,37 @@ export function ReportViewer({ entry }: ReportViewerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry.filterFields, control, unitOptions, tipoRefeicaoOptions, insumoOptions, terminalOptions, userOptions, draft.data_inicio, draft.data_fim, applied]);
 
+  const isPanel = entry.filterLayout === "painel";
+
+  /** "Gerar Relatório" refaz a busca mesmo sem alteração — é o que o nome promete. */
+  const regenerate = React.useCallback(() => {
+    filters.apply();
+    setReloadToken((token) => token + 1);
+  }, [filters]);
+
+  // Ordem do desenho: escopo e refinamento primeiro, período no fim.
+  const panelFields = React.useMemo(() => {
+    if (!isPanel) return null;
+
+    const semPeriodo = entry.filterFields.filter((field) => field.type !== "dateRange");
+
+    return (
+      <>
+        {semPeriodo.map((field, index) => (
+          <FilterPill key={`painel-${index}`} control={control} field={field} bag={optionsBag} />
+        ))}
+        {hasDateRange && <FilterPill control={control} field={{ type: "dateRange" }} bag={optionsBag} />}
+      </>
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPanel, entry.filterFields, hasDateRange, control, unitOptions, tipoRefeicaoOptions, insumoOptions, terminalOptions, userOptions]);
+
+  const appliedPills = React.useMemo(
+    () => (isPanel ? buildAppliedPills({ fields: entry.filterFields, applied, bag: optionsBag }) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isPanel, entry.filterFields, applied, unitOptions, tipoRefeicaoOptions],
+  );
+
   const emptyActions = [
     ...(filters.isDefault ? [] : [{ label: "Limpar filtros", onClick: filters.clearAll }]),
     ...(hasDateRange ? [{ label: "Ampliar para 90 dias", onClick: () => filters.expandPeriod(90) }] : []),
@@ -536,19 +710,29 @@ export function ReportViewer({ entry }: ReportViewerProps) {
         <ReportExportMenu formats={exportFormats} />
       </Stack>
 
-      <ReportFilterBar
-        groups={groups}
-        chips={chips}
-        dirty={filters.dirty}
-        canClear={!filters.isDefault}
-        canUndo={filters.canUndo}
-        dateIssue={filters.dateIssue}
-        isLoading={isLoading}
-        onApply={filters.apply}
-        onDiscard={filters.discard}
-        onClear={filters.clearAll}
-        onUndo={filters.undo}
-      />
+      {isPanel ? (
+        <ReportFilterPanel
+          dateIssue={filters.dateIssue}
+          isLoading={isLoading}
+          onApply={regenerate}
+        >
+          {panelFields}
+        </ReportFilterPanel>
+      ) : (
+        <ReportFilterBar
+          groups={groups}
+          chips={chips}
+          dirty={filters.dirty}
+          canClear={!filters.isDefault}
+          canUndo={filters.canUndo}
+          dateIssue={filters.dateIssue}
+          isLoading={isLoading}
+          onApply={filters.apply}
+          onDiscard={filters.discard}
+          onClear={filters.clearAll}
+          onUndo={filters.undo}
+        />
+      )}
 
       {error && activeKey !== "extra" && (
         <ReportErrorState
@@ -561,6 +745,8 @@ export function ReportViewer({ entry }: ReportViewerProps) {
 
       {activeKey === "overview" ? (
         <>
+          {/* {isPanel && <ReportAppliedFilters pills={appliedPills} generatedAt={generatedAt} />} */}
+
           {(isLoading || cards.length > 0) && (
             <ReportSection id="resumo" title="Resumo do período" plain>
               <Box display="grid" gap={2} gridTemplateColumns={{ xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }}>
