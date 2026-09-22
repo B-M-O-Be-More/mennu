@@ -105,6 +105,15 @@ export default function AuditorStartModal({
   const itensParaConferir =
     checklist?.itens_pendentes ?? checklist?.total_itens ?? audit.total_itens ?? 0;
 
+  // Não há o que "começar" quando tudo já foi conferido — o auditor vai
+  // direto ao resumo, que é onde está o "Conferência concluída". Exige o
+  // checklist carregado: os totais do `audit` não dizem quanto foi conferido.
+  const isConcluida = Boolean(
+    checklist && checklist.total_itens > 0 && checklist.itens_pendentes === 0,
+  );
+
+  const contador = isConcluida ? checklist?.total_itens ?? 0 : itensParaConferir;
+
   const dataReferencia = checklist?.data_referencia ?? audit.data_referencia;
 
   return (
@@ -137,11 +146,18 @@ export default function AuditorStartModal({
           />
         </Stack>
 
-        <Alert severity="info" variant="outlined" sx={{ borderRadius: 2 }}>
-          Confira fisicamente cada item e informe a quantidade encontrada no
-          local. Não consulte documentos ou sistemas — apenas o que está diante
-          de você.
-        </Alert>
+        {isConcluida ? (
+          <Alert severity="success" variant="outlined" sx={{ borderRadius: 2 }}>
+            Todos os itens já foram conferidos. Revise o resumo da conferência
+            e envie a auditoria.
+          </Alert>
+        ) : (
+          <Alert severity="info" variant="outlined" sx={{ borderRadius: 2 }}>
+            Confira fisicamente cada item e informe a quantidade encontrada no
+            local. Não consulte documentos ou sistemas — apenas o que está
+            diante de você.
+          </Alert>
+        )}
 
         <Stack
           direction="row"
@@ -162,10 +178,10 @@ export default function AuditorStartModal({
                 color={theme.palette.text.secondary}
               />
               <Typography variant="h5" fontWeight={600}>
-                {itensParaConferir}
+                {contador}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                itens para conferir
+                {isConcluida ? "itens conferidos" : "itens para conferir"}
               </Typography>
             </React.Fragment>
           )}
@@ -182,7 +198,7 @@ export default function AuditorStartModal({
           }}
           sx={{ paddingY: 1.5 }}
         >
-          Começar conferência
+          {isConcluida ? "Ver resumo da conferência" : "Começar conferência"}
         </Button>
       </Stack>
     </Modal>

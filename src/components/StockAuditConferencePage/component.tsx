@@ -215,6 +215,11 @@ function StockAuditConferencePageContent() {
         (item) => toAuditNumber(item.quantidade_encontrada) === null,
       );
       setIndex(firstPending >= 0 ? firstPending : 0);
+
+      // Nada pendente: não há o que conferir item a item, então a entrada é
+      // o resumo — já no estado "Conferência concluída", pronto para enviar.
+      // Só vale na carga; depois o auditor navega à vontade entre as views.
+      if (detail.itens.length > 0 && firstPending < 0) setView("resumo");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao carregar a auditoria");
       setAudit(null);
@@ -279,6 +284,18 @@ function StockAuditConferencePageContent() {
   ).length;
   const pendentes = Math.max(items.length - conferidos, 0);
   const isLastItem = index >= items.length - 1;
+
+  // O item atual é gravado no próprio clique do rodapé, então ele não conta
+  // como pendente aqui: se nada mais falta, a conferência termina neste
+  // clique — mesmo que o auditor esteja no meio da lista (voltou para
+  // corrigir um item, entrou pela lista lateral, retomou um rascunho…).
+  const pendentesAposSalvar = items.filter(
+    (item) =>
+      item.id !== currentItemId &&
+      toAuditNumber(item.quantidade_encontrada) === null,
+  ).length;
+
+  const isFinalStep = isLastItem || pendentesAposSalvar === 0;
 
   const progress = items.length
     ? Math.round((conferidos / items.length) * 100)
@@ -384,7 +401,7 @@ function StockAuditConferencePageContent() {
     const saved = await saveCurrentItem();
     if (!saved) return;
 
-    if (isLastItem) {
+    if (isFinalStep) {
       setView("resumo");
       return;
     }
@@ -956,13 +973,13 @@ function StockAuditConferencePageContent() {
             <Button
               variant="contained"
               sx={{ flex: 2 }}
-              endIcon={!isLastItem ? <KeyboardArrowRight /> : undefined}
+              endIcon={!isFinalStep ? <KeyboardArrowRight /> : undefined}
               onClick={handleNext}
               disabled={isSaving}
             >
               {isSaving
                 ? "Salvando..."
-                : isLastItem
+                : isFinalStep
                   ? "Concluir conferência"
                   : "Próximo"}
             </Button>
