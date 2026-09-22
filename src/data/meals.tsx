@@ -1,5 +1,4 @@
 import {
-  MealRuleResponse,
   MealTypeResponse,
   MealRecordsResponse,
   Unit,
@@ -85,45 +84,6 @@ export const mealTypesMock: MealTypeResponse[] = [
     endTime: "2026-02-04T23:00:00.000Z",
     validations: [mealValidations[0], mealValidations[2]],
     units: [unitsMock[0], unitsMock[1], unitsMock[2]],
-  },
-];
-
-export const mealRulesMock: MealRuleResponse[] = [
-  {
-    id: "1",
-    unit: unitsMock[0].label,
-    dailyLimit: 3,
-    weeklyLimit: 15,
-    monthlyLimit: 60,
-    minInterval: 240,
-    isTimeRestricted: true,
-  },
-  {
-    id: "2",
-    unit: unitsMock[1].label,
-    dailyLimit: 3,
-    weeklyLimit: 15,
-    monthlyLimit: 60,
-    minInterval: 240,
-    isTimeRestricted: true,
-  },
-  {
-    id: "3",
-    unit: unitsMock[2].label,
-    dailyLimit: 3,
-    weeklyLimit: 15,
-    monthlyLimit: 60,
-    minInterval: 240,
-    isTimeRestricted: false,
-  },
-  {
-    id: "4",
-    unit: unitsMock[3].label,
-    dailyLimit: 3,
-    weeklyLimit: 15,
-    monthlyLimit: 60,
-    minInterval: 240,
-    isTimeRestricted: false,
   },
 ];
 

@@ -119,7 +119,7 @@ export function MealsPage() {
       {activeTab === 1 && (
         <MealTypesTab refreshKey={mealTypesRefreshKey} onNotify={handleNotify} />
       )}
-      {activeTab === 2 && <MealRulesTab />}
+      {activeTab === 2 && <MealRulesTab onNotify={handleNotify} />}
 
       <Toast
         open={toast.open}

@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const context = readContextRequestHeaders(req.headers);
   if (context && context.unidade_id !== Number(id)) {
@@ -33,7 +33,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   try {
     return proxyResponse(await fetch(`${getApiBaseUrl()}/unidade/${id}/politicas`, {
-      method: "PUT", headers, body: await req.text(),
+      method: "PATCH", headers, body: await req.text(),
     }));
   } catch (err) {
     return proxyError(err);

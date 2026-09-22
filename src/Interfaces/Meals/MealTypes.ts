@@ -89,8 +89,13 @@ export interface TipoRefeicaoPaginatedApi {
 }
 
 export interface MealRuleResponse {
+  /** Chave da política dentro da unidade (`tipo_refeicao`). */
   id: string;
   unit: string;
+  mealType: string;
+  mealTypeLabel: string;
+  startTime: string;
+  endTime: string;
   dailyLimit: number;
   weeklyLimit: number;
   monthlyLimit: number;

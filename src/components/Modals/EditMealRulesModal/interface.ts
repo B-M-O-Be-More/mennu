@@ -1,8 +1,9 @@
 import { MealRuleResponse } from "@/Interfaces/Meals/MealTypes";
+import { MealRuleInput } from "@/schemas/mealRulesSchema";
 
 export interface EditMealRulesModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData: MealRuleResponse;
-  id: string;
+  onSave?: (values: MealRuleInput) => Promise<void>;
 }
