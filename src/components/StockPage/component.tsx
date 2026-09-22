@@ -423,39 +423,51 @@ export function StockPage({}: StockPageProps) {
               {error && <Alert severity="error">{error}</Alert>}
 
               <Stack
-                direction={{ xs: "column", md: "row" }}
+                direction={{ xs: "column", lg: "row" }}
                 justifyContent="space-between"
                 gap={2}
-                alignItems={{ xs: "stretch", md: "center" }}
+                alignItems={{ xs: "stretch", lg: "center" }}
               >
                 <Typography>Itens Cadastrados</Typography>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   gap={2}
-                  flexWrap="wrap"
-                  minWidth={{ md: "450px" }}
+                  flexWrap="nowrap"
+                  alignItems="flex-start"
+                  width="100%"
+                  maxWidth={{ lg: "760px" }}
                 >
-                  <Input
-                    placeholder="Buscar item..."
-                    icon={<SearchIcon />}
-                    register={register("itemSearch")}
-                  />
-                  <Can permissions="estoque.view.saldo">
-                    <Select
-                      options={unitOptions}
-                      name="unidade"
-                      control={control}
-                      formControlSx={{ minWidth: { sm: "200px" } }}
+                  <Box sx={{ flex: "1 1 auto", minWidth: 0, width: "100%" }}>
+                    <Input
+                      placeholder="Buscar item..."
+                      icon={<SearchIcon />}
+                      register={register("itemSearch")}
                     />
+                  </Box>
+                  <Can permissions="estoque.view.saldo">
+                    <Box
+                      sx={{
+                        flex: { xs: "1 1 auto", sm: "0 0 clamp(160px, 24vw, 200px)" },
+                        width: "100%",
+                      }}
+                    >
+                      <Select
+                        options={unitOptions}
+                        name="unidade"
+                        control={control}
+                      />
+                    </Box>
                   </Can>
                   <Button
                     variant="contained"
                     startIcon={<PlusIcon />}
                     onClick={() => setOpenNewStockModal(true)}
                     sx={{
-                      height: "50px",
+                      flexShrink: 0,
+                      height: "56px",
+                      width: { xs: "100%", sm: "auto" },
                       whiteSpace: "nowrap",
-                      paddingX: "2rem",
+                      paddingX: { xs: "2rem", sm: "1.5rem", md: "2rem" },
                     }}
                   >
                     Novo Item
