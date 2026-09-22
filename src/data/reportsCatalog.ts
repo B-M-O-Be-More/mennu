@@ -112,6 +112,13 @@ export interface ReportCatalogEntry {
   permission: PermissionCode;
   endpoints: ReportEndpoints;
   filterFields: FilterFieldConfig[];
+  /**
+   * Como os filtros aparecem. `grupos` (padrão) é a barra com legendas,
+   * chips removíveis e desfazer; `painel` é o desenho enxuto — campos numa
+   * linha, "Gerar Relatório" e o recorte numa faixa acima dos cards. Só vale
+   * para relatório de poucos campos, onde tudo cabe numa linha.
+   */
+  filterLayout?: "grupos" | "painel";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: IColumn<any>[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -211,6 +218,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
         ],
       },
     ],
+    filterLayout: "painel",
     columns: reportsMenuColumns as IColumn<ICardapioPlanejamentoRow>[],
     mapRow: mapApiRowCardapioPlanejamento,
     contextColumns: { unidade_id: "unidade", tipo_refeicao_id: "tipoRefeicao", status: "status" },
@@ -239,6 +247,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
       { type: "select", field: "sucesso", label: "Resultado", options: SUCESSO_OPTIONS },
       { type: "tipoRefeicao" },
     ],
+    filterLayout: "painel",
     columns: acessoColumns,
     mapRow: mapApiRowAcesso,
     contextColumns: { terminal_id: "terminal", tipo_refeicao_id: "tipoRefeicao", sucesso: "sucesso" },
@@ -263,6 +272,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
       { type: "insumo" },
       { type: "select", field: "apenas_divergentes", label: "Divergência", options: DIVERGENTES_OPTIONS },
     ],
+    filterLayout: "painel",
     columns: auditoriaRelatorioColumns,
     mapRow: mapApiRowAuditoria,
     contextColumns: {
@@ -292,6 +302,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
       { type: "select", field: "categoria_usuario", label: "Categoria", options: CATEGORIA_USUARIO_OPTIONS },
       { type: "tipoRefeicao" },
     ],
+    filterLayout: "painel",
     columns: presencaColumns,
     mapRow: mapApiRowPresenca,
     contextColumns: { unidade_id: "unidade", categoria_usuario: "categoria" },
@@ -314,6 +325,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
       { type: "select", field: "tipo", label: "Tipo", options: TIPO_TERMINAL_OPTIONS },
       { type: "dateRange" },
     ],
+    filterLayout: "painel",
     columns: terminaisColumns,
     mapRow: mapApiRowTerminais,
     contextColumns: { unidade_id: "unidade", status: "statusAtual", tipo: "tipo" },
@@ -337,6 +349,7 @@ export const REPORTS_CATALOG: ReportCatalogEntry[] = [
       { type: "select", field: "ativo", label: "Status", options: ATIVO_OPTIONS },
       { type: "select", field: "possui_nfc", label: "Credencial NFC", options: NFC_OPTIONS },
     ],
+    filterLayout: "painel",
     columns: usuariosReportColumns,
     mapRow: mapApiRowUsuariosReport,
     contextColumns: { categoria_usuario: "categoria", ativo: "ativo", possui_nfc: "possuiNfc" },

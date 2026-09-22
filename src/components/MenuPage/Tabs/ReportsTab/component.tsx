@@ -127,7 +127,7 @@ export function ReportsTab({ }: ReportsTabProps) {
 
   return (
     <>
-      <Stack direction={"row"} gap={2}>
+      <Stack direction={"row"} gap={2} flexWrap="wrap">
         {tabs.map((tab, index) => (
           <TabButton
             key={index}
@@ -141,31 +141,29 @@ export function ReportsTab({ }: ReportsTabProps) {
       </Stack>
 
       <Card>
-        <Stack gap={{ xs: 1, sm: 2 }} direction={"row"} flexWrap="wrap">
+        {/* Grade, não linha flex: `DatePicker` ocupa 100% da largura, então
+            numa `Stack` em linha cada data empurrava as demais para a linha
+            seguinte. Aqui os cinco campos dividem o espaço e vão de 5 a 1
+            coluna conforme couber. */}
+        <Box
+          display="grid"
+          gap={{ xs: 1, sm: 2 }}
+          gridTemplateColumns="repeat(auto-fit, minmax(min(200px, 100%), 1fr))"
+          alignItems="flex-end"
+        >
           <DatePicker label="Data Início" name="dataInicio" control={control} />
           <DatePicker label="Data Fim" name="dataFim" control={control} />
 
-          <Select
-            options={unitOptions}
-            name="unidade"
-            control={control}
-            formControlSx={{ maxWidth: "250px" }}
-          />
+          <Select options={unitOptions} name="unidade" control={control} />
 
           <Select
             options={[{ label: "Todos os tipos", value: "" }, ...tipoRefeicaoOptions.filter((o) => o.value !== "")]}
             name="tipo"
             control={control}
-            formControlSx={{ maxWidth: "250px" }}
           />
 
-          <Select
-            options={STATUS_OPTIONS}
-            name="status"
-            control={control}
-            formControlSx={{ maxWidth: "250px" }}
-          />
-        </Stack>
+          <Select options={STATUS_OPTIONS} name="status" control={control} />
+        </Box>
       </Card>
 
       {error && <Alert severity="error">{error}</Alert>}

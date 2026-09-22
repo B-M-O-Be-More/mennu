@@ -40,7 +40,7 @@ export function ReportFilterBar({
       sx={{ p: { xs: 1.5, md: 2 } }}
     >
       <Stack gap={1.5}>
-        <Stack direction="row" gap={1} alignItems="center">
+        <Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
           <FilterIcon height={18} width={18} />
           <Typography variant="body2" component="h2" fontWeight={600}>
             Filtros
@@ -52,10 +52,16 @@ export function ReportFilterBar({
           )}
         </Stack>
 
+        {/* `auto-fit` reflui por espaço real, não por breakpoint: antes ia de 1
+            coluna direto para 3 no `md`, desperdiçando a largura do `sm` e
+            espremendo os grupos logo acima de 900px — onde a sidebar come boa
+            parte do espaço e as trilhas `auto`, que não encolhem abaixo do
+            min-content, chegam a furar o card. O `min(...)` cobre o container
+            mais estreito que a própria trilha mínima. */}
         <Box
           display="grid"
           gap={2}
-          gridTemplateColumns={{ xs: "1fr", md: `repeat(${Math.min(groups.length, 3)}, auto)` }}
+          gridTemplateColumns="repeat(auto-fit, minmax(min(240px, 100%), 1fr))"
           alignItems="flex-end"
         >
           {groups.map((group) => (
@@ -69,7 +75,7 @@ export function ReportFilterBar({
                 {group.titulo}
               </Typography>
               {group.extra && <Box mb={1}>{group.extra}</Box>}
-              <Box display="grid" gap={1} gridTemplateColumns="repeat(auto-fill, minmax(150px, 1fr))">
+              <Box display="grid" gap={1} gridTemplateColumns="repeat(auto-fill, minmax(min(150px, 100%), 1fr))">
                 {group.children}
               </Box>
             </Box>
@@ -99,13 +105,20 @@ export function ReportFilterBar({
                   color="warning"
                   variant="outlined"
                   onDelete={chip.onRemove}
+                  sx={{ maxWidth: "100%" }}
                 />
               </li>
             ))}
           </Stack>
         )}
 
-        <Stack direction="row" gap={1} flexWrap="wrap" justifyContent="flex-end">
+        <Stack
+          direction="row"
+          gap={1}
+          flexWrap="wrap"
+          justifyContent="flex-end"
+          sx={{ "& > *": { flexGrow: { xs: 1, sm: 0 } } }}
+        >
           {canUndo && onUndo && (
             <Button
               size="small"
