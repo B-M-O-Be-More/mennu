@@ -25,15 +25,17 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const unidadeId = searchParams.get("unidade_id");
-
   const url = new URL(`${baseUrl}/insumo/categorias`);
-  if (unidadeId) url.searchParams.append("unidade_id", unidadeId);
+
+  if (unidadeId) {
+    url.searchParams.set("unidade_id", unidadeId);
+  }
 
   try {
     const response = await fetch(url.toString(), { headers });
     const data = await safeJson(response);
     return NextResponse.json(data, { status: response.status });
-  } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json({ message: String(error) }, { status: 500 });
   }
 }

@@ -18,3 +18,24 @@ export async function POST(req: NextRequest) {
     return proxyError(err);
   }
 }
+
+export async function DELETE() {
+  const authHeaders = await getAuthHeaders();
+  if (!authHeaders) {
+    return NextResponse.json(
+      { message: "Autenticação necessária" },
+      { status: 401 },
+    );
+  }
+
+  try {
+    return proxyResponse(
+      await fetch(`${getApiBaseUrl()}/configuracoes/geral/logo/`, {
+        method: "DELETE",
+        headers: authHeaders,
+      }),
+    );
+  } catch (err) {
+    return proxyError(err);
+  }
+}

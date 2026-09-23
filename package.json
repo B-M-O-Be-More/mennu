@@ -36,6 +36,7 @@
     "react-hook-form": "^7.71.1",
     "react-i18next": "^16.2.4",
     "react-icons": "^5.5.0",
+    "react-image-crop": "^11.1.2",
     "react-pro-sidebar": "^1.1.0",
     "react-url-modal": "^0.5.1",
     "use-mask-input": "^3.5.2",

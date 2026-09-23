@@ -78,18 +78,18 @@ export default function Input({
       {label && (
         <Stack
           direction={"row"}
-          gap={1}
+          gap={0.5}
+          alignItems="center"
+          mb={1}
           sx={{
             "& svg": {
               width: 18,
-              height: 20,
+              height: 18,
             },
           }}
         >
-          {labelIcon}
           <Typography
             variant="body2"
-            mb={1}
             color="text.label"
             fontWeight={400}
           >
@@ -103,6 +103,7 @@ export default function Input({
               *
             </Typography>
           </Typography>
+          {labelIcon}
         </Stack>
       )}
 

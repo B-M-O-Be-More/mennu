@@ -6,11 +6,18 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { BottomNavComponent } from "@/components/BottomNav";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
-import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
+import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 import { hasAdminAccess } from "@/utils/userUtils";
 import { viewPermission } from "@/utils/permissionUtils";
 import { SELECT_UNIT_ROUTE } from "@/utils/userContextUtils";
 import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
+import {
+  DEFAULT_SYSTEM_LOGO_SRC,
+  GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+  GeneralSettingsLogoUpdatedDetail,
+  getGeneralSettingsLogoSrc,
+  settingsService,
+} from "@/services/settingsService";
 
 export default function MainLayout({
   children,
@@ -26,6 +33,9 @@ export default function MainLayout({
     clearContext,
   } = useUser();
   const router = useRouter();
+  const [sidebarLogoSrc, setSidebarLogoSrc] = React.useState(
+    DEFAULT_SYSTEM_LOGO_SRC,
+  );
 
   const pathname = usePathname();
   const previousPathnameRef = React.useRef<string | null>(null);
@@ -39,9 +49,6 @@ export default function MainLayout({
     { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios", permissions: viewPermission("cardapio") },
     { id: "estoque", label: "Estoque", icon: <EstoqueIcon />, path: "/estoque", permissions: viewPermission("estoque") },
     { id: "refeicoes", label: "Refeições", icon: <RefeicoesIcon />, path: "/refeicoes", permissions: viewPermission("refeicaoservida") },
-    // TODO: a API ainda não expõe um recurso para solicitações extras — sem
-    // `permissions`, o item fica visível para todos.
-    { id: "solicitacoes-extras", label: "Solicitações Extras", icon: <SolicitacoesExtrasIcon />, path: "/solicitacoes-extras" },
     { id: "relatorios", label: "Relatórios", icon: <RelatoriosIcon />, path: "/relatorios", permissions: viewPermission("relatorio") },
     { id: "usuarios", label: "Usuários", icon: <UsuariosIcon />, path: "/usuarios", permissions: viewPermission("usuario") },
     { id: "terminal", label: "Terminal", icon: <TerminalIcon />, path: "/terminal", permissions: viewPermission("terminal") },
@@ -123,6 +130,52 @@ export default function MainLayout({
     Boolean(activeContext);
 
   React.useEffect(() => {
+    let active = true;
+
+    // Evita exibir por alguns instantes a marca da empresa anterior.
+    setSidebarLogoSrc(DEFAULT_SYSTEM_LOGO_SRC);
+
+    if (!shouldShowSidebar || !activeContext?.empresa_id) {
+      return () => {
+        active = false;
+      };
+    }
+
+    settingsService
+      .getGeneral()
+      .then((settings) => {
+        if (active) setSidebarLogoSrc(getGeneralSettingsLogoSrc(settings));
+      })
+      .catch(() => {
+        if (active) setSidebarLogoSrc(DEFAULT_SYSTEM_LOGO_SRC);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [shouldShowSidebar, activeContext?.empresa_id]);
+
+  React.useEffect(() => {
+    const handleLogoUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<GeneralSettingsLogoUpdatedDetail>;
+      setSidebarLogoSrc(
+        customEvent.detail?.logoSrc || DEFAULT_SYSTEM_LOGO_SRC,
+      );
+    };
+
+    window.addEventListener(
+      GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+      handleLogoUpdated,
+    );
+    return () => {
+      window.removeEventListener(
+        GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+        handleLogoUpdated,
+      );
+    };
+  }, []);
+
+  React.useEffect(() => {
     // Sai da tela cheia sempre que a rota atual não for mais kiosk — cobre
     // o botão de voltar, o botão nativo do navegador, qualquer navegação.
     // Não depende de mount/unmount do componente do kiosk (isso rodava em
@@ -170,7 +223,7 @@ export default function MainLayout({
           onSwitchUnit={clearContext}
           switchUnitIcon={<BuildingIcon />}
           showAdminSection={hasAdminAccess(user)}
-          logoSrc="/assets/logo.svg"
+          logoSrc={sidebarLogoSrc}
           activePath={pathname}
         />
       )}

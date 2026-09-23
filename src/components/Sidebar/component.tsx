@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import NextLink from "next/link";
-import Image from "next/image";
 import { SidebarProps } from "./interface";
 import { SidebarMenuItem } from "@/Interfaces/Sidebar/menuItem";
 import Can from "@/components/Can";
@@ -142,17 +141,30 @@ interface SidebarLogoProps {
 }
 
 function SidebarLogo({ logoSrc }: SidebarLogoProps) {
-  if (logoSrc) {
+  const [hasLoadError, setHasLoadError] = React.useState(false);
+
+  React.useEffect(() => {
+    setHasLoadError(false);
+  }, [logoSrc]);
+
+  const imageSrc = hasLoadError ? "/assets/logo.svg" : logoSrc;
+
+  if (imageSrc) {
     return (
-      <Box sx={{ position: "relative", width: "100%", height: "100%" }}>
-        <Image
-          src={logoSrc}
-          alt="Logo"
-          fill
-          style={{ objectFit: "contain" }}
-          priority
-        />
-      </Box>
+      <Box
+        component="img"
+        src={imageSrc}
+        alt="Logo do sistema Mennu"
+        onError={() => {
+          if (imageSrc !== "/assets/logo.svg") setHasLoadError(true);
+        }}
+        sx={{
+          display: "block",
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+        }}
+      />
     );
   }
 

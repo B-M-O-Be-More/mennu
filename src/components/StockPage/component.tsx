@@ -1,6 +1,17 @@
 "use client";
 
-import { Stack, Typography, Box, Button, Alert, Tooltip } from "@mui/material";
+import {
+  Stack,
+  Typography,
+  Box,
+  Button,
+  Alert,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select as MuiSelect,
+} from "@mui/material";
 import React, { useState, useEffect } from "react";
 import {
   AlertIcon,
@@ -43,6 +54,35 @@ const MOVEMENT_TABS = { auditoria: 0, historico: 1 } as const;
 /** Abas principais da tela de estoque. */
 const MAIN_TABS = { estoque: 0, movimentacoes: 1, saldo: 2 } as const;
 
+type StockFilterState = {
+  categoria: string;
+  tipo_padrao: string;
+  unidade_medida: string;
+  quantidade_atual: "none" | "asc" | "desc";
+  ativo: "all" | "active" | "inactive";
+};
+
+const EMPTY_STOCK_FILTERS: StockFilterState = {
+  categoria: "all",
+  tipo_padrao: "all",
+  unidade_medida: "all",
+  quantidade_atual: "none",
+  ativo: "all",
+};
+
+const EMPTY_FILTER_VALUE = "__empty__";
+
+const getStockOptions = (rows: IStock[], key: keyof IStock) => {
+  const values = Array.from(
+    new Set(rows.map((row) => String(row[key] ?? "").trim()).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const hasEmpty = rows.some((row) => !String(row[key] ?? "").trim());
+  return [
+    ...(hasEmpty ? [{ value: EMPTY_FILTER_VALUE, label: "Sem preenchimento" }] : []),
+    ...values.map((value) => ({ value, label: value })),
+  ];
+};
+
 export function StockPage({}: StockPageProps) {
   const searchParams = useSearchParams();
   // `?tab=auditoria` abre direto a listagem de auditorias — é para onde a tela
@@ -80,6 +120,174 @@ export function StockPage({}: StockPageProps) {
   const searchTerm = watch("itemSearch");
   const unidadeFiltro = watch("unidade");
   const debouncedSearch = useDebounce(searchTerm, 500);
+  const [stockFilters, setStockFilters] = React.useState<StockFilterState>(
+    EMPTY_STOCK_FILTERS,
+  );
+
+  const updateStockFilter = React.useCallback(
+    (updates: Partial<StockFilterState>) =>
+      setStockFilters((previous) => ({ ...previous, ...updates })),
+    [],
+  );
+
+  const clearStockFilter = React.useCallback(
+    (key: keyof StockFilterState) =>
+      updateStockFilter({
+        [key]:
+          key === "ativo" ||
+          key === "categoria" ||
+          key === "tipo_padrao" ||
+          key === "unidade_medida"
+            ? "all"
+            : "none",
+      } as Partial<StockFilterState>),
+    [updateStockFilter],
+  );
+
+  const stockOptions = React.useMemo(
+    () => ({
+      categoria: getStockOptions(stockData.results, "categoria"),
+      tipo_padrao: getStockOptions(stockData.results, "tipo_padrao"),
+      unidade_medida: getStockOptions(stockData.results, "unidade_medida"),
+    }),
+    [stockData.results],
+  );
+
+  const filteredStockRows = React.useMemo(() => {
+    const matchesOption = (value: unknown, selected: string) => {
+      if (selected === "all") return true;
+      if (selected === EMPTY_FILTER_VALUE) return !String(value ?? "").trim();
+      return String(value ?? "").trim() === selected;
+    };
+
+    return stockData.results.filter((row) => {
+      if (!matchesOption(row.categoria, stockFilters.categoria)) return false;
+      if (!matchesOption(row.tipo_padrao, stockFilters.tipo_padrao)) return false;
+      if (!matchesOption(row.unidade_medida, stockFilters.unidade_medida)) return false;
+      if (stockFilters.ativo === "active" && !row.ativo) return false;
+      if (stockFilters.ativo === "inactive" && row.ativo) return false;
+      return true;
+    }).toSorted((a, b) => {
+      if (stockFilters.quantidade_atual === "none") return 0;
+      const aQuantity = Number(String(a.quantidade_atual ?? "").replace(",", "."));
+      const bQuantity = Number(String(b.quantidade_atual ?? "").replace(",", "."));
+      const aValue = Number.isFinite(aQuantity) ? aQuantity : 0;
+      const bValue = Number.isFinite(bQuantity) ? bQuantity : 0;
+      return stockFilters.quantidade_atual === "asc"
+        ? aValue - bValue
+        : bValue - aValue;
+    });
+  }, [stockData.results, stockFilters]);
+
+  const stockFilterResetKey = JSON.stringify({
+    debouncedSearch,
+    unidadeFiltro,
+    stockFilters,
+  });
+
+  const stockColumnFilters = React.useMemo(
+    () => ({
+      categoria: {
+        active: stockFilters.categoria !== "all",
+        ariaLabel: "Filtrar por categoria",
+        content: (
+          <FormControl fullWidth size="small">
+            <InputLabel>Categoria</InputLabel>
+            <MuiSelect
+              label="Categoria"
+              value={stockFilters.categoria}
+              onChange={(event) => updateStockFilter({ categoria: event.target.value })}
+            >
+              <MenuItem value="all">Todas</MenuItem>
+              {stockOptions.categoria.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </FormControl>
+        ),
+        onClear: () => clearStockFilter("categoria"),
+      },
+      tipo_padrao: {
+        active: stockFilters.tipo_padrao !== "all",
+        ariaLabel: "Filtrar por tipo padrão",
+        content: (
+          <FormControl fullWidth size="small">
+            <InputLabel>Tipo Padrão</InputLabel>
+            <MuiSelect
+              label="Tipo Padrão"
+              value={stockFilters.tipo_padrao}
+              onChange={(event) => updateStockFilter({ tipo_padrao: event.target.value })}
+            >
+              <MenuItem value="all">Todos</MenuItem>
+              {stockOptions.tipo_padrao.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </FormControl>
+        ),
+        onClear: () => clearStockFilter("tipo_padrao"),
+      },
+      unidade_medida: {
+        active: stockFilters.unidade_medida !== "all",
+        ariaLabel: "Filtrar por unidade de medida",
+        content: (
+          <FormControl fullWidth size="small">
+            <InputLabel>Unidade de Medida</InputLabel>
+            <MuiSelect
+              label="Unidade de Medida"
+              value={stockFilters.unidade_medida}
+              onChange={(event) => updateStockFilter({ unidade_medida: event.target.value })}
+            >
+              <MenuItem value="all">Todas</MenuItem>
+              {stockOptions.unidade_medida.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </FormControl>
+        ),
+        onClear: () => clearStockFilter("unidade_medida"),
+      },
+      quantidade_atual: {
+        active: stockFilters.quantidade_atual !== "none",
+        ariaLabel: "Ordenar por quantidade atual",
+        onToggle: () =>
+          updateStockFilter({
+            quantidade_atual:
+              stockFilters.quantidade_atual === "desc" ? "asc" : "desc",
+          }),
+        sortDirection:
+          stockFilters.quantidade_atual === "none"
+            ? undefined
+            : stockFilters.quantidade_atual,
+      },
+      ativo: {
+        active: stockFilters.ativo !== "all",
+        ariaLabel: "Filtrar por status",
+        content: (
+          <FormControl fullWidth size="small">
+            <InputLabel>Status</InputLabel>
+            <MuiSelect
+              label="Status"
+              value={stockFilters.ativo}
+              onChange={(event) => updateStockFilter({ ativo: event.target.value as StockFilterState["ativo"] })}
+            >
+              <MenuItem value="all">Todos</MenuItem>
+              <MenuItem value="active">Ativo</MenuItem>
+              <MenuItem value="inactive">Inativo</MenuItem>
+            </MuiSelect>
+          </FormControl>
+        ),
+        onClear: () => clearStockFilter("ativo"),
+      },
+    }),
+    [clearStockFilter, stockFilters, stockOptions, updateStockFilter],
+  );
 
   const loadStockData = async (search?: string, unidadeId?: string) => {
     setLoading(true);
@@ -423,39 +631,51 @@ export function StockPage({}: StockPageProps) {
               {error && <Alert severity="error">{error}</Alert>}
 
               <Stack
-                direction={{ xs: "column", md: "row" }}
+                direction={{ xs: "column", lg: "row" }}
                 justifyContent="space-between"
                 gap={2}
-                alignItems={{ xs: "stretch", md: "center" }}
+                alignItems={{ xs: "stretch", lg: "center" }}
               >
                 <Typography>Itens Cadastrados</Typography>
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   gap={2}
-                  flexWrap="wrap"
-                  minWidth={{ md: "450px" }}
+                  flexWrap="nowrap"
+                  alignItems="flex-start"
+                  width="100%"
+                  maxWidth={{ lg: "760px" }}
                 >
-                  <Input
-                    placeholder="Buscar item..."
-                    icon={<SearchIcon />}
-                    register={register("itemSearch")}
-                  />
-                  <Can permissions="estoque.view.saldo">
-                    <Select
-                      options={unitOptions}
-                      name="unidade"
-                      control={control}
-                      formControlSx={{ minWidth: { sm: "200px" } }}
+                  <Box sx={{ flex: "1 1 auto", minWidth: 0, width: "100%" }}>
+                    <Input
+                      placeholder="Buscar item..."
+                      icon={<SearchIcon />}
+                      register={register("itemSearch")}
                     />
+                  </Box>
+                  <Can permissions="estoque.view.saldo">
+                    <Box
+                      sx={{
+                        flex: { xs: "1 1 auto", sm: "0 0 clamp(160px, 24vw, 200px)" },
+                        width: "100%",
+                      }}
+                    >
+                      <Select
+                        options={unitOptions}
+                        name="unidade"
+                        control={control}
+                      />
+                    </Box>
                   </Can>
                   <Button
                     variant="contained"
                     startIcon={<PlusIcon />}
                     onClick={() => setOpenNewStockModal(true)}
                     sx={{
-                      height: "50px",
+                      flexShrink: 0,
+                      height: "56px",
+                      width: { xs: "100%", sm: "auto" },
                       whiteSpace: "nowrap",
-                      paddingX: "2rem",
+                      paddingX: { xs: "2rem", sm: "1.5rem", md: "2rem" },
                     }}
                   >
                     Novo Item
@@ -495,9 +715,11 @@ export function StockPage({}: StockPageProps) {
                       }
                     : col,
                 )}
-                rows={stockData.results}
+                rows={filteredStockRows}
                 initialRowsPerPage={5}
                 isLoading={loading}
+                pageResetKey={stockFilterResetKey}
+                columnFilters={stockColumnFilters}
               />
 
               {selectedStock && (

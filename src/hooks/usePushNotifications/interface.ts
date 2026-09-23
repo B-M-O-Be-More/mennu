@@ -1,4 +1,9 @@
-export type PushPermissionState = "unsupported" | "default" | "granted" | "denied";
+export type PushPermissionState =
+  | "loading"
+  | "unsupported"
+  | "default"
+  | "granted"
+  | "denied";
 
 export interface RequestPermissionResult {
   success: boolean;
