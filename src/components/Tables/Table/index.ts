@@ -4,6 +4,7 @@ import {
   IColumn,
   RemotePagination,
   TablePaginationActionsProps,
+  TableColumnFilter,
 } from "./interface";
 
 export default Table;
@@ -12,4 +13,5 @@ export type {
   IColumn,
   RemotePagination,
   TablePaginationActionsProps,
+  TableColumnFilter,
 };

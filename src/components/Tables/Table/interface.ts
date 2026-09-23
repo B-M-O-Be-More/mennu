@@ -30,7 +30,18 @@ export interface TableProps<TRow> {
   initialRowsPerPage?: number;
   isLoading?: boolean;
   remotePagination?: RemotePagination;
+  pageResetKey?: string | number;
+  columnFilters?: Record<string, TableColumnFilter>;
   getRowKey?: (row: TRow, index: number) => React.Key;
+}
+
+export interface TableColumnFilter {
+  active?: boolean;
+  ariaLabel: string;
+  content?: React.ReactNode;
+  onClear?: () => void;
+  onToggle?: () => void;
+  sortDirection?: "asc" | "desc";
 }
 
 export interface TablePaginationActionsProps {
