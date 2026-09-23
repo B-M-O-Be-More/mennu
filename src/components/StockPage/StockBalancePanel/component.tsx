@@ -125,6 +125,7 @@ export default function StockBalancePanel({ refreshToken = 0 }: StockBalancePane
         />
         <Input label="Lote" placeholder="Ex: L2026-001" register={register("lote")} />
         <FormControlLabel
+          sx={{ ml: 0, mr: 0, gap: 1 }}
           control={
             <Switch
               checked={!!comSaldoField.value}
