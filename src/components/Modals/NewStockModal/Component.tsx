@@ -5,6 +5,7 @@ import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import AutocompleteFreeSolo from "@/components/FormControl/AutocompleteFreeSolo";
 import { useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createStockSchema } from "@/schemas/stockSchema";
@@ -23,6 +24,8 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [unidadesError, setUnidadesError] = useState<string | null>(null);
+  const [categorias, setCategorias] = useState<string[]>([]);
+  const [categoriasLoading, setCategoriasLoading] = useState(false);
 
   const {
     register,
@@ -113,6 +116,44 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
       isCancelled = true;
     };
   }, [open, getValues, setValue]);
+
+  React.useEffect(() => {
+    let isCancelled = false;
+
+    const fetchCategorias = async () => {
+      setCategoriasLoading(true);
+      try {
+        const response = await fetch("/api/insumo/categorias", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          if (!isCancelled) setCategorias([]);
+          return;
+        }
+
+        const data = (await response.json()) as string[];
+        if (!isCancelled) setCategorias(Array.isArray(data) ? data : []);
+      } catch {
+        if (!isCancelled) setCategorias([]);
+      } finally {
+        if (!isCancelled) setCategoriasLoading(false);
+      }
+    };
+
+    if (open) {
+      fetchCategorias();
+    } else {
+      setCategorias([]);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [open]);
 
   const onSubmit = async (data: StockFormData) => {
     setLoading(true);
@@ -211,11 +252,14 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
           />
 
           <Stack direction="row" spacing={2}>
-            <Input
+            <AutocompleteFreeSolo
               label="Categoria"
               placeholder="Ex. Alimentos"
               optional={true}
-              register={register("categoria")}
+              options={categorias}
+              loading={categoriasLoading}
+              control={control}
+              name="categoria"
               error={errors.categoria?.message}
             />
             <Input

@@ -4,6 +4,7 @@ import { unidadesMedidaOptions } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import AutocompleteFreeSolo from "@/components/FormControl/AutocompleteFreeSolo";
 import { EditStockModalProps } from "./interface";
 import { useForm, type Resolver } from "react-hook-form";
 import { createStockSchema } from "@/schemas/stockSchema";
@@ -27,6 +28,8 @@ export default function EditStockModal({
   const [error, setError] = useState<string | null>(null);
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [unidadesError, setUnidadesError] = useState<string | null>(null);
+  const [categorias, setCategorias] = useState<string[]>([]);
+  const [categoriasLoading, setCategoriasLoading] = useState(false);
 
   const {
     register,
@@ -113,6 +116,44 @@ export default function EditStockModal({
       fetchUnidades();
     } else {
       setUnidades([]);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [open]);
+
+  React.useEffect(() => {
+    let isCancelled = false;
+
+    const fetchCategorias = async () => {
+      setCategoriasLoading(true);
+      try {
+        const response = await fetch("/api/insumo/categorias", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          if (!isCancelled) setCategorias([]);
+          return;
+        }
+
+        const data = (await response.json()) as string[];
+        if (!isCancelled) setCategorias(Array.isArray(data) ? data : []);
+      } catch {
+        if (!isCancelled) setCategorias([]);
+      } finally {
+        if (!isCancelled) setCategoriasLoading(false);
+      }
+    };
+
+    if (open) {
+      fetchCategorias();
+    } else {
+      setCategorias([]);
     }
 
     return () => {
@@ -222,11 +263,14 @@ export default function EditStockModal({
           error={errors.nome?.message}
         />
         <Stack direction="row" spacing={2}>
-          <Input
+          <AutocompleteFreeSolo
             label="Categoria"
             placeholder="Ex. Alimentos"
             optional={true}
-            register={register("categoria")}
+            options={categorias}
+            loading={categoriasLoading}
+            control={control}
+            name="categoria"
             error={errors.categoria?.message}
           />
 
