@@ -5,6 +5,7 @@ import { NewStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import CreatableCategorySelect from "@/components/FormControl/CreatableCategorySelect";
 import { useForm, type Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createStockSchema } from "@/schemas/stockSchema";
@@ -211,11 +212,10 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
           />
 
           <Stack direction="row" spacing={2}>
-            <Input
-              label="Categoria"
-              placeholder="Ex. Alimentos"
-              optional={true}
-              register={register("categoria")}
+            <CreatableCategorySelect
+              name="categoria"
+              control={control}
+              enabled={open}
               error={errors.categoria?.message}
             />
             <Input

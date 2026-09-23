@@ -3,7 +3,11 @@ import * as yup from "yup";
 
 export const createStockSchema = yup.object({
   nome: yup.string().required("O nome do insumo é obrigatório"),
-  categoria: yup.string().optional(),
+  categoria: yup
+    .string()
+    .trim()
+    .max(100, "A categoria deve ter no máximo 100 caracteres")
+    .optional(),
   tipo_padrao: yup.string().optional(),
   unidade_medida: yup
     .string()

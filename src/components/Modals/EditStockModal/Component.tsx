@@ -5,6 +5,7 @@ import { unidadesMedidaOptions } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import CreatableCategorySelect from "@/components/FormControl/CreatableCategorySelect";
 import { EditStockModalProps } from "./interface";
 import { useForm, type Resolver } from "react-hook-form";
 import { createStockSchema } from "@/schemas/stockSchema";
@@ -141,11 +142,10 @@ export default function EditStockModal({
           error={errors.nome?.message}
         />
         <Stack direction="row" spacing={2}>
-          <Input
-            label="Categoria"
-            placeholder="Ex. Alimentos"
-            optional={true}
-            register={register("categoria")}
+          <CreatableCategorySelect
+            name="categoria"
+            control={control}
+            enabled={open}
             error={errors.categoria?.message}
           />
 
