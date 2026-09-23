@@ -4,6 +4,7 @@ type Option = { label: string; value: string };
 interface ApiInsumo {
   id?: number | null;
   nome?: string;
+  unidade_medida?: string | null;
 }
 
 function normalizeArrayPayload<T>(payload: unknown): T[] {
@@ -25,6 +26,11 @@ function normalizeArrayPayload<T>(payload: unknown): T[] {
 
 export function useInsumoOptions() {
   const [insumoOptions, setInsumoOptions] = React.useState<Option[]>([]);
+  // A unidade de medida não cabe no rótulo do select, mas as telas precisam
+  // dela para rotular a quantidade digitada (kg, L, unid...).
+  const [unidadeMedidaByInsumoId, setUnidadeMedidaByInsumoId] = React.useState<
+    Record<string, string>
+  >({});
   const [isLoadingInsumos, setIsLoadingInsumos] = React.useState(false);
   const [insumosError, setInsumosError] = React.useState<string | null>(null);
 
@@ -43,17 +49,27 @@ export function useInsumoOptions() {
       }
 
       const payload = await response.json();
-      const insumos = normalizeArrayPayload<ApiInsumo>(payload)
-        .filter((insumo) => Number.isInteger(insumo.id))
-        .map((insumo) => ({
+      const insumos = normalizeArrayPayload<ApiInsumo>(payload).filter((insumo) =>
+        Number.isInteger(insumo.id),
+      );
+
+      setInsumoOptions(
+        insumos.map((insumo) => ({
           label: insumo.nome ?? `Insumo ${insumo.id}`,
           value: String(insumo.id),
-        }));
-
-      setInsumoOptions(insumos);
+        })),
+      );
+      setUnidadeMedidaByInsumoId(
+        Object.fromEntries(
+          insumos
+            .filter((insumo) => insumo.unidade_medida)
+            .map((insumo) => [String(insumo.id), String(insumo.unidade_medida)]),
+        ),
+      );
     } catch (err) {
       setInsumosError(err instanceof Error ? err.message : "Erro ao carregar insumos");
       setInsumoOptions([]);
+      setUnidadeMedidaByInsumoId({});
     } finally {
       setIsLoadingInsumos(false);
     }
@@ -65,6 +81,7 @@ export function useInsumoOptions() {
 
   return {
     insumoOptions,
+    unidadeMedidaByInsumoId,
     isLoadingInsumos,
     insumosError,
     reloadInsumoOptions: loadInsumoOptions,

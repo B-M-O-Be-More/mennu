@@ -1,11 +1,11 @@
-import { Stack, Button, useTheme } from "@mui/material";
+import { Stack, Button, useTheme, Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { TransferStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
-import { CircledCheckIcon, AlertIcon } from "@/components/Icons";
-import { useForm } from "react-hook-form";
+import { CircledCheckIcon, AlertIcon, PlusIcon, TrashIcon } from "@/components/Icons";
+import { useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { transferStockSchema, TransferStockSchemaFormData } from "@/schemas/transferStockSchema";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
@@ -13,11 +13,13 @@ import { useInsumoOptions } from "@/hooks/useInsumoOptions/hook";
 import { useUser } from "@/context/AuthContext";
 import React from "react";
 
+const EMPTY_MOVIMENTACAO = { insumoId: "", quantidade: 0 };
+
 export default function TransferStockModal({ open, onClose, onSave }: TransferStockModalProps) {
   const theme = useTheme();
   const { activeContext } = useUser();
   const { unitOptions } = useUnitFilterOptions();
-  const { insumoOptions } = useInsumoOptions();
+  const { insumoOptions, unidadeMedidaByInsumoId } = useInsumoOptions();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
 
@@ -30,15 +32,45 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
     register,
     control,
     reset,
+    watch,
     formState: { errors },
   } = useForm<TransferStockSchemaFormData>({
     resolver: yupResolver(transferStockSchema),
     defaultValues: {
       unidadeDestinoId: "",
-      insumoId: "",
-      quantidade: 0,
+      movimentacoes: [EMPTY_MOVIMENTACAO],
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "movimentacoes",
+  });
+
+  const movimentacoes = watch("movimentacoes");
+
+  // Cada insumo entra uma vez só na transferência: o que já foi escolhido em
+  // outra linha fica desabilitado nas demais.
+  const getItemOptions = (index: number) => {
+    const jaEscolhidos = new Set(
+      (movimentacoes ?? [])
+        .map((movimentacao, movimentacaoIndex) =>
+          movimentacaoIndex === index ? "" : movimentacao?.insumoId,
+        )
+        .filter(Boolean),
+    );
+
+    return [
+      { label: "Selecione um item", value: "" },
+      ...insumoOptions.map((option) => ({
+        ...option,
+        disabled: jaEscolhidos.has(option.value),
+      })),
+    ];
+  };
+
+  const getUnidadeMedida = (index: number) =>
+    unidadeMedidaByInsumoId[movimentacoes?.[index]?.insumoId ?? ""] ?? "";
 
   const onSubmit = async (data: TransferStockSchemaFormData) => {
     setSubmitError(null);
@@ -49,9 +81,11 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          insumo_id: Number(data.insumoId),
           unidade_destino_id: Number(data.unidadeDestinoId),
-          quantidade: data.quantidade,
+          movimentacoes: data.movimentacoes.map((movimentacao) => ({
+            insumo_id: Number(movimentacao.insumoId),
+            quantidade: movimentacao.quantidade,
+          })),
         }),
       });
 
@@ -93,23 +127,78 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
           error={errors.unidadeDestinoId?.message}
         />
 
-        <Select
-          label="Item"
-          optional={false}
-          options={[{ label: "Selecione um item", value: "" }, ...insumoOptions]}
-          name="insumoId"
-          control={control}
-          error={errors.insumoId?.message}
-        />
+        <Stack gap={1}>
+          <Typography variant="body2" color="text.label" fontWeight={400}>
+            Itens{" "}
+            <Typography variant="body2" component="span" color="primary.main">
+              *
+            </Typography>
+          </Typography>
 
-        <Input
-          label="Quantidade"
-          placeholder="0"
-          type="number"
-          optional={false}
-          register={register("quantidade")}
-          error={errors.quantidade?.message}
-        />
+          {fields.map((field, index) => (
+            <Stack
+              key={field.id}
+              direction={{ xs: "column", sm: "row" }}
+              gap={1}
+              alignItems={{ sm: "flex-start" }}
+            >
+              <Select
+                options={getItemOptions(index)}
+                name={`movimentacoes.${index}.insumoId`}
+                control={control}
+                error={errors.movimentacoes?.[index]?.insumoId?.message}
+                formControlSx={{ flex: 1 }}
+              />
+
+              <Box width={{ xs: "100%", sm: 160 }}>
+                <Input
+                  placeholder="Quantidade"
+                  type="number"
+                  register={register(`movimentacoes.${index}.quantidade`)}
+                  error={errors.movimentacoes?.[index]?.quantidade?.message}
+                  suffix={getUnidadeMedida(index) || undefined}
+                />
+              </Box>
+
+              <Box sx={{ alignSelf: { xs: "flex-end", sm: "auto" }, mt: { sm: 1.5 } }}>
+                <Tooltip title="Remover item">
+                  <span>
+                    <IconButton
+                      aria-label="remover-item"
+                      size="small"
+                      disabled={fields.length === 1 || isSubmitting}
+                      onClick={() => remove(index)}
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        color: "text.secondary",
+                      }}
+                    >
+                      <TrashIcon width={20} height={20} />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Box>
+            </Stack>
+          ))}
+
+          {typeof errors.movimentacoes?.message === "string" && (
+            <Typography variant="caption" color="error.contrastText">
+              {errors.movimentacoes.message}
+            </Typography>
+          )}
+
+          <Button
+            variant="outlined"
+            startIcon={<PlusIcon />}
+            onClick={() => append(EMPTY_MOVIMENTACAO)}
+            disabled={isSubmitting}
+            sx={{ alignSelf: "flex-start", fontWeight: 400 }}
+          >
+            Adicionar item
+          </Button>
+        </Stack>
 
         <ClosableAlertBox
           severity="info"
@@ -118,7 +207,7 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
           description="O saldo será aumentado automaticamente."
         />
 
-        <Stack direction="row" gap={2}>
+        <Stack direction={{ xs: "column-reverse", sm: "row" }} gap={2}>
           <Button
             variant="outlined"
             sx={{
