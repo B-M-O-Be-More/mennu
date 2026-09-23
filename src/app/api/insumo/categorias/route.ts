@@ -10,14 +10,12 @@ async function safeJson(response: Response) {
       `Resposta inesperada da API (${response.status}): ${text.slice(0, 200)}`,
     );
   }
-
   return response.json();
 }
 
 export async function GET(req: NextRequest) {
   const baseUrl = getApiBaseUrl();
   const headers = await getAuthHeaders();
-
   if (!headers) {
     return NextResponse.json(
       { message: "Autenticação necessária" },
