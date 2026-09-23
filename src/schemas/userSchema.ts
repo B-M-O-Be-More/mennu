@@ -1,5 +1,4 @@
 import { mockStatuses } from "@/data/menuItems";
-import { CATEGORIA_USUARIO_OPTIONS } from "@/Interfaces/Terminal/terminal";
 import * as yup from "yup";
 
 export const createUserSchema = yup.object({
@@ -21,14 +20,16 @@ export const createUserSchema = yup.object({
     .string()
     .required("A matrícula é obrigatória"),
 
+  // A criação vincula o usuário a uma unidade só; a API recebe o id dela.
   unidade_id: yup
     .string()
     .required("A unidade é obrigatória"),
 
-  categoria_usuario: yup
+  // O cargo (perfil de permissões) é opcional: sem ele o usuário nasce apenas
+  // com o acesso da categoria. Vazio = nenhum cargo selecionado.
+  cargo_id: yup
     .string()
-    .required("A categoria é obrigatória")
-    .oneOf(CATEGORIA_USUARIO_OPTIONS.map((c) => c.value), "Categoria inválida"),
+    .default(""),
 
   status: yup
     .string()
@@ -40,13 +41,15 @@ export const createUserSchema = yup.object({
     .required("A senha é obrigatória")
     .min(6, "A senha deve ter pelo menos 6 caracteres"),
 
+  // Aceita separadores ("1250458-25"), como o placeholder do campo sugere: o
+  // envio já normaliza para dígitos. Só barra letras e afins.
   numero_cartao: yup
     .string()
     .default("")
     .test(
       "numero-cartao-digits",
       "O número do cartão deve conter apenas dígitos",
-      (value) => !value || /^\d+$/.test(value),
+      (value) => !value || /^\d+$/.test(value.replace(/\D/g, "")),
     ),
 
   email: yup
@@ -71,6 +74,10 @@ export const editUserSchema = yup.object({
     .required("O nome é obrigatório")
     .min(3, "O nome deve ter pelo menos 3 caracteres"),
 
+  matricula: yup
+    .string()
+    .required("A matrícula é obrigatória"),
+
   password: yup
     .string()
     .default("")
@@ -86,7 +93,7 @@ export const editUserSchema = yup.object({
     .test(
       "numero-cartao-digits",
       "O número do cartão deve conter apenas dígitos",
-      (value) => !value || /^\d+$/.test(value),
+      (value) => !value || /^\d+$/.test(value.replace(/\D/g, "")),
     ),
 
   email: yup

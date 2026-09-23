@@ -45,6 +45,16 @@ export interface IUser {
   feature_flags?: FeatureFlag[];
 }
 
+/**
+ * Cargo vinculado ao usuário na listagem. `unidade` nula = cargo global, que
+ * vale em todas as unidades.
+ */
+export interface IUsuarioCargo {
+  id: number;
+  nome: string;
+  unidade: { id: number; nome: string } | null;
+}
+
 export interface IUsuarioListItem {
   id: number;
   nome: string | null;
@@ -54,5 +64,6 @@ export interface IUsuarioListItem {
   is_active: boolean;
   criado_em: string;
   unidade: { id: number; nome: string };
+  cargos?: IUsuarioCargo[];
   numero_cartao: string | null;
 }
