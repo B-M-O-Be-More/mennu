@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Checkbox, Stack } from "@mui/material";
+import { Box, Button, Checkbox, Stack } from "@mui/material";
 import Modal from "../Modal";
 import { NewPermissionProfileModalProps } from "./interface";
 import { useForm } from "react-hook-form";
@@ -95,7 +95,12 @@ export function NewPermissionProfileModal({
       title={"Criar Novo Perfil"}
       maxWidth="md"
       open={isOpen}
-      onClose={handleClose}>
+      onClose={handleClose}
+      dialogSx={{
+        m: { xs: 1.5, sm: 4 },
+        width: { xs: "calc(100% - 24px)", sm: "calc(100% - 64px)" },
+        maxHeight: { xs: "calc(100% - 24px)", sm: "calc(100% - 64px)" },
+      }}>
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Nome"
@@ -114,25 +119,33 @@ export function NewPermissionProfileModal({
           error={errors.descricao?.message}
         />
 
-        <Table
-          initialRowsPerPage={25}
-          columns={permissionsColumns.map((col) =>
-            ["visualizar", "editar", "excluir", "criar"].includes(col.key as string)
-              ? {
-                ...col,
-                render: (_row: IProfilePermissionsItems, rowIndex: number) => {
-                  const key = col.key as keyof IProfilePermissionsItems;
-                  return (
-                    <Checkbox {...register(`permissoes.${rowIndex}.${key}`)} />
-                  );
+        {/* As cinco colunas da matriz nao cabem no celular: em vez de
+            espremer, mantem a largura minima e rola na horizontal. */}
+        <Box sx={{ "& table": { minWidth: 560 } }}>
+          <Table
+            initialRowsPerPage={25}
+            columns={permissionsColumns.map((col) =>
+              ["visualizar", "editar", "excluir", "criar"].includes(col.key as string)
+                ? {
+                  ...col,
+                  render: (_row: IProfilePermissionsItems, rowIndex: number) => {
+                    const key = col.key as keyof IProfilePermissionsItems;
+                    return (
+                      <Checkbox {...register(`permissoes.${rowIndex}.${key}`)} />
+                    );
+                  }
                 }
-              }
-              : col
-          )}
-          rows={permissions || []}
-        />
+                : col
+            )}
+            rows={permissions || []}
+          />
+        </Box>
 
-        <Stack direction="row" gap={2} justifyContent={"space-between"}>
+        <Stack
+          direction={{ xs: "column-reverse", sm: "row" }}
+          gap={2}
+          justifyContent={"space-between"}
+        >
           <Button
             variant="outlined"
             sx={{ flex: 1 }}

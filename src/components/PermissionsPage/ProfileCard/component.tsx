@@ -187,12 +187,18 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
         sx={{ padding: { xs: 1, sm: 1, md: 1.5 }, maxWidth: "auto" }}
         variant="compact"
       >
-        <Stack direction={"row"} gap={2} >
+        <Stack
+          direction={"row"}
+          gap={{ xs: 1.5, sm: 2 }}
+          alignItems="flex-start"
+          flexWrap="wrap"
+        >
           <IconBox
             icon={<PerfisPermissoesIcon color={theme.palette.purple.contrastText} />}
             bgColor="purple.main"
+            sx={{ padding: { xs: 1.25, sm: 2 } }}
           />
-          <Box flex={1}>
+          <Box flex="1 1 200px" minWidth={0}>
             {isEditing ? (
               <Stack gap={1} marginBottom={1}>
                 <Input
@@ -212,8 +218,15 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
               </Stack>
             ) : (
               <React.Fragment>
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <Typography variant="h5" fontWeight={600}>
+                <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    sx={{
+                      fontSize: { xs: "1.125rem", md: "1.5rem" },
+                      wordBreak: "break-word",
+                    }}
+                  >
                     {profile.nome}
                   </Typography>
                   {profile.is_default && (
@@ -234,7 +247,16 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
                 : ""}
             </Typography>
           </Box>
-          <Stack direction={"row"} gap={1} marginLeft={"auto"}>
+          <Stack
+            direction={"row"}
+            gap={1}
+            flexShrink={0}
+            sx={{
+              marginLeft: "auto",
+              width: { xs: "100%", sm: "auto" },
+              justifyContent: { xs: "flex-end", sm: "flex-start" },
+            }}
+          >
             <Can module="cargo" action="assign">
               <Tooltip title="Adicionar Perfil ao cargo">
                 <span>
@@ -336,19 +358,28 @@ export default function ProfileCard({ profile, onUpdated, onAddProfile, onNotify
           easing="ease-in-out"
         >
           <Divider sx={{ borderColor: "grey.100", width: "100%", my: 2 }} />
-          <Box paddingX={1}>
+          <Box paddingX={{ xs: 0, sm: 1 }}>
             <Typography variant="body2" mb={2} color="text.label">
               Matriz de Permissões
             </Typography>
 
-            <Table
-              columns={columns}
-              rows={permissions}
-              initialRowsPerPage={25}
-            />
+            {/* As cinco colunas da matriz nao cabem no celular: em vez de
+                espremer, mantem a largura minima e rola na horizontal. */}
+            <Box sx={{ "& table": { minWidth: 560 } }}>
+              <Table
+                columns={columns}
+                rows={permissions}
+                initialRowsPerPage={25}
+              />
+            </Box>
 
             {isEditing && (
-              <Stack direction="row" gap={2} justifyContent="flex-end" marginTop={2}>
+              <Stack
+                direction={{ xs: "column-reverse", sm: "row" }}
+                gap={2}
+                justifyContent="flex-end"
+                marginTop={2}
+              >
                 <Button
                   variant="outlined"
                   onClick={handleCancelEditing}
