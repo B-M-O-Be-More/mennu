@@ -94,7 +94,7 @@ export function PermissionsPage({ }: PermissionsPageProps) {
   }, [profiles, debouncedSearch]);
 
   return (
-    <Stack gap={2} height={"100%"} maxHeight={"100%"}>
+    <Stack gap={2} minHeight={"100%"}>
       <PageHeader
         title="Gerenciar Perfis e Permissões"
         subtitle="Configure permissões granulares para cada perfil de usuário"

@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertColor, Button, Checkbox, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { AlertColor, Box, Button, Checkbox, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import Modal from "../Modal";
 import { AddUsersToCargoModalProps } from "./interface";
 import React from "react";
@@ -305,6 +305,11 @@ export default function AddUsersToCargoModal({
         open={open}
         onClose={handleClose}
         maxWidth="md"
+        dialogSx={{
+          m: { xs: 1.5, sm: 4 },
+          width: { xs: "calc(100% - 24px)", sm: "calc(100% - 64px)" },
+          maxHeight: { xs: "calc(100% - 24px)", sm: "calc(100% - 64px)" },
+        }}
         title="Adicionar Perfil ao cargo"
         subtitle={`Vincule usuários da empresa ao cargo "${profile.nome}"`}
       >
@@ -314,12 +319,14 @@ export default function AddUsersToCargoModal({
               Usuários vinculados ({linkedUsers.length})
             </Typography>
 
-            <Table
-              columns={linkedColumns}
-              rows={linkedUsers}
-              initialRowsPerPage={5}
-              isLoading={isLoadingLinked}
-            />
+            <Box sx={{ "& table": { minWidth: 480 } }}>
+              <Table
+                columns={linkedColumns}
+                rows={linkedUsers}
+                initialRowsPerPage={5}
+                isLoading={isLoadingLinked}
+              />
+            </Box>
           </Stack>
 
           <Stack gap={1}>
@@ -342,12 +349,14 @@ export default function AddUsersToCargoModal({
               />
             </Stack>
 
-            <Table
-              columns={columns}
-              rows={users}
-              initialRowsPerPage={5}
-              isLoading={isLoadingUsers}
-            />
+            <Box sx={{ "& table": { minWidth: 480 } }}>
+              <Table
+                columns={columns}
+                rows={users}
+                initialRowsPerPage={5}
+                isLoading={isLoadingUsers}
+              />
+            </Box>
 
             {hasMoreUsers && (
               <Typography variant="caption" color="text.secondary">
@@ -357,7 +366,11 @@ export default function AddUsersToCargoModal({
             )}
           </Stack>
 
-          <Stack direction="row" gap={2} justifyContent={"space-between"}>
+          <Stack
+            direction={{ xs: "column-reverse", sm: "row" }}
+            gap={2}
+            justifyContent={"space-between"}
+          >
             <Button
               variant="outlined"
               sx={{ flex: 1 }}
