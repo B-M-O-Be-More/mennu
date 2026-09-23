@@ -6,7 +6,7 @@ import { SidebarComponent } from "@/components/Sidebar";
 import { BottomNavComponent } from "@/components/BottomNav";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/AuthContext";
-import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, SolicitacoesExtrasIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
+import { BuildingIcon, CardapiosIcon, ConfiguracoesIcon, DashboardIcon, EstoqueIcon, LogsAuditoriaIcon, PerfisPermissoesIcon, RefeicoesIcon, RelatoriosIcon, SairIcon, TerminalIcon, UsuariosIcon } from "@/components/Icons";
 import { hasAdminAccess } from "@/utils/userUtils";
 import { viewPermission } from "@/utils/permissionUtils";
 import { SELECT_UNIT_ROUTE } from "@/utils/userContextUtils";
@@ -49,9 +49,6 @@ export default function MainLayout({
     { id: "cardapios", label: "Cardápios", icon: <CardapiosIcon />, path: "/cardapios", permissions: viewPermission("cardapio") },
     { id: "estoque", label: "Estoque", icon: <EstoqueIcon />, path: "/estoque", permissions: viewPermission("estoque") },
     { id: "refeicoes", label: "Refeições", icon: <RefeicoesIcon />, path: "/refeicoes", permissions: viewPermission("refeicaoservida") },
-    // TODO: a API ainda não expõe um recurso para solicitações extras — sem
-    // `permissions`, o item fica visível para todos.
-    { id: "solicitacoes-extras", label: "Solicitações Extras", icon: <SolicitacoesExtrasIcon />, path: "/solicitacoes-extras" },
     { id: "relatorios", label: "Relatórios", icon: <RelatoriosIcon />, path: "/relatorios", permissions: viewPermission("relatorio") },
     { id: "usuarios", label: "Usuários", icon: <UsuariosIcon />, path: "/usuarios", permissions: viewPermission("usuario") },
     { id: "terminal", label: "Terminal", icon: <TerminalIcon />, path: "/terminal", permissions: viewPermission("terminal") },
