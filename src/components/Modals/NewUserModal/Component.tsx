@@ -1,24 +1,107 @@
-import { Stack, Typography, Button, useTheme, Alert } from "@mui/material";
+import { Stack, Typography, Button, useTheme } from "@mui/material";
 import { mockStatuses } from "../../../data/menuItems";
-import { CATEGORIA_USUARIO_OPTIONS } from "@/Interfaces/Terminal/terminal";
 import { NewUserModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
-import { useForm } from "react-hook-form";
+import { useForm, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { createUserSchema, CreateUserSchemaFormData } from "@/schemas/userSchema";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { UsuariosIcon } from "@/components/Icons";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
+import { useCargoOptions } from "@/hooks/useCargoOptions/hook";
+import { getApiMessage } from "@/utils/apiMessage";
 import React from "react";
 
-export default function NewUserModal({ open, onClose, onCreated }: NewUserModalProps) {
+/**
+ * A criação devolve o usuário em formatos diferentes conforme o endpoint
+ * (`{id}`, `{data:{id}}` ou `{results:[{id}]}`) — o id é o que permite
+ * vincular o cargo logo em seguida.
+ */
+function extractCreatedUserId(payload: unknown): number | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const root = payload as {
+    id?: unknown;
+    data?: { id?: unknown };
+    results?: unknown;
+  };
+  const firstResult = Array.isArray(root.results)
+    ? (root.results[0] as { id?: unknown } | undefined)
+    : (root.results as { id?: unknown } | undefined);
+
+  for (const candidate of [root.id, root.data?.id, firstResult?.id]) {
+    const id = Number(candidate);
+    if (Number.isInteger(id) && id > 0) return id;
+  }
+
+  return null;
+}
+
+/**
+ * Vincula o usuário recém-criado ao cargo escolhido. Devolve a mensagem de
+ * erro em vez de lançar: o usuário já existe nesse ponto, então a falha aqui
+ * é parcial e não pode ser tratada como falha do cadastro.
+ */
+async function linkUserToCargo(
+  cargoId: string,
+  userId: number | null,
+): Promise<string | null> {
+  if (!userId) {
+    return "Usuário criado, mas a API não devolveu o id — vincule o cargo pela tela de Perfis & Permissões.";
+  }
+
+  try {
+    const response = await fetch(`/api/cargos/${cargoId}/usuarios`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario_ids: [userId] }),
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      return getApiMessage(
+        payload,
+        "Usuário criado, mas não foi possível vinculá-lo ao cargo.",
+      );
+    }
+
+    return null;
+  } catch {
+    return "Usuário criado, mas não foi possível vinculá-lo ao cargo.";
+  }
+}
+
+/**
+ * A categoria saiu do formulário (quem define o acesso agora é o cargo), mas
+ * continua no payload: os terminais filtram quem pode entrar por ela.
+ */
+const CATEGORIA_USUARIO_PADRAO = "FUNCIONARIO";
+
+export default function NewUserModal({ open, onClose, onCreated, onNotify }: NewUserModalProps) {
   const theme = useTheme();
   const { unitOptions } = useUnitFilterOptions();
   const realUnitOptions = unitOptions.filter((option) => option.value !== "all");
+  // Só busca os cargos quando o modal abre (o componente fica montado o tempo
+  // todo na página de usuários).
+  const { cargoOptions, isLoadingCargos, cargosError } = useCargoOptions(open);
+  const cargoSelectOptions = React.useMemo(
+    () => [
+      {
+        label: isLoadingCargos ? "Carregando cargos..." : "Selecione o cargo",
+        value: "",
+      },
+      ...cargoOptions,
+    ],
+    [cargoOptions, isLoadingCargos],
+  );
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [submitError, setSubmitError] = React.useState<string | null>(null);
+
+  // A opção ausente no select não explica sozinha por que a lista veio vazia.
+  React.useEffect(() => {
+    if (cargosError) onNotify?.(cargosError, "error");
+  }, [cargosError, onNotify]);
 
   const {
     handleSubmit,
@@ -34,7 +117,7 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
       nome: "",
       documento: "",
       matricula: "",
-      categoria_usuario: "FUNCIONARIO",
+      cargo_id: "",
       unidade_id: "",
       status: "false",
       password: "",
@@ -45,13 +128,30 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
   });
 
   React.useEffect(() => {
+    // Espelha o que o Select já mostra: sem valor no form, ele exibe a primeira
+    // opção — sem esse seed, a tela mostraria uma unidade e o envio iria vazio.
     if (realUnitOptions.length > 0 && !getValues("unidade_id")) {
       setValue("unidade_id", realUnitOptions[0].value, { shouldValidate: false });
     }
   }, [realUnitOptions, getValues, setValue]);
 
+  // Sem isto, o clique em "Criar" simplesmente não faz nada quando algum campo
+  // é reprovado — o erro fica só embaixo do campo, fora da área visível de um
+  // modal longo.
+  const onInvalid = (formErrors: FieldErrors<CreateUserSchemaFormData>) => {
+    const messages = Object.values(formErrors)
+      .map((fieldError) => fieldError?.message)
+      .filter((message): message is string => Boolean(message));
+
+    onNotify?.(
+      messages.length > 0
+        ? messages.join(" · ")
+        : "Revise os campos destacados antes de continuar.",
+      "error",
+    );
+  };
+
   const onSubmit = async (data: CreateUserSchemaFormData) => {
-    setSubmitError(null);
     setIsSubmitting(true);
 
     try {
@@ -63,7 +163,7 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
           documento: data.documento.replace(/\D/g, ""),
           matricula: data.matricula,
           unidade_id: Number(data.unidade_id),
-          categoria_usuario: data.categoria_usuario,
+          categoria_usuario: CATEGORIA_USUARIO_PADRAO,
           is_active: data.status === "true",
           password: data.password,
           numero_cartao: data.numero_cartao ? data.numero_cartao.replace(/\D/g, "") : undefined,
@@ -72,18 +172,35 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
         }),
       });
 
+      const payload = await response.json().catch(() => null);
+
       if (!response.ok) {
-        const errData = await response
-          .json()
-          .catch(() => ({ detail: "Erro ao criar usuário" }));
-        throw new Error(errData.detail ?? "Erro ao criar usuário");
+        throw new Error(getApiMessage(payload, "Erro ao criar usuário"));
       }
 
+      // O vínculo com o cargo é um segundo passo: `POST /cargos/{id}/usuarios`
+      // é o endpoint que a tela de Perfis & Permissões já usa para isso.
+      const cargoError = data.cargo_id
+        ? await linkUserToCargo(data.cargo_id, extractCreatedUserId(payload))
+        : null;
+
+      // O usuário já existe neste ponto: o formulário é limpo e o modal fecha
+      // mesmo com falha no vínculo — reenviar duplicaria o cadastro. O aviso
+      // do vínculo fica mais tempo na tela por exigir uma ação manual depois.
       reset();
       onCreated();
       onClose();
+
+      if (cargoError) {
+        onNotify?.(cargoError, "warning", 8000);
+      } else {
+        onNotify?.(getApiMessage(payload, "Usuário criado com sucesso"), "success");
+      }
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Erro ao criar usuário");
+      onNotify?.(
+        err instanceof Error ? err.message : "Erro ao criar usuário",
+        "error",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -91,9 +208,7 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
 
   return (
     <Modal open={open} onClose={onClose} title="Novo Usuário">
-      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        {submitError && <Alert severity="error">{submitError}</Alert>}
-
+      <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit, onInvalid)}>
         <Input
           label="Nome Completo"
           placeholder="Ex. João Silva"
@@ -125,12 +240,12 @@ export default function NewUserModal({ open, onClose, onCreated }: NewUserModalP
 
         <Stack direction="row" spacing={2}>
           <Select
-            label="Categoria"
-            optional={false}
-            options={CATEGORIA_USUARIO_OPTIONS}
-            name="categoria_usuario"
+            label="Cargo"
+            options={cargoSelectOptions}
+            name="cargo_id"
             control={control}
-            error={errors.categoria_usuario?.message}
+            disabled={isLoadingCargos}
+            error={errors.cargo_id?.message ?? cargosError ?? undefined}
           />
 
           <Select

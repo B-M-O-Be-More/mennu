@@ -12,7 +12,8 @@ import {
   useTheme,
 } from "@mui/material";
 import Card from "@/components/Cards/Card";
-import { BuildingIcon, CircledCheckIcon } from "@/components/Icons";
+import Input from "@/components/FormControl/Input";
+import { BuildingIcon, CircledCheckIcon, SearchIcon } from "@/components/Icons";
 import { useUser } from "@/context/AuthContext";
 import { IUserContext } from "@/Interfaces/User/context";
 import { SelectUnitPageProps, UnitOptionProps } from "./interface";
@@ -22,6 +23,15 @@ import { SelectUnitPageProps, UnitOptionProps } from "./interface";
  * da mesma empresa, e cada uma tem cargo e permissões próprios. A escolha
  * define o header `unidade-id-x` de todas as requisições seguintes.
  */
+
+/** Sem acento e em minúsculo: "sao paulo" precisa achar "São Paulo". */
+function normalize(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
 
 function UnitOption({ contexto, selected, onSelect }: UnitOptionProps) {
   const theme = useTheme();
@@ -165,6 +175,17 @@ export function SelectUnitPage({}: SelectUnitPageProps) {
     if (contexts.length === 1) setSelectedUnidadeId(contexts[0].unidade_id);
   }, [activeContext, contexts, selectedUnidadeId]);
 
+  const [search, setSearch] = React.useState("");
+
+  // Busca só no cliente: os contextos já vieram inteiros de `/auth/contextos`.
+  const visibleContexts = React.useMemo(() => {
+    const term = normalize(search);
+    if (!term) return contexts;
+    return contexts.filter((contexto) =>
+      normalize(contexto.unidade_nome).includes(term),
+    );
+  }, [contexts, search]);
+
   const selected = React.useMemo(
     () =>
       contexts.find((contexto) => contexto.unidade_id === selectedUnidadeId) ??
@@ -231,31 +252,52 @@ export function SelectUnitPage({}: SelectUnitPageProps) {
             <CircularProgress size={28} />
           </Stack>
         ) : hasContexts ? (
-          <Stack
-            spacing={1}
-            width="100%"
-            sx={{
-              maxHeight: 320,
-              overflowY: "auto",
-              overscrollBehavior: "contain",
-              px: 0.25,
-              py: 0.25,
-              "&::-webkit-scrollbar": { width: 6 },
-              "&::-webkit-scrollbar-thumb": {
-                borderRadius: 3,
-                backgroundColor: "divider",
-              },
-              scrollbarWidth: "thin",
-            }}
-          >
-            {contexts.map((contexto) => (
-              <UnitOption
-                key={`${contexto.empresa_id}-${contexto.unidade_id}`}
-                contexto={contexto}
-                selected={contexto.unidade_id === selectedUnidadeId}
-                onSelect={handleSelect}
-              />
-            ))}
+          <Stack spacing={1.5} width="100%">
+            <Input
+              placeholder="Buscar unidade pelo nome"
+              icon={<SearchIcon width={18} height={18} />}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              size="small"
+            />
+
+            {visibleContexts.length === 0 ? (
+              <Stack alignItems="center" gap={1} py={3}>
+                <Typography variant="body2" color="text.secondary" textAlign="center">
+                  Nenhuma unidade encontrada para “{search.trim()}”.
+                </Typography>
+                <Button variant="text" size="small" onClick={() => setSearch("")}>
+                  Limpar busca
+                </Button>
+              </Stack>
+            ) : (
+              <Stack
+                spacing={1}
+                width="100%"
+                sx={{
+                  maxHeight: 320,
+                  overflowY: "auto",
+                  overscrollBehavior: "contain",
+                  px: 0.25,
+                  py: 0.25,
+                  "&::-webkit-scrollbar": { width: 6 },
+                  "&::-webkit-scrollbar-thumb": {
+                    borderRadius: 3,
+                    backgroundColor: "divider",
+                  },
+                  scrollbarWidth: "thin",
+                }}
+              >
+                {visibleContexts.map((contexto) => (
+                  <UnitOption
+                    key={`${contexto.empresa_id}-${contexto.unidade_id}`}
+                    contexto={contexto}
+                    selected={contexto.unidade_id === selectedUnidadeId}
+                    onSelect={handleSelect}
+                  />
+                ))}
+              </Stack>
+            )}
           </Stack>
         ) : (
           <Stack alignItems="center" gap={1} py={3} width="100%">

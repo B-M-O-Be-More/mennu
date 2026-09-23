@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography, Box, Button, Alert } from "@mui/material";
+import { Stack, Typography, Box, Button } from "@mui/material";
 import { UsersPageProps } from "./";
 import React from "react";
 import { CSVIcon, DownloadIcon, FileIcon, FilterIcon, PlusIcon, SearchIcon } from "../Icons";
@@ -22,6 +22,8 @@ import ExportModal from "../Modals/ExportModal";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { useDebounce } from "@/hooks/useDebounce/hook";
 import Can from "@/components/Can";
+import Toast from "@/components/Toast";
+import { useToast } from "@/hooks/useToast/hook";
 
 interface PaginationMetadados {
   total_pages?: number;
@@ -38,13 +40,13 @@ interface CargoListPayload {
 
 export function UsersPage({ }: UsersPageProps) {
   const { unitOptions } = useUnitFilterOptions();
+  const { toast, showToast, closeToast } = useToast();
   const [openCreateUserModal, setOpenCreateUserModal] = React.useState(false);
   const [openExportUsersModal, setOpenExportUsersModal] = React.useState(false);
   const [editingUser, setEditingUser] = React.useState<IUsuarioListItem | null>(null);
 
   const [users, setUsers] = React.useState<IUsuarioListItem[]>([]);
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
   const [adminCount, setAdminCount] = React.useState(0);
 
   const {
@@ -64,7 +66,6 @@ export function UsersPage({ }: UsersPageProps) {
 
   const loadUsers = React.useCallback(async () => {
     setLoading(true);
-    setError(null);
 
     try {
       const baseParams = new URLSearchParams();
@@ -105,12 +106,15 @@ export function UsersPage({ }: UsersPageProps) {
 
       setUsers(allResults);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar usuários");
+      showToast(
+        err instanceof Error ? err.message : "Erro ao carregar usuários",
+        "error",
+      );
       setUsers([]);
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, filters.unidade, filters.status]);
+  }, [debouncedSearch, filters.unidade, filters.status, showToast]);
 
   React.useEffect(() => {
     loadUsers();
@@ -150,7 +154,10 @@ export function UsersPage({ }: UsersPageProps) {
         prev.map((u) => (u.id === user.id ? { ...u, is_active: newState } : u)),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao alterar status do usuário");
+      showToast(
+        err instanceof Error ? err.message : "Erro ao alterar status do usuário",
+        "error",
+      );
     }
   };
 
@@ -225,6 +232,7 @@ export function UsersPage({ }: UsersPageProps) {
         open={openCreateUserModal}
         onClose={() => setOpenCreateUserModal(false)}
         onCreated={loadUsers}
+        onNotify={showToast}
       />
 
       <EditUserModal
@@ -232,10 +240,11 @@ export function UsersPage({ }: UsersPageProps) {
         onClose={() => setEditingUser(null)}
         onUpdated={loadUsers}
         user={editingUser}
+        onNotify={showToast}
       />
 
       <Card>
-        <Stack gap={2} direction={{ xs: "column", sm: "row" }} flexWrap="wrap">
+        <Stack gap={2} direction={{ xs: "column", md: "row" }}>
           <Input
             placeholder="Buscar por nome, matrícula..."
             icon={<SearchIcon />}
@@ -291,8 +300,6 @@ export function UsersPage({ }: UsersPageProps) {
           ))}
         </Box>
 
-        {error && <Alert severity="error">{error}</Alert>}
-
         <Table
           columns={userColumns.map(col =>
             col.key === "acoes"
@@ -317,6 +324,14 @@ export function UsersPage({ }: UsersPageProps) {
           isLoading={loading}
         />
       </Card>
+
+      <Toast
+        open={toast.open}
+        message={toast.message}
+        severity={toast.severity}
+        autoHideDuration={toast.duration}
+        onClose={closeToast}
+      />
     </Stack>
 
   );

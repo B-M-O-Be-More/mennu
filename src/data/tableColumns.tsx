@@ -4,7 +4,7 @@ import { IMovement, MovementTipo } from "@/Interfaces/Movement/movement";
 import { IStock } from "@/Interfaces/Stock/stock";
 import { ISaldoEstoqueItem, ISaldoEstoqueConsolidado } from "@/Interfaces/Stock/saldoEstoque";
 import { IUsuarioListItem } from "@/Interfaces/User/user";
-import { Avatar, Box, Chip, Stack, Typography } from "@mui/material";
+import { Avatar, Box, Chip, Stack, Tooltip, Typography } from "@mui/material";
 import { CheckIcon, PaperIcon, XIcon } from "@/components/Icons";
 import { MealRecordsResponse } from "@/Interfaces/Meals/MealTypes";
 import { formatDate, formatDateOnly } from "@/utils/formatDate";
@@ -92,7 +92,34 @@ const userColumns: IColumn<IUsuarioListItem>[] = [
       />
     ),
   },
-  { key: "categoria_usuario", label: "Categoria" },
+  {
+    key: "cargos",
+    label: "Cargos",
+    render: (row) => {
+      const cargos = row.cargos ?? [];
+
+      if (cargos.length === 0) {
+        return (
+          <Typography variant="body2" color="text.secondary">
+            Sem cargo
+          </Typography>
+        );
+      }
+
+      return (
+        <Stack direction="row" gap={0.5} flexWrap="wrap">
+          {cargos.map((cargo) => (
+            <Tooltip
+              key={cargo.id}
+              title={cargo.unidade?.nome ?? "Todas as unidades"}
+            >
+              <Chip label={cargo.nome} size="small" variant="outlined" />
+            </Tooltip>
+          ))}
+        </Stack>
+      );
+    },
+  },
   {
     key: "acoes",
     label: "Ações",
