@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Stack, Button, Alert } from "@mui/material";
+import { Stack, Button, Alert, IconButton, Tooltip } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { unidadesMedidaOptions } from "@/data/menuItems";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
@@ -168,6 +169,20 @@ export default function EditStockModal({
           />
           <Input
             label="Ponto de Reposição"
+            labelIcon={
+              <Tooltip
+                title="Quantidade indicativa para iniciar reposição."
+                arrow
+              >
+                <IconButton
+                  size="small"
+                  aria-label="Informação sobre o ponto de reposição"
+                  sx={{ p: 0, color: "text.secondary" }}
+                >
+                  <InfoOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            }
             placeholder="0"
             optional={true}
             register={register("ponto_reposicao")}
