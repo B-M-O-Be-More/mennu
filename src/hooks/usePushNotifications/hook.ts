@@ -8,26 +8,26 @@ import {
   UsePushNotificationsReturn,
 } from "./interface";
 
-function getInitialPermission(): PushPermissionState {
-  if (
-    typeof window === "undefined" ||
-    !("Notification" in window) ||
-    !("serviceWorker" in navigator)
-  ) {
-    return "unsupported";
-  }
-  return Notification.permission;
-}
-
 /**
  * Ativa notificações desktop/navegador via FCM. Pede permissão, registra o
  * service worker e envia o token pro Novu através do BFF.
  */
 export function usePushNotifications(): UsePushNotificationsReturn {
-  const [permission, setPermission] = React.useState<PushPermissionState>(
-    getInitialPermission,
-  );
+  const [permission, setPermission] =
+    React.useState<PushPermissionState>("loading");
   const [isRegistering, setIsRegistering] = React.useState(false);
+
+  React.useEffect(() => {
+    if (
+      !("Notification" in window) ||
+      !("serviceWorker" in navigator)
+    ) {
+      setPermission("unsupported");
+      return;
+    }
+
+    setPermission(Notification.permission);
+  }, []);
 
   // FCM não mostra notificação sozinho com a aba em foco — precisa exibir na mão.
   // Usa `registration.showNotification` (não `new Notification`) pra ficar

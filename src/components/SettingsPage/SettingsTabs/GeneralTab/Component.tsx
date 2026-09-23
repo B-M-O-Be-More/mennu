@@ -14,15 +14,22 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import React from "react";
 import Input from "@/components/FormControl/Input";
+import ActionModal from "@/components/Modals/ActionModal";
 import UploadImageModal from "@/components/Modals/UploadImageModal";
-import { ImageIcon, UploadIcon } from "@/components/Icons";
+import { ImageIcon, TrashIcon, UploadIcon } from "@/components/Icons";
 import { GeneralTabProps } from "./interface";
 import {
   GeneralSettingsFormData,
   generalSettingsSchema,
 } from "@/schemas/generalSettingsSchema";
 import { GeneralSettingsApi } from "@/Interfaces/Settings/settings";
-import { resolveLogoUrl, settingsService } from "@/services/settingsService";
+import {
+  DEFAULT_SYSTEM_LOGO_SRC,
+  GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+  GeneralSettingsLogoUpdatedDetail,
+  getGeneralSettingsLogoSrc,
+  settingsService,
+} from "@/services/settingsService";
 import { theme } from "@/theme/theme";
 import Can from "@/components/Can";
 import { usePushNotifications } from "@/hooks/usePushNotifications/hook";
@@ -41,16 +48,18 @@ function toFormValues(settings: GeneralSettingsApi): GeneralSettingsFormData {
 
 export default function GeneralTab({}: GeneralTabProps) {
   const [openUploadLogoModal, setOpenUploadLogoModal] = React.useState(false);
+  const [openDeleteLogoModal, setOpenDeleteLogoModal] = React.useState(false);
   const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
+  const [hasCustomLogo, setHasCustomLogo] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isDeletingLogo, setIsDeletingLogo] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
     control,
-    watch,
     reset,
   } = useForm<GeneralSettingsFormData>({
     resolver: yupResolver(generalSettingsSchema),
@@ -62,19 +71,6 @@ export default function GeneralTab({}: GeneralTabProps) {
       image: null,
     },
   });
-  const imageFile = watch("image")?.[0] ?? null;
-  const [localPreview, setLocalPreview] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (!imageFile) {
-      setLocalPreview(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(imageFile);
-    setLocalPreview(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [imageFile]);
-
   React.useEffect(() => {
     let active = true;
     settingsService
@@ -82,7 +78,8 @@ export default function GeneralTab({}: GeneralTabProps) {
       .then((settings) => {
         if (active) {
           reset(toFormValues(settings));
-          setLogoUrl(resolveLogoUrl(settings.logo_url));
+          setLogoUrl(getGeneralSettingsLogoSrc(settings));
+          setHasCustomLogo(Boolean(settings.logo_url));
         }
       })
       .catch((loadError: unknown) => {
@@ -112,7 +109,8 @@ export default function GeneralTab({}: GeneralTabProps) {
         modo_manutencao: data.maintenanceMode,
       });
       reset(toFormValues(updated));
-      setLogoUrl(resolveLogoUrl(updated.logo_url));
+      setLogoUrl(getGeneralSettingsLogoSrc(updated));
+      setHasCustomLogo(Boolean(updated.logo_url));
     } catch (saveError) {
       setError(
         saveError instanceof Error
@@ -126,18 +124,58 @@ export default function GeneralTab({}: GeneralTabProps) {
 
   const handleLogoUpload = async (file: File) => {
     const updated = await settingsService.uploadLogo(file);
-    setLogoUrl(resolveLogoUrl(updated.logo_url));
+    const updatedLogoSrc = getGeneralSettingsLogoSrc(updated);
+    setLogoUrl(updatedLogoSrc);
+    setHasCustomLogo(Boolean(updated.logo_url));
+    window.dispatchEvent(
+      new CustomEvent<GeneralSettingsLogoUpdatedDetail>(
+        GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+        {
+          detail: { logoSrc: updatedLogoSrc },
+        },
+      ),
+    );
   };
 
-  const previewUrl = localPreview ?? logoUrl;
-  const disabled = isLoading || isSaving;
+  const previewUrl = logoUrl;
+  const disabled = isLoading || isSaving || isDeletingLogo;
 
   const { permission, isRegistering, requestPermission } =
     usePushNotifications();
   const { toast, showToast, closeToast } = useToast();
 
+  const handleDeleteLogo = async () => {
+    setIsDeletingLogo(true);
+    setError(null);
+
+    try {
+      await settingsService.deleteLogo();
+      setLogoUrl(DEFAULT_SYSTEM_LOGO_SRC);
+      setHasCustomLogo(false);
+      setOpenDeleteLogoModal(false);
+      window.dispatchEvent(
+        new CustomEvent<GeneralSettingsLogoUpdatedDetail>(
+          GENERAL_SETTINGS_LOGO_UPDATED_EVENT,
+          { detail: { logoSrc: DEFAULT_SYSTEM_LOGO_SRC } },
+        ),
+      );
+      showToast("Logo removido com sucesso", "success");
+    } catch (deleteError) {
+      showToast(
+        deleteError instanceof Error
+          ? deleteError.message
+          : "Não foi possível remover o logo",
+        "error",
+      );
+    } finally {
+      setIsDeletingLogo(false);
+    }
+  };
+
   const browserPushLabel =
-    permission === "denied"
+    permission === "loading"
+      ? "Verificando suporte a notificações..."
+      : permission === "denied"
       ? "Bloqueadas nas configurações do navegador."
       : permission === "unsupported"
         ? "Este navegador não suporta notificações."
@@ -177,18 +215,25 @@ export default function GeneralTab({}: GeneralTabProps) {
             <Typography fontWeight={400} mb={1}>
               Logo do Sistema
             </Typography>
-            <Stack direction="row" alignItems="center" gap={2}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              alignItems={{ xs: "stretch", sm: "center" }}
+              gap={2}
+            >
               {previewUrl ? (
                 <CardMedia
                   component="img"
                   image={previewUrl}
                   alt="Logo do Sistema"
+                  onError={() => setLogoUrl(DEFAULT_SYSTEM_LOGO_SRC)}
                   sx={{
-                    height: 100,
-                    width: "auto",
+                    width: { xs: "100%", sm: 324 },
+                    maxWidth: "100%",
+                    aspectRatio: "18 / 5",
                     borderRadius: 3,
-                    bgcolor: "grey.50",
+                    bgcolor: "background.auth",
                     objectFit: "contain",
+                    flexShrink: 0,
                   }}
                 />
               ) : (
@@ -207,30 +252,50 @@ export default function GeneralTab({}: GeneralTabProps) {
                 </Box>
               )}
               <Box width="100%">
-                <Button
-                  variant="outlined"
-                  startIcon={
-                    <UploadIcon
-                      color={theme.palette.primary.main}
-                      height={20}
-                      width={20}
-                    />
-                  }
-                  sx={{
-                    borderRadius: 3,
-                    color: theme.palette.primary.main,
-                    textTransform: "none",
-                    py: 1,
-                    width: { xs: "100%", sm: "60%", md: "30%" },
-                    justifyContent: "flex-start",
-                  }}
-                  onClick={() => setOpenUploadLogoModal(true)}
-                  disabled={disabled}
-                >
-                  Fazer Upload
-                </Button>
+                <Stack direction={{ xs: "column", md: "row" }} gap={1}>
+                  <Button
+                    variant="outlined"
+                    startIcon={
+                      <UploadIcon
+                        color={theme.palette.primary.main}
+                        height={20}
+                        width={20}
+                      />
+                    }
+                    sx={{
+                      borderRadius: 3,
+                      color: theme.palette.primary.main,
+                      textTransform: "none",
+                      py: 1,
+                      minHeight: 44,
+                      justifyContent: "flex-start",
+                    }}
+                    onClick={() => setOpenUploadLogoModal(true)}
+                    disabled={disabled}
+                  >
+                    Fazer Upload
+                  </Button>
+                  {hasCustomLogo && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      startIcon={<TrashIcon width={20} height={20} />}
+                      sx={{
+                        borderRadius: 3,
+                        textTransform: "none",
+                        py: 1,
+                        minHeight: 44,
+                        justifyContent: "flex-start",
+                      }}
+                      onClick={() => setOpenDeleteLogoModal(true)}
+                      disabled={disabled}
+                    >
+                      Remover logo
+                    </Button>
+                  )}
+                </Stack>
                 <Typography variant="body2" color="text.secondary" mt={1}>
-                  Formatos aceitos: JPG, PNG, SVG (máx. 2MB)
+                  JPG, PNG ou SVG, até 2 MB. O arquivo será recortado em 18:5.
                 </Typography>
               </Box>
             </Stack>
@@ -238,7 +303,7 @@ export default function GeneralTab({}: GeneralTabProps) {
               open={openUploadLogoModal}
               onClose={() => setOpenUploadLogoModal(false)}
               title="Upload de Logo"
-              image={imageFile}
+              image={null}
               onSave={handleLogoUpload}
             />
           </Box>
@@ -301,6 +366,7 @@ export default function GeneralTab({}: GeneralTabProps) {
               checked={permission === "granted"}
               disabled={
                 isRegistering ||
+                permission === "loading" ||
                 permission === "denied" ||
                 permission === "unsupported"
               }
@@ -353,6 +419,18 @@ export default function GeneralTab({}: GeneralTabProps) {
         severity={toast.severity}
         autoHideDuration={toast.duration}
         onClose={closeToast}
+      />
+      <ActionModal
+        open={openDeleteLogoModal}
+        loading={isDeletingLogo}
+        onCancel={() => setOpenDeleteLogoModal(false)}
+        onConfirm={() => void handleDeleteLogo()}
+        title="Remover logo personalizado?"
+        subtitle="A sidebar voltará a usar o logo padrão da Mennu."
+        confirmLabel="Remover"
+        cancelLabel="Cancelar"
+        color="error"
+        icon={<TrashIcon width={60} height={60} />}
       />
     </>
   );

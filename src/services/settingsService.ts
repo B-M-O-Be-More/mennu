@@ -19,6 +19,18 @@ import {
   getContextRequestHeaders,
 } from "@/utils/authContextHeaders";
 
+export const DEFAULT_SYSTEM_LOGO_SRC = "/assets/logo.svg";
+export const GENERAL_SETTINGS_LOGO_UPDATED_EVENT =
+  "mennu:general-settings-logo-updated";
+
+export interface GeneralSettingsLogoUpdatedDetail {
+  logoSrc: string;
+}
+
+export interface DeleteLogoResponse {
+  detail: string;
+}
+
 /** A API pode devolver `/media/...`; no browser ela deve apontar ao host da API. */
 export function resolveLogoUrl(url: string | null): string | null {
   if (!url || /^https?:\/\//i.test(url)) return url;
@@ -27,6 +39,30 @@ export function resolveLogoUrl(url: string | null): string | null {
   if (!apiUrl) return url;
 
   return new URL(url, new URL(apiUrl).origin).toString();
+}
+
+/**
+ * Gera a URL exibida pela interface e invalida o cache quando a configuração
+ * é atualizada, mesmo que o backend reutilize o mesmo caminho do arquivo.
+ */
+export function resolveVersionedLogoUrl(
+  url: string | null,
+  updatedAt: string,
+): string | null {
+  const resolvedUrl = resolveLogoUrl(url);
+  if (!resolvedUrl) return null;
+
+  const separator = resolvedUrl.includes("?") ? "&" : "?";
+  return `${resolvedUrl}${separator}v=${encodeURIComponent(updatedAt)}`;
+}
+
+export function getGeneralSettingsLogoSrc(
+  settings: Pick<GeneralSettingsApi, "logo_url" | "atualizado_em">,
+): string {
+  return (
+    resolveVersionedLogoUrl(settings.logo_url, settings.atualizado_em) ??
+    DEFAULT_SYSTEM_LOGO_SRC
+  );
 }
 
 export function mapUnitFromApi(unit: UnitApi): UnitListItem {
@@ -60,6 +96,10 @@ export const settingsService = {
       body: data,
     });
   },
+  deleteLogo: () =>
+    requestJson<DeleteLogoResponse>("/api/configuracoes/geral/logo", {
+      method: "DELETE",
+    }),
   getSecurity: () => requestJson<SecuritySettingsApi>("/api/configuracoes/seguranca"),
   updateSecurity: (data: SecuritySettingsUpdateApi) =>
     requestJson<SecuritySettingsApi>("/api/configuracoes/seguranca", {

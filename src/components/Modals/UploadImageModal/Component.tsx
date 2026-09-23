@@ -1,10 +1,31 @@
-import { Stack, Typography, Button, useTheme, Collapse, Alert } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Collapse,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { Download as DownloadIcon } from "@mui/icons-material";
 import Modal from "../Modal";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { ImageIcon } from "@/components/Icons";
 import React from "react";
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  type Crop,
+  type PixelCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 import { UploadImageModalProps } from "./";
+import {
+  createCroppedLogoFile,
+  LOGO_ASPECT_RATIO,
+  validateLogoDimensions,
+  validateLogoFile,
+} from "./cropLogo";
 
 export default function UploadImageModal({
   open,
@@ -19,8 +40,11 @@ export default function UploadImageModal({
   const [tempImage, setTempImage] = React.useState<File | null>(image);
 
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [crop, setCrop] = React.useState<Crop>();
+  const [completedCrop, setCompletedCrop] = React.useState<PixelCrop>();
   const [saveError, setSaveError] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState(false);
+  const imageRef = React.useRef<HTMLImageElement | null>(null);
 
   React.useEffect(() => {
     if (!tempImage) {
@@ -40,19 +64,63 @@ export default function UploadImageModal({
   React.useEffect(() => {
     if (open) {
       setTempImage(image);
+      setCrop(undefined);
+      setCompletedCrop(undefined);
       setSaveError(null);
     }
   }, [open, image]);
 
+  const resetAndClose = () => {
+    if (isSaving) return;
+    setTempImage(image);
+    setCrop(undefined);
+    setCompletedCrop(undefined);
+    setSaveError(null);
+    onClose();
+  };
+
+  const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const loadedImage = event.currentTarget;
+    imageRef.current = loadedImage;
+
+    const dimensionError = validateLogoDimensions(loadedImage);
+    if (dimensionError) {
+      setSaveError(dimensionError);
+      setCrop(undefined);
+      setCompletedCrop(undefined);
+      return;
+    }
+
+    const { naturalWidth: width, naturalHeight: height } = loadedImage;
+    const sourceAspect = width / height;
+    const initialCrop = makeAspectCrop(
+      sourceAspect > LOGO_ASPECT_RATIO
+        ? { unit: "%", height: 90 }
+        : { unit: "%", width: 90 },
+      LOGO_ASPECT_RATIO,
+      width,
+      height,
+    );
+
+    setCrop(centerCrop(initialCrop, width, height));
+    setSaveError(null);
+  };
+
   return (
-    <Modal open={open} onClose={onClose} title={title} subtitle={subtitle}>
+    <Modal
+      open={open}
+      onClose={resetAndClose}
+      title={title}
+      subtitle={subtitle}
+      maxWidth="md"
+    >
       <Stack gap={2}>
         {saveError && <Alert severity="error">{saveError}</Alert>}
         <ClosableAlertBox
           severity="info"
           icon={<ImageIcon color={theme.palette.info.contrastText} />}
           title="Logo do Sistema"
-          description="Escolha uma imagem que representará o sistema Mennu em todas as telas e terminais. Recomendado: imagem quadrada, fundo transparente."
+          description="Posicione a marca dentro da área horizontal. O recorte será salvo em PNG na proporção 18:5 (864×240 px)."
           isCloseable={false}
         />
 
@@ -84,21 +152,23 @@ export default function UploadImageModal({
               <input
                 type="file"
                 hidden
-                accept="image/*"
+                accept="image/jpeg,image/png,image/svg+xml"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
 
-                  const maxSizeMB = 2;
-                  const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-                  if (file.size > maxSizeBytes) {
-                    alert(`Arquivo muito grande! O limite é ${maxSizeMB}MB.`);
+                  const validationError = validateLogoFile(file);
+                  if (validationError) {
+                    setSaveError(validationError);
                     e.target.value = "";
                     return;
                   }
 
+                  setSaveError(null);
+                  setCrop(undefined);
+                  setCompletedCrop(undefined);
                   setTempImage(file);
+                  e.target.value = "";
                 }}
               />
             </Button>
@@ -107,7 +177,7 @@ export default function UploadImageModal({
             </Typography>
           </Stack>
           <Typography variant="caption" color="text.secondary">
-            Formatos aceitos: JPG, PNG, SVG (máx. 2MB)
+            JPG, PNG ou SVG, até 2 MB e 4000×4000 px.
           </Typography>
         </Stack>
 
@@ -121,18 +191,49 @@ export default function UploadImageModal({
               borderRadius={3}
             >
               <Typography variant="body2" fontWeight={400} color="text.label" mb={1}>
-                Preview da Imagem
+                Ajuste o recorte
               </Typography>
-              <img
-                src={previewUrl ?? ""}
-                alt="Preview da Imagem"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: 200,
-                  borderRadius: 8,
-                  backgroundColor: theme.palette.background.default,
+              <Typography variant="caption" color="text.secondary">
+                Arraste a seleção ou use o teclado para escolher a área que aparecerá na sidebar.
+              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  overflow: "auto",
+                  borderRadius: 2,
+                  bgcolor: "background.default",
+                  p: 1,
                 }}
-              />
+              >
+                <ReactCrop
+                  crop={crop}
+                  aspect={LOGO_ASPECT_RATIO}
+                  keepSelection
+                  ruleOfThirds
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(pixelCrop) => setCompletedCrop(pixelCrop)}
+                >
+                  <Box
+                    component="img"
+                    ref={imageRef}
+                    src={previewUrl}
+                    alt="Imagem selecionada para recorte do logo"
+                    onLoad={handleImageLoad}
+                    onError={() => {
+                      setSaveError("Não foi possível abrir esta imagem.");
+                      setCrop(undefined);
+                      setCompletedCrop(undefined);
+                    }}
+                    sx={{
+                      display: "block",
+                      maxWidth: "100%",
+                      maxHeight: 360,
+                      objectFit: "contain",
+                    }}
+                  />
+                </ReactCrop>
+              </Box>
             </Stack>
           )}
         </Collapse>
@@ -149,10 +250,7 @@ export default function UploadImageModal({
               borderRadius: 2,
             }}
             disabled={isSaving}
-            onClick={() => {
-              setTempImage(image);
-              onClose();
-            }}
+            onClick={resetAndClose}
           >
             Cancelar
           </Button>
@@ -166,13 +264,18 @@ export default function UploadImageModal({
             }}
             variant="contained"
             startIcon={<DownloadIcon />}
-            disabled={!tempImage || isSaving}
+            disabled={!tempImage || !completedCrop || !!saveError || isSaving}
             onClick={async () => {
-              if (!tempImage) return;
+              if (!tempImage || !completedCrop || !imageRef.current) return;
               setIsSaving(true);
               setSaveError(null);
               try {
-                await onSave(tempImage);
+                const croppedFile = await createCroppedLogoFile(
+                  imageRef.current,
+                  completedCrop,
+                  tempImage.name,
+                );
+                await onSave(croppedFile);
                 onClose();
               } catch (error) {
                 setSaveError(error instanceof Error ? error.message : "Não foi possível enviar a imagem");
