@@ -10,11 +10,6 @@ import { createStockSchema } from "@/schemas/stockSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-type Unidade = {
-  id: number;
-  nome: string;
-};
-
 type StockFormData = yup.Asserts<typeof createStockSchema>;
 
 export default function EditStockModal({
@@ -25,14 +20,11 @@ export default function EditStockModal({
 }: EditStockModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [unidades, setUnidades] = useState<Unidade[]>([]);
-  const [unidadesError, setUnidadesError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
     control,
   } = useForm<StockFormData>({
@@ -43,7 +35,6 @@ export default function EditStockModal({
       tipo_padrao: "",
       unidade_medida: "kg",
       ponto_reposicao: 0,
-      unidade_id: "",
       quantidade_atual: 0,
     },
   });
@@ -57,68 +48,9 @@ export default function EditStockModal({
       tipo_padrao: stockItem.tipo_padrao ?? "",
       unidade_medida: stockItem.unidade_medida,
       ponto_reposicao: Number(stockItem.ponto_reposicao) || 0,
-      unidade_id: "",
       quantidade_atual: Number(stockItem.quantidade_atual) || 0,
     });
   }, [open, stockItem, reset]);
-
-  React.useEffect(() => {
-    if (!open || !stockItem || unidades.length === 0) return;
-
-    const parsedUnidadeId = Number(stockItem.unidade_id);
-    const hasUnidade = unidades.some((u) => u.id === parsedUnidadeId);
-
-    setValue("unidade_id", hasUnidade ? String(parsedUnidadeId) : "", {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-  }, [open, stockItem, unidades, setValue]);
-
-  React.useEffect(() => {
-    let isCancelled = false;
-
-    const fetchUnidades = async () => {
-      try {
-        const response = await fetch("/api/unidades", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            response.status === 401
-              ? "Sessão expirada. Faça login novamente."
-              : "Erro ao carregar unidades. Tente novamente."
-          );
-        }
-
-        const data = (await response.json()) as { results?: Unidade[] };
-
-        if (!isCancelled) {
-          setUnidades(data.results ?? []);
-          setUnidadesError(null);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          setUnidades([]);
-          setUnidadesError(err instanceof Error ? err.message : "Erro ao carregar unidades");
-        }
-      }
-    };
-
-    if (open) {
-      fetchUnidades();
-    } else {
-      setUnidades([]);
-    }
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [open]);
 
   const onSubmit = async (data: StockFormData) => {
     setLoading(true);
@@ -132,7 +64,6 @@ export default function EditStockModal({
         quantidade_atual: number;
         categoria?: string;
         tipo_padrao?: string;
-        unidade_id?: number;
       } = {
         nome: data.nome,
         unidade_medida: data.unidade_medida,
@@ -149,17 +80,6 @@ export default function EditStockModal({
 
       if (tipoPadrao) {
         payload.tipo_padrao = tipoPadrao;
-      }
-
-      if (
-        data.unidade_id !== undefined &&
-        data.unidade_id !== null &&
-        `${data.unidade_id}`.trim() !== ""
-      ) {
-        const parsedUnidadeId = Number(data.unidade_id);
-        if (Number.isFinite(parsedUnidadeId) && parsedUnidadeId > 0) {
-          payload.unidade_id = parsedUnidadeId;
-        }
       }
 
       const response = await fetch(`/api/insumo/${stockItem.id}`, {
@@ -195,7 +115,6 @@ export default function EditStockModal({
         tipo_padrao: payload.tipo_padrao ?? null,
         unidade_medida: payload.unidade_medida,
         ponto_reposicao: String(payload.ponto_reposicao),
-        unidade_id: payload.unidade_id ?? null,
         quantidade_atual: String(payload.quantidade_atual),
       });
       onClose();
@@ -212,7 +131,6 @@ export default function EditStockModal({
     <Modal open={open} onClose={onClose} title="Editar Insumo">
       <Stack gap={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
         {error && <Alert severity="error">{error}</Alert>}
-        {unidadesError && <Alert severity="warning">{unidadesError}</Alert>}
 
         <Input
           label="Nome do Insumo"
@@ -264,18 +182,6 @@ export default function EditStockModal({
           optional={false}
           register={register("quantidade_atual")}
           error={errors.quantidade_atual?.message}
-        />
-
-        <Select
-          label="Unidade"
-          optional={true}
-          options={[
-            { label: "Selecione uma unidade", value: "" },
-            ...unidades.map((u) => ({ label: u.nome, value: String(u.id) })),
-          ]}
-          control={control}
-          name="unidade_id"
-          error={errors.unidade_id?.message}
         />
 
         <Stack direction="row" gap={2}>
