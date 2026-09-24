@@ -3,6 +3,7 @@ import { TransferStockModalProps } from ".";
 import Modal from "../Modal";
 import Input from "@/components/FormControl/Input";
 import Select from "@/components/FormControl/Select";
+import SearchableSelect from "@/components/FormControl/SearchableSelect";
 import ClosableAlertBox from "@/components/ClosableAlertBox";
 import { CircledCheckIcon, AlertIcon, PlusIcon, TrashIcon } from "@/components/Icons";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -21,7 +22,11 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
   const theme = useTheme();
   const { activeContext } = useUser();
   const { unitOptions } = useUnitFilterOptions();
-  const { insumoOptions, unidadeMedidaByInsumoId } = useInsumoOptions();
+  const {
+    insumoOptions,
+    unidadeMedidaByInsumoId,
+    isLoadingInsumos,
+  } = useInsumoOptions();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   // `null` enquanto o saldo não carregou (ou falhou): sem ele não dá para
@@ -109,13 +114,10 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
         .filter(Boolean),
     );
 
-    return [
-      { label: "Selecione um item", value: "" },
-      ...insumoOptions.map((option) => ({
-        ...option,
-        disabled: jaEscolhidos.has(option.value),
-      })),
-    ];
+    return insumoOptions.map((option) => ({
+      ...option,
+      disabled: jaEscolhidos.has(option.value),
+    }));
   };
 
   const getUnidadeMedida = (index: number) =>
@@ -166,8 +168,8 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
         body: JSON.stringify({
           unidade_destino_id: Number(data.unidadeDestinoId),
           movimentacoes: data.movimentacoes.map((movimentacao) => ({
-            insumo_id: Number(movimentacao.insumoId),
-            quantidade: movimentacao.quantidade,
+            insumo_id: String(movimentacao.insumoId),
+            quantidade: String(movimentacao.quantidade),
           })),
         }),
       });
@@ -231,11 +233,16 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
                 gap={1}
                 alignItems={{ sm: "flex-start" }}
               >
-                <Select
+                <SearchableSelect
                   options={getItemOptions(index)}
                   name={`movimentacoes.${index}.insumoId`}
                   control={control}
                   error={errors.movimentacoes?.[index]?.insumoId?.message}
+                  placeholder="Selecione ou busque um item"
+                  loading={isLoadingInsumos}
+                  noOptionsText="Nenhum insumo encontrado"
+                  loadingText="Carregando insumos..."
+                  disabled={isSubmitting}
                   formControlSx={{ flex: 1 }}
                 />
 
