@@ -115,15 +115,29 @@ export default function StockBalancePanel({ refreshToken = 0 }: StockBalancePane
     <Card>
       {error && <Alert severity="error">{error}</Alert>}
 
-      <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end">
-        <Select
-          label="Unidade"
-          options={unitOptions}
-          name="unidadeId"
-          control={control}
-          formControlSx={{ minWidth: "220px" }}
-        />
-        <Input label="Lote" placeholder="Ex: L2026-001" register={register("lote")} />
+      <Stack gap={2}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          gap={2}
+          alignItems="flex-start"
+        >
+          <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+            <Select
+              label="Unidade"
+              options={unitOptions}
+              name="unidadeId"
+              control={control}
+            />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+            <Input
+              label="Lote"
+              placeholder="Ex: L2026-001"
+              register={register("lote")}
+            />
+          </Box>
+        </Stack>
+
         <FormControlLabel
           sx={{ ml: 0, mr: 0, gap: 1 }}
           control={
