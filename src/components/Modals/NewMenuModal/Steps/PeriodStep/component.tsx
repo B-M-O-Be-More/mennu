@@ -7,6 +7,7 @@ import DatePicker from "@/components/FormControl/DatePicker";
 import { mockTiposIntervalo } from "../../Component";
 import dayjs from "dayjs";
 import React from "react";
+import { getCardapioDatesLimitError } from "@/utils/menuDates";
 
 const mockWeekDays = [
   { label: "Segunda-feira", id: "segunda" },
@@ -25,9 +26,21 @@ export function PeriodStep({
   onClose,
   control,
   setValue,
+  setError,
+  clearErrors,
 }: PeriodStepProps) {
   const tipoIntervalo = useWatch({ control, name: "tipoIntervalo" });
   const vigencia = useWatch({ control, name: "vigencia" });
+  const diasSemana = useWatch({ control, name: "diasSemana" });
+
+  const periodLimitError = vigencia?.inicio
+    ? getCardapioDatesLimitError(
+        dayjs(vigencia.inicio),
+        vigencia.fim ? dayjs(vigencia.fim) : null,
+        tipoIntervalo ?? "personalizado",
+        (diasSemana ?? []).filter((dia): dia is string => Boolean(dia)),
+      )
+    : null;
 
   React.useEffect(() => {
     if (vigencia?.inicio && vigencia?.fim) {
@@ -38,6 +51,20 @@ export function PeriodStep({
       }
     }
   }, [vigencia?.inicio, vigencia?.fim, setValue]);
+
+  React.useEffect(() => {
+    if (periodLimitError) {
+      setError("vigencia.fim", {
+        type: "maxCardapioDates",
+        message: periodLimitError,
+      });
+      return;
+    }
+
+    if (errors.vigencia?.fim?.type === "maxCardapioDates") {
+      clearErrors("vigencia.fim");
+    }
+  }, [clearErrors, errors.vigencia?.fim?.type, periodLimitError, setError]);
 
   return (
     <>
@@ -108,7 +135,7 @@ export function PeriodStep({
               "diasSemana",
             ]);
 
-            if (valid) {
+            if (valid && !periodLimitError) {
               setCurrentStep(1);
             }
           }}
