@@ -168,8 +168,8 @@ export default function TransferStockModal({ open, onClose, onSave }: TransferSt
         body: JSON.stringify({
           unidade_destino_id: Number(data.unidadeDestinoId),
           movimentacoes: data.movimentacoes.map((movimentacao) => ({
-            insumo_id: Number(movimentacao.insumoId),
-            quantidade: movimentacao.quantidade,
+            insumo_id: String(movimentacao.insumoId),
+            quantidade: String(movimentacao.quantidade),
           })),
         }),
       });
