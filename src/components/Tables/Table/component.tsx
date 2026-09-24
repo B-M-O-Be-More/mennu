@@ -135,6 +135,7 @@ export default function TableG<T extends object>({
     key: string;
     element: HTMLElement;
   } | null>(null);
+  const previousPageResetKey = React.useRef(pageResetKey);
   const isRemotePagination = Boolean(remotePagination);
   const page = remotePagination?.page ?? localPage;
   const rowsPerPage = remotePagination?.rowsPerPage ?? localRowsPerPage;
@@ -143,6 +144,13 @@ export default function TableG<T extends object>({
   React.useEffect(() => {
     if (!isRemotePagination) setLocalPage(0);
   }, [isRemotePagination, pageResetKey]);
+
+  React.useEffect(() => {
+    if (previousPageResetKey.current === pageResetKey) return;
+
+    previousPageResetKey.current = pageResetKey;
+    setFilterAnchor(null);
+  }, [pageResetKey]);
 
   const emptyRows =
     !isRemotePagination && page > 0
@@ -285,6 +293,7 @@ export default function TableG<T extends object>({
                       open={isOpen}
                       anchorEl={filterAnchor?.element}
                       onClose={() => setFilterAnchor(null)}
+                      disableScrollLock
                       anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                       transformOrigin={{ vertical: "top", horizontal: "left" }}
                       slotProps={{
