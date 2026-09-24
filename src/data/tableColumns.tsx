@@ -110,7 +110,7 @@ const userColumns: IColumn<IUsuarioListItem>[] = [
         <Stack direction="row" gap={0.5} flexWrap="wrap">
           {cargos.map((cargo) => (
             <Tooltip
-              key={cargo.id}
+              key={`${cargo.id}-${cargo.unidade?.id ?? "global"}`}
               title={cargo.unidade?.nome ?? "Todas as unidades"}
             >
               <Chip label={cargo.nome} size="small" variant="outlined" />
