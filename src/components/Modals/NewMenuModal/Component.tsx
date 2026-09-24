@@ -8,7 +8,11 @@ import React from "react";
 import BasicInfoStep from "./Steps/BasicInfoStep";
 import PeriodStep from "./Steps/PeriodStep";
 import dayjs from "dayjs";
-import { computeCardapioDates } from "@/utils/menuDates";
+import {
+  computeCardapioDates,
+  MAX_CARDAPIO_DATES_MESSAGE,
+  MAX_CARDAPIO_DATES_PER_REQUEST,
+} from "@/utils/menuDates";
 
 export const mockTiposIntervalo = [
   { label: "Personalizado", value: "personalizado" },
@@ -25,6 +29,8 @@ export default function NewMenuModal({ open, onClose, onCreated }: NewMenuModalP
     register,
     reset,
     setValue,
+    setError,
+    clearErrors,
     trigger,
     control,
     formState: { errors },
@@ -53,15 +59,26 @@ export default function NewMenuModal({ open, onClose, onCreated }: NewMenuModalP
 
   const onSubmit = async (data: CreateMenuSchemaFormData) => {
     setSubmitError(null);
+
+    const datas = computeCardapioDates(
+      data.vigencia.inicio,
+      data.vigencia.fim,
+      data.tipoIntervalo,
+      (data.diasSemana ?? []).filter((d): d is string => !!d),
+    );
+
+    if (datas.length > MAX_CARDAPIO_DATES_PER_REQUEST) {
+      setError("vigencia.fim", {
+        type: "maxCardapioDates",
+        message: MAX_CARDAPIO_DATES_MESSAGE,
+      });
+      setCurrentStep(0);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const datas = computeCardapioDates(
-        data.vigencia.inicio,
-        data.vigencia.fim,
-        data.tipoIntervalo,
-        (data.diasSemana ?? []).filter((d): d is string => !!d),
-      );
 
       if (datas.length === 0) {
         throw new Error("Nenhuma data válida para o período informado.");
@@ -115,6 +132,8 @@ export default function NewMenuModal({ open, onClose, onCreated }: NewMenuModalP
               setCurrentStep={setCurrentStep}
               control={control}
               setValue={setValue}
+              setError={setError}
+              clearErrors={clearErrors}
             />
           )
         }

@@ -4,6 +4,27 @@ import {
   IStockAuditSummary,
   StockAuditStatusKey,
 } from "@/Interfaces/StockAudit/stockAudit";
+import { getApiMessage } from "@/utils/apiMessage";
+
+export const DUPLICATE_DRAFT_AUDIT_MESSAGE =
+  "Já existe uma auditoria em rascunho para esta unidade na data informada.";
+
+const DUPLICATE_AUDIT_MESSAGE =
+  "Já existe uma auditoria para esta unidade na data informada.";
+
+/** Mensagem segura e acionável para falhas ao criar uma auditoria. */
+export function getStockAuditCreateError(
+  status: number,
+  payload: unknown,
+): string {
+  const apiMessage = getApiMessage(payload, "Erro ao criar a auditoria");
+
+  if (status !== 409) return apiMessage;
+
+  return /status:\s*rascunho/i.test(apiMessage)
+    ? DUPLICATE_DRAFT_AUDIT_MESSAGE
+    : DUPLICATE_AUDIT_MESSAGE;
+}
 
 /**
  * Status da auditoria de estoque.

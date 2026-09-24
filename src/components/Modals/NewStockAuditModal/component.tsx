@@ -13,6 +13,11 @@ import { SelectOption } from "@/components/FormControl/Select/interface";
 import { useUnitFilterOptions } from "@/hooks/useUnitFilterOptions/hook";
 import { createStockAuditSchema } from "@/schemas/stockAuditSchema";
 import { NewStockAuditModalProps } from "./interface";
+import { IUserContext } from "@/Interfaces/User/context";
+import { authContextService } from "@/services/authContextService";
+import { getContextRequestHeaders } from "@/utils/authContextHeaders";
+import { getApiMessage } from "@/utils/apiMessage";
+import { getStockAuditCreateError } from "@/utils/stockAuditUtils";
 
 type FormData = {
   unidade_id: string;
@@ -57,14 +62,16 @@ function toOptions(items: ApiItem[]): SelectOption[] {
     .filter((option) => option.value);
 }
 
-async function fetchJson(url: string, fallbackError: string) {
-  const response = await fetch(url);
+async function fetchJson(
+  url: string,
+  fallbackError: string,
+  init?: RequestInit,
+) {
+  const response = await fetch(url, init);
 
   if (!response.ok) {
-    const errData = await response
-      .json()
-      .catch(() => ({ message: fallbackError }));
-    throw new Error(errData.message ?? errData.detail ?? fallbackError);
+    const errData: unknown = await response.json().catch(() => null);
+    throw new Error(getApiMessage(errData, fallbackError));
   }
 
   return response.json();
@@ -81,12 +88,17 @@ export default function NewStockAuditModal({
   const [auditorOptions, setAuditorOptions] = React.useState<SelectOption[]>([
     AUDITOR_PROMPT,
   ]);
-  const [auditorsError, setAuditorsError] = React.useState<string | null>(null);
+  const [contextError, setContextError] = React.useState<string | null>(null);
+  const [requestContext, setRequestContext] =
+    React.useState<IUserContext | null>(null);
+  const [isLoadingUnitContext, setIsLoadingUnitContext] =
+    React.useState(false);
   const [checklistCount, setChecklistCount] = React.useState<number | null>(
     null,
   );
   const [isSaving, setIsSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const unitRequestRef = React.useRef(0);
 
   const unitOptions = React.useMemo<SelectOption[]>(
     () => [UNIT_PROMPT, ...loadedUnits.filter((option) => option.value !== "all")],
@@ -99,6 +111,7 @@ export default function NewStockAuditModal({
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(
@@ -114,94 +127,117 @@ export default function NewStockAuditModal({
 
   const unidadeId = watch("unidade_id");
 
-  // Carregamento próprio: uma falha aqui não pode esvaziar o select de unidades.
+  // O contexto temporário acompanha todas as operações da unidade escolhida,
+  // sem alterar a unidade ativa da sessão. O contador evita que uma resposta
+  // lenta sobrescreva os dados após o usuário trocar de unidade.
   React.useEffect(() => {
-    if (!open) return;
+    const requestId = ++unitRequestRef.current;
+    setValue("auditor_id", "");
+    setAuditorOptions([AUDITOR_PROMPT]);
+    setContextError(null);
+    setRequestContext(null);
+    setChecklistCount(null);
+    setError(null);
 
-    let cancelled = false;
-
-    const loadAuditors = async () => {
-      try {
-        const payload = await fetchJson(
-          "/api/usuarios?cargo=auditor&page_size=200",
-          "Erro ao carregar auditores",
-        );
-
-        if (cancelled) return;
-
-        setAuditorOptions([
-          AUDITOR_PROMPT,
-          ...toOptions(normalizeResults<ApiItem>(payload)),
-        ]);
-        setAuditorsError(null);
-      } catch (err) {
-        if (cancelled) return;
-        setAuditorOptions([AUDITOR_PROMPT]);
-        setAuditorsError(
-          err instanceof Error ? err.message : "Erro ao carregar auditores",
-        );
-      }
-    };
-
-    loadAuditors();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
-
-  // O checklist é montado a partir dos insumos da unidade — contamos com
-  // `page_size=1` e lemos apenas o total da paginação.
-  React.useEffect(() => {
-    if (!open || !unidadeId) {
-      setChecklistCount(null);
+    const selectedUnitId = Number(unidadeId);
+    if (!open || !Number.isInteger(selectedUnitId) || selectedUnitId <= 0) {
+      setIsLoadingUnitContext(false);
       return;
     }
 
-    let cancelled = false;
+    const loadUnitData = async () => {
+      setIsLoadingUnitContext(true);
 
-    const loadChecklistCount = async () => {
       try {
-        const payload = await fetchJson(
-          `/api/insumo?unidade_id=${unidadeId}&page_size=1`,
-          "Erro ao contar os itens do checklist",
+        const context =
+          await authContextService.getContextForUnit(selectedUnitId);
+        const headers = getContextRequestHeaders(context);
+        const [auditorsPayload, checklistPayload] = await Promise.all([
+          fetchJson(
+            "/api/usuarios?cargo=auditor&page_size=200",
+            "Erro ao carregar auditores",
+            { headers },
+          ),
+          fetchJson(
+            `/api/insumo?unidade_id=${selectedUnitId}&page_size=1`,
+            "Erro ao contar os itens do checklist",
+            { headers },
+          ),
+        ]);
+
+        if (unitRequestRef.current !== requestId) return;
+
+        const total = (
+          checklistPayload as { metadados?: { total_results?: number } }
+        )?.metadados?.total_results;
+
+        setRequestContext(context);
+        setAuditorOptions([
+          AUDITOR_PROMPT,
+          ...toOptions(normalizeResults<ApiItem>(auditorsPayload)),
+        ]);
+        setChecklistCount(
+          total ?? normalizeResults(checklistPayload).length,
         );
+      } catch (err) {
+        if (unitRequestRef.current !== requestId) return;
 
-        if (cancelled) return;
-
-        const total = (payload as { metadados?: { total_results?: number } })
-          ?.metadados?.total_results;
-        setChecklistCount(total ?? normalizeResults(payload).length);
-      } catch {
-        if (!cancelled) setChecklistCount(null);
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Não foi possível validar o contexto desta unidade.";
+        setContextError(message);
+        setRequestContext(null);
+        setAuditorOptions([AUDITOR_PROMPT]);
+        setChecklistCount(null);
+      } finally {
+        if (unitRequestRef.current === requestId) {
+          setIsLoadingUnitContext(false);
+        }
       }
     };
 
-    loadChecklistCount();
+    loadUnitData();
 
     return () => {
-      cancelled = true;
+      if (unitRequestRef.current === requestId) {
+        unitRequestRef.current += 1;
+      }
     };
-  }, [open, unidadeId]);
+  }, [open, setValue, unidadeId]);
 
   const handleClose = () => {
+    unitRequestRef.current += 1;
     reset();
+    setAuditorOptions([AUDITOR_PROMPT]);
     setChecklistCount(null);
+    setRequestContext(null);
+    setContextError(null);
+    setIsLoadingUnitContext(false);
     setError(null);
     onClose();
   };
 
   const onSubmit = async (data: FormData) => {
-    setIsSaving(true);
     setError(null);
 
+    const unidade = Number(data.unidade_id);
+    if (!requestContext || requestContext.unidade_id !== unidade) {
+      setError("Aguarde a validação do contexto da unidade selecionada.");
+      return;
+    }
+
+    setIsSaving(true);
+
     try {
-      const unidade = Number(data.unidade_id);
       const auditor = Number(data.auditor_id);
 
       const response = await fetch("/api/auditoria-estoque", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getContextRequestHeaders(requestContext),
+        },
         body: JSON.stringify({
           // Os ids só entram quando numéricos; sem eles a API resolve a
           // unidade pelo escopo do usuário, conforme o schema de criação.
@@ -213,12 +249,8 @@ export default function NewStockAuditModal({
       });
 
       if (!response.ok) {
-        const errData = await response
-          .json()
-          .catch(() => ({ message: "Erro ao criar a auditoria" }));
-        throw new Error(
-          errData.message ?? errData.detail ?? "Erro ao criar a auditoria",
-        );
+        const errData: unknown = await response.json().catch(() => null);
+        throw new Error(getStockAuditCreateError(response.status, errData));
       }
 
       onCreated?.();
@@ -230,12 +262,16 @@ export default function NewStockAuditModal({
     }
   };
 
-  const loadError = error ?? unitsError ?? auditorsError;
+  const loadError = error ?? contextError ?? unitsError;
 
   return (
     <Modal open={open} onClose={handleClose} title="Nova Auditoria">
       <Stack component="form" onSubmit={handleSubmit(onSubmit)} gap={3}>
-        {loadError && <Alert severity="error">{loadError}</Alert>}
+        {loadError && (
+          <Alert severity="error" role="alert">
+            {loadError}
+          </Alert>
+        )}
 
         <Select
           label="Selecione a Unidade"
@@ -258,6 +294,12 @@ export default function NewStockAuditModal({
             name="auditor_id"
             control={control}
             error={errors.auditor_id?.message}
+            disabled={
+              !unidadeId ||
+              isLoadingUnitContext ||
+              !requestContext ||
+              Boolean(contextError)
+            }
           />
 
           <Box>
@@ -304,10 +346,14 @@ export default function NewStockAuditModal({
           <Button
             type="submit"
             variant="contained"
-            disabled={isSaving}
+            disabled={isSaving || isLoadingUnitContext || !requestContext}
             sx={{ flex: 1, height: 56, fontWeight: 600 }}
           >
-            {isSaving ? "Criando..." : "Criar Auditoria"}
+            {isSaving
+              ? "Criando..."
+              : isLoadingUnitContext
+                ? "Validando unidade..."
+                : "Criar Auditoria"}
           </Button>
         </Stack>
       </Stack>

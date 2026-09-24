@@ -1,4 +1,8 @@
-import { Dayjs } from "dayjs";
+import type { Dayjs } from "dayjs";
+
+export const MAX_CARDAPIO_DATES_PER_REQUEST = 100;
+export const MAX_CARDAPIO_DATES_MESSAGE =
+  "É possível planejar no máximo 100 dias de cardápio.";
 
 const WEEKDAY_MAP: Record<string, number> = {
   domingo: 0,
@@ -39,4 +43,22 @@ export function computeCardapioDates(
   }
 
   return dates;
+}
+
+export function getCardapioDatesLimitError(
+  inicio: Dayjs,
+  fim: Dayjs | null | undefined,
+  tipoIntervalo: string,
+  diasSemana: string[],
+): string | null {
+  const dates = computeCardapioDates(
+    inicio,
+    fim,
+    tipoIntervalo,
+    diasSemana,
+  );
+
+  return dates.length > MAX_CARDAPIO_DATES_PER_REQUEST
+    ? MAX_CARDAPIO_DATES_MESSAGE
+    : null;
 }

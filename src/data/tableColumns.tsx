@@ -128,7 +128,26 @@ const userColumns: IColumn<IUsuarioListItem>[] = [
 ];
 
 const stockColumns: IColumn<IStock>[] = [
-  { key: "nome", label: "Nome" },
+  {
+    key: "nome",
+    label: "Nome",
+    render: (row) => (
+      <Tooltip title={row.nome} placement="top-start" arrow>
+        <Typography
+          variant="body2"
+          noWrap
+          sx={{
+            display: "block",
+            maxWidth: { xs: 120, sm: 160, lg: 200 },
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {row.nome}
+        </Typography>
+      </Tooltip>
+    ),
+  },
   { key: "categoria", label: "Categoria" },
   { key: "tipo_padrao", label: "Tipo Padrão" },
   { key: "unidade_medida", label: "Unidade de Medida" },

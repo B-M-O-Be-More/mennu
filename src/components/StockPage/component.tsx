@@ -11,10 +11,13 @@ import {
   InputLabel,
   MenuItem,
   Select as MuiSelect,
+  CardActionArea,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import {
   AlertIcon,
+  ArrowIcon,
+  CheckIcon,
   DownloadIcon,
   EstoqueIcon,
   PaperIcon,
@@ -55,6 +58,7 @@ const MOVEMENT_TABS = { auditoria: 0, historico: 1 } as const;
 const MAIN_TABS = { estoque: 0, movimentacoes: 1, saldo: 2 } as const;
 
 type StockFilterState = {
+  nome: "none" | "asc" | "desc";
   categoria: string;
   tipo_padrao: string;
   unidade_medida: string;
@@ -63,6 +67,7 @@ type StockFilterState = {
 };
 
 const EMPTY_STOCK_FILTERS: StockFilterState = {
+  nome: "none",
   categoria: "all",
   tipo_padrao: "all",
   unidade_medida: "all",
@@ -71,6 +76,12 @@ const EMPTY_STOCK_FILTERS: StockFilterState = {
 };
 
 const EMPTY_FILTER_VALUE = "__empty__";
+
+const getNextSortDirection = (current: "none" | "asc" | "desc") => {
+  if (current === "none") return "asc";
+  if (current === "asc") return "desc";
+  return "none";
+};
 
 const getStockOptions = (rows: IStock[], key: keyof IStock) => {
   const values = Array.from(
@@ -123,6 +134,7 @@ export function StockPage({}: StockPageProps) {
   const [stockFilters, setStockFilters] = React.useState<StockFilterState>(
     EMPTY_STOCK_FILTERS,
   );
+  const [criticalOnly, setCriticalOnly] = React.useState(false);
 
   const updateStockFilter = React.useCallback(
     (updates: Partial<StockFilterState>) =>
@@ -168,6 +180,14 @@ export function StockPage({}: StockPageProps) {
       if (stockFilters.ativo === "inactive" && row.ativo) return false;
       return true;
     }).toSorted((a, b) => {
+      if (stockFilters.nome !== "none") {
+        const comparison = String(a.nome ?? "").localeCompare(
+          String(b.nome ?? ""),
+          "pt-BR",
+          { sensitivity: "base" },
+        );
+        return stockFilters.nome === "asc" ? comparison : -comparison;
+      }
       if (stockFilters.quantidade_atual === "none") return 0;
       const aQuantity = Number(String(a.quantidade_atual ?? "").replace(",", "."));
       const bQuantity = Number(String(b.quantidade_atual ?? "").replace(",", "."));
@@ -182,11 +202,23 @@ export function StockPage({}: StockPageProps) {
   const stockFilterResetKey = JSON.stringify({
     debouncedSearch,
     unidadeFiltro,
+    criticalOnly,
     stockFilters,
   });
 
   const stockColumnFilters = React.useMemo(
     () => ({
+      nome: {
+        active: stockFilters.nome !== "none",
+        ariaLabel: "Ordenar por nome",
+        onToggle: () =>
+          updateStockFilter({
+            nome: getNextSortDirection(stockFilters.nome),
+            quantidade_atual: "none",
+          }),
+        sortDirection:
+          stockFilters.nome === "none" ? undefined : stockFilters.nome,
+      },
       categoria: {
         active: stockFilters.categoria !== "all",
         ariaLabel: "Filtrar por categoria",
@@ -258,8 +290,10 @@ export function StockPage({}: StockPageProps) {
         ariaLabel: "Ordenar por quantidade atual",
         onToggle: () =>
           updateStockFilter({
-            quantidade_atual:
-              stockFilters.quantidade_atual === "desc" ? "asc" : "desc",
+            quantidade_atual: getNextSortDirection(
+              stockFilters.quantidade_atual,
+            ),
+            nome: "none",
           }),
         sortDirection:
           stockFilters.quantidade_atual === "none"
@@ -289,13 +323,22 @@ export function StockPage({}: StockPageProps) {
     [clearStockFilter, stockFilters, stockOptions, updateStockFilter],
   );
 
-  const loadStockData = async (search?: string, unidadeId?: string) => {
+  const loadStockData = React.useCallback(async (
+    search?: string,
+    unidadeId?: string,
+    onlyCritical = false,
+  ) => {
     setLoading(true);
     setError(null);
     try {
-      const url = search
-        ? `/api/insumo?search=${encodeURIComponent(search)}`
-        : "/api/insumo";
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (unidadeId && unidadeId !== "all") {
+        params.set("unidade_id", unidadeId);
+      }
+      if (onlyCritical) params.set("critico", "true");
+      const query = params.toString();
+      const url = `/api/insumo${query ? `?${query}` : ""}`;
       const response = await fetch(url);
       if (!response.ok) {
         const errData = await response.json();
@@ -338,9 +381,9 @@ export function StockPage({}: StockPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadMovementData = async () => {
+  const loadMovementData = React.useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -357,20 +400,28 @@ export function StockPage({}: StockPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const isAuditTab = openTab === 1 && movementTab === MOVEMENT_TABS.auditoria;
 
   useEffect(() => {
     if (openTab === 0) {
-      loadStockData(debouncedSearch, unidadeFiltro);
+      loadStockData(debouncedSearch, unidadeFiltro, criticalOnly);
       return;
     }
 
     if (openTab === 1 && movementTab === MOVEMENT_TABS.historico) {
       loadMovementData();
     }
-  }, [openTab, movementTab, debouncedSearch, unidadeFiltro]);
+  }, [
+    openTab,
+    movementTab,
+    debouncedSearch,
+    unidadeFiltro,
+    criticalOnly,
+    loadStockData,
+    loadMovementData,
+  ]);
 
   const handleEditStock = (stock: IStock) => {
     setSelectedStock(stock);
@@ -378,7 +429,7 @@ export function StockPage({}: StockPageProps) {
   };
 
   const handleSaveStock = () => {
-    loadStockData(debouncedSearch, unidadeFiltro);
+    loadStockData(debouncedSearch, unidadeFiltro, criticalOnly);
   };
 
   const handleToggleStock = async (stock: IStock, newState: boolean) => {
@@ -451,7 +502,9 @@ export function StockPage({}: StockPageProps) {
           variant="outlined"
           startIcon={<UpdateIcon />}
           onClick={() => {
-            if (openTab === 0) return loadStockData(debouncedSearch, unidadeFiltro);
+            if (openTab === 0) {
+              return loadStockData(debouncedSearch, unidadeFiltro, criticalOnly);
+            }
             if (openTab === 2) return setBalanceRefreshToken((token) => token + 1);
             if (isAuditTab) return setAuditRefreshToken((token) => token + 1);
             return loadMovementData();
@@ -523,9 +576,8 @@ export function StockPage({}: StockPageProps) {
         </Stack>
       )}
 
-      {/* Os totalizadores de insumos não se aplicam à auditoria nem ao saldo
-          por lote, que têm os próprios resumos. */}
-      {!isAuditTab && openTab !== 2 && (
+      {/* Estes indicadores descrevem exclusivamente a listagem de insumos. */}
+      {openTab === MAIN_TABS.estoque && (
         <Box
           display="grid"
           gap={2}
@@ -560,31 +612,87 @@ export function StockPage({}: StockPageProps) {
               {stockData.resumo.total_ativos}
             </Typography>
           </Card>
-          <Card spacing={0}>
-            <Stack
-              alignItems="center"
-              direction="row"
-              gap={2}
-              justifyContent="space-between"
-              width="100%"
+          <Card
+            spacing={0}
+            padding={0}
+            sx={{
+              overflow: "hidden",
+              bgcolor: criticalOnly ? "error.main" : "background.paper",
+            }}
+          >
+            <CardActionArea
+              aria-label={
+                criticalOnly
+                  ? "Remover filtro de itens críticos"
+                  : "Mostrar somente itens críticos"
+              }
+              aria-pressed={criticalOnly}
+              onClick={() => setCriticalOnly((previous) => !previous)}
+              sx={{
+                alignItems: "stretch",
+                display: "flex",
+                flex: 1,
+                flexDirection: "column",
+                gap: 2,
+                justifyContent: "space-between",
+                p: { xs: 1, md: 3 },
+                textAlign: "left",
+                transition: "background-color 180ms ease",
+                "&:hover": {
+                  bgcolor: criticalOnly
+                    ? "rgba(231, 0, 11, 0.08)"
+                    : "error.main",
+                },
+                "&.Mui-focusVisible": {
+                  outline: "2px solid",
+                  outlineColor: "error.contrastText",
+                  outlineOffset: -2,
+                },
+              }}
             >
-              <Box>
-                <Typography color="text.primary" variant="body1" fontWeight={400}>
-                  Itens Críticos
+              <Stack
+                alignItems="center"
+                direction="row"
+                gap={2}
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Box>
+                  <Typography color="text.primary" variant="body1" fontWeight={400}>
+                    Itens Críticos
+                  </Typography>
+                  <Typography
+                    color="text.secondary"
+                    variant="body2"
+                    fontWeight={400}
+                  >
+                    Abaixo do mínimo
+                  </Typography>
+                </Box>
+                <IconBox icon={<AlertIcon color="#E7000B" />} bgColor={"#FEF2F2"} />
+              </Stack>
+              <Typography variant="h4" fontWeight={400} color="text.primary" width="100%">
+                {stockData.resumo.itens_criticos}
+              </Typography>
+              <Stack
+                alignItems="center"
+                color="error.contrastText"
+                direction="row"
+                gap={0.75}
+                width="100%"
+              >
+                {criticalOnly ? (
+                  <CheckIcon width={16} height={16} />
+                ) : (
+                  <ArrowIcon width={16} height={16} />
+                )}
+                <Typography color="inherit" variant="caption" fontWeight={600}>
+                  {criticalOnly
+                    ? "Filtro ativo — clique para remover"
+                    : "Clique para ver os itens críticos"}
                 </Typography>
-                <Typography
-                  color="text.secondary"
-                  variant="body2"
-                  fontWeight={400}
-                >
-                  Abaixo do mínimo
-                </Typography>
-              </Box>
-              <IconBox icon={<AlertIcon color="#E7000B" />} bgColor={"#FEF2F2"} />
-            </Stack>
-            <Typography variant="h4" fontWeight={400} color="text.primary">
-              {stockData.resumo.itens_criticos}
-            </Typography>
+              </Stack>
+            </CardActionArea>
           </Card>
           <Card spacing={0}>
             <Stack
@@ -684,7 +792,7 @@ export function StockPage({}: StockPageProps) {
                     open={openNewStockModal}
                     onClose={() => {
                       setOpenNewStockModal(false);
-                      loadStockData(debouncedSearch, unidadeFiltro);
+                      loadStockData(debouncedSearch, unidadeFiltro, criticalOnly);
                     }}
                   />
                 </Stack>
@@ -772,7 +880,7 @@ export function StockPage({}: StockPageProps) {
                   onClose={() => setOpenTransferStockModal(false)}
                   onSave={() => {
                     loadMovementData();
-                    loadStockData(debouncedSearch, unidadeFiltro);
+                    loadStockData(debouncedSearch, unidadeFiltro, criticalOnly);
                   }}
                 />
               </Stack>

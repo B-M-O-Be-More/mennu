@@ -36,7 +36,7 @@ export default function DatePickerG({
         <Controller
           name={name}
           control={control}
-          render={({ field }) => (
+          render={({ field, fieldState }) => (
             <DatePicker
               value={field.value}
               minDate={minDate}
@@ -46,8 +46,21 @@ export default function DatePickerG({
                 field: {
                   readOnly: true,
                 },
+                popper: {
+                  sx: {
+                    "& .MuiPickersArrowSwitcher-button:not(.Mui-disabled)": {
+                      color: "text.secondary",
+                      opacity: 1,
+                    },
+                  },
+                },
                 textField: {
                   size,
+                  error: Boolean(fieldState.error),
+                  helperText: fieldState.error?.message,
+                  FormHelperTextProps: {
+                    role: "alert",
+                  },
                 },
               }}
             />
