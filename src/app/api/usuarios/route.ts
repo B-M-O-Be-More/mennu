@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getApiBaseUrl } from "@/app/api/_shared/getApiBaseUrl";
 import { getAuthHeaders } from "@/app/api/_shared/getAuthHeaders";
+import { proxyError, proxyResponse } from "@/app/api/_shared/proxyResponse";
+import { readContextRequestHeaders } from "@/utils/authContextHeaders";
 
 async function safeJson(response: Response) {
   const contentType = response.headers.get("content-type") ?? "";
@@ -16,7 +18,7 @@ async function safeJson(response: Response) {
 
 export async function GET(req: NextRequest) {
   const baseUrl = getApiBaseUrl();
-  const headers = await getAuthHeaders();
+  const headers = await getAuthHeaders(readContextRequestHeaders(req.headers));
   if (!headers) {
     return NextResponse.json(
       { message: "Autenticação necessária" },
@@ -33,10 +35,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(url.toString(), { headers });
-    const data = await safeJson(response);
-    return NextResponse.json(data, { status: response.status });
+    return proxyResponse(response);
   } catch (err) {
-    return NextResponse.json({ message: String(err) }, { status: 500 });
+    return proxyError(err);
   }
 }
 
