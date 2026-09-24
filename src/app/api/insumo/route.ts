@@ -32,8 +32,12 @@ export async function GET(req: NextRequest) {
   // Usados para contar os itens que comporão o checklist da auditoria.
   const unidadeId = searchParams.get("unidade_id");
   const pageSize = searchParams.get("page_size");
+  const critico = searchParams.get("critico");
   if (unidadeId) url.searchParams.append("unidade_id", unidadeId);
   if (pageSize) url.searchParams.append("page_size", pageSize);
+  if (critico === "true" || critico === "false") {
+    url.searchParams.append("critico", critico);
+  }
 
   try {
     const response = await fetch(url.toString(), { headers });

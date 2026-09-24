@@ -22,6 +22,9 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import { TablePaginationActionsProps, TableProps } from "./";
 import TableSkeleton from "@/components/Skeletons/TableSkeleton";
 
@@ -210,9 +213,11 @@ export default function TableG<T extends object>({
                       <Tooltip
                         title={
                           isToggle
-                            ? filter.active
-                              ? "Alternar ordenação"
-                              : "Ordenar quantidade"
+                            ? filter.sortDirection === "asc"
+                              ? "Ordenar decrescente"
+                              : filter.sortDirection === "desc"
+                                ? "Remover ordenação"
+                                : "Ordenar crescente"
                             : filter.active
                               ? "Editar filtro"
                               : "Filtrar coluna"
@@ -254,16 +259,23 @@ export default function TableG<T extends object>({
                             },
                           }}
                         >
-                          <KeyboardArrowDownIcon
-                            fontSize="small"
-                            sx={{
-                              transform: isOpen ? "rotate(180deg)" : "none",
-                              ...(filter?.sortDirection === "asc" && {
-                                transform: "rotate(180deg)",
-                              }),
-                              transition: "transform 180ms ease",
-                            }}
-                          />
+                          {isToggle ? (
+                            filter.sortDirection === "asc" ? (
+                              <ArrowUpwardIcon fontSize="small" />
+                            ) : filter.sortDirection === "desc" ? (
+                              <ArrowDownwardIcon fontSize="small" />
+                            ) : (
+                              <UnfoldMoreIcon fontSize="small" />
+                            )
+                          ) : (
+                            <KeyboardArrowDownIcon
+                              fontSize="small"
+                              sx={{
+                                transform: isOpen ? "rotate(180deg)" : "none",
+                                transition: "transform 180ms ease",
+                              }}
+                            />
+                          )}
                         </IconButton>
                       </Tooltip>
                     )}

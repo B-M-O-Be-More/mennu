@@ -7,7 +7,7 @@ export const createStockSchema = yup.object({
     .string()
     .trim()
     .max(100, "A categoria deve ter no máximo 100 caracteres")
-    .optional(),
+    .required("A categoria é obrigatória"),
   tipo_padrao: yup.string().optional(),
   unidade_medida: yup
     .string()

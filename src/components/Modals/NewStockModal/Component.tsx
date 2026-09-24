@@ -216,6 +216,7 @@ export default function NewStockModal({ open, onClose }: NewStockModalProps) {
               name="categoria"
               control={control}
               enabled={open}
+              optional={false}
               error={errors.categoria?.message}
             />
             <Input
