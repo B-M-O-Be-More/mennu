@@ -67,20 +67,6 @@ type MenusResponse = {
   results?: unknown[];
 };
 
-const sortMenusByDate = (firstMenu: IMenu, secondMenu: IMenu) => {
-  const dateComparison = dayjs(firstMenu.dataRefeicao).diff(
-    dayjs(secondMenu.dataRefeicao),
-    "day",
-  );
-  if (dateComparison !== 0) return dateComparison;
-
-  const mealTypeComparison =
-    firstMenu.tipoRefeicaoOrdem - secondMenu.tipoRefeicaoOrdem;
-  if (mealTypeComparison !== 0) return mealTypeComparison;
-
-  return secondMenu.id - firstMenu.id;
-};
-
 async function parseMenusResponse(response: Response): Promise<MenusResponse> {
   const payload = (await response.json()) as MenusResponse;
   if (!response.ok) {
@@ -158,19 +144,14 @@ export function MenusTab({}: MenusTabProps) {
     try {
       const params = new URLSearchParams();
       params.set("data_refeicao_after", dayjs().format("YYYY-MM-DD"));
+      params.set("ordering", "data_refeicao,tipo_refeicao__ordem,-id");
       params.set("page", "1");
-      // O endpoint ainda não oferece `ordering`. Como o filtro de data já
-      // elimina o histórico, carregamos somente os futuros (até o limite da
-      // API), ordenamos com dayjs e exibimos os oito mais próximos.
-      params.set("page_size", "200");
+      params.set("page_size", "8");
 
       const response = await fetch(`/api/cardapio?${params}`, { signal });
       const payload = await parseMenusResponse(response);
       const menus = Array.isArray(payload.results)
-        ? payload.results
-            .map(mapApiCardapio)
-            .toSorted(sortMenusByDate)
-            .slice(0, 8)
+        ? payload.results.map(mapApiCardapio)
         : [];
       setUpcomingMenus(menus);
     } catch (error) {
@@ -201,14 +182,12 @@ export function MenusTab({}: MenusTabProps) {
       setTableError(null);
       try {
         const params = new URLSearchParams(tableFilterQuery);
+        params.set("ordering", "-data_refeicao,tipo_refeicao__ordem,-id");
         params.set("page", String(tablePage + 1));
         params.set("page_size", String(tablePagination.rowsPerPage));
 
         const response = await fetch(`/api/cardapio?${params}`, { signal });
         const payload = await parseMenusResponse(response);
-        // A API pagina antes de responder e não expõe `ordering`; portanto,
-        // preservamos a ordem global do servidor em vez de ordenar só esta
-        // página e criar uma sequência incorreta entre páginas.
         const menus = Array.isArray(payload.results)
           ? payload.results.map(mapApiCardapio)
           : [];
